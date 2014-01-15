@@ -60,7 +60,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
   /**
   * query scopes
   */
-  public function scopeFindCommUser($query, $id)
+  public function scopeFind_comm_user($query, $id)
   {
     return $query->find($id)->comm_user()->get()[0];
   }

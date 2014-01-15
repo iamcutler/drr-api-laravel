@@ -90,7 +90,7 @@ class AuthController extends \BaseController {
       if(UserController::validate_user_password($password, $user['password']))
       {
         // Get relational comm_user data
-        $comm_user = User::FindCommUser($user->id);
+        $comm_user = User::Find_comm_user($user->id);
 
         $result = ['status' => true,
           'user' => [
