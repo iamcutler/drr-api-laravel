@@ -15,3 +15,10 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
+/*
+|--------------------------------------------------------------------------
+| Authentication
+|--------------------------------------------------------------------------
+*/
+// Check username uniqueness
+Route::get('/check/username/{username}', 'UserController@check_username_uniqueness');

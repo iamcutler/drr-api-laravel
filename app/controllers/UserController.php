@@ -76,4 +76,20 @@ class UserController extends \BaseController {
 		//
 	}
 
+  /*
+   * check username uniqueness
+   */
+  public function check_username_uniqueness($username)
+  {
+    $result = User::where('username', '=', $username)->take(1)->count();
+
+    if($result)
+    {
+      return Response::json(['unique' => true]);
+    }
+    else
+    {
+      return Response::json(['unique' => false]);
+    }
+  }
 }
