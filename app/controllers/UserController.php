@@ -92,4 +92,15 @@ class UserController extends \BaseController {
       return Response::json(['unique' => false]);
     }
   }
+
+  public static function validate_user_password($userPass, $systemPass) {
+    $salt = substr($systemPass, strpos($systemPass, ":") + 1);
+    $userPass = md5($userPass . $salt) . ":" . $salt;
+    // Compare passwords
+    if($userPass === $systemPass) {
+      return true;
+    }
+
+    return false;
+  }
 }
