@@ -64,4 +64,19 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
   {
     return $query->find($id)->comm_user()->get()[0];
   }
+
+  public function scopeCheck_username_uniqueness($query, $username)
+  {
+    return $query->where('username', '=', $username)->take(1);
+  }
+
+  public function scopeCheck_email_uniqueness($query, $email)
+  {
+    return $query->where('email', '=', $email)->take(1);
+  }
+
+  public function scopeFind_User_Hash_by_id($query, $id)
+  {
+    return $query->where('id', '=', $id)->take(1);
+  }
 }
