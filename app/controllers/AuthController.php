@@ -78,8 +78,8 @@ class AuthController extends \BaseController {
 
   protected function login()
   {
-    $username = Input::post('username');
-    $password = Input::post('password');
+    $username = Input::get('username');
+    $password = Input::get('password');
 
     $user = User::where('username', '=', $username)->take(1);
 
@@ -89,13 +89,16 @@ class AuthController extends \BaseController {
 
       if(UserController::validate_user_password($password, $user['password']))
       {
+        // Get relational comm_user data
+        $comm_user = User::FindCommUser($user->id);
+
         $result = ['status' => true,
           'user' => [
-            'id' => $user['id'],
-            'name' => $user['name'],
-            'slug' => $user['slug'],
-            'thumbnail' => $user['thumb'],
-            'hash' => $user['user_hash']
+            'id' => $user->id,
+            'name' => $user->name,
+            'slug' => $comm_user->alias,
+            'thumbnail' => $comm_user->thumb,
+            'hash' => $user->user_hash
           ]
         ];
       }
