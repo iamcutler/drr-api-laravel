@@ -6,7 +6,8 @@ class DirtyGirlController extends \BaseController {
     $results = DirtyGirl::orderBy('dirty_girl_name','ASC')->get();
 
     $girls = [];
-    foreach($results as $key => $val) {
+    foreach($results as $key => $val)
+    {
       $girls[$key]['id'] = $val['id'];
       $girls[$key]['campaign_month'] = $val['campaign_month'];
       $girls[$key]['campaign_year'] = $val['campaign_year'];
