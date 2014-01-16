@@ -5,6 +5,7 @@ class CommUser extends Eloquent {
    * The database table used by the model.
    */
   protected $table = "community_users";
+  protected $primaryKey = 'userid';
 
   /**
   * ORM
