@@ -76,33 +76,20 @@ class UserController extends \BaseController {
 		//
 	}
 
-  /*
-   * check username uniqueness
-   */
-  public function check_username_uniqueness($username)
+  // Check if username is unique
+  protected function check_username_uniqueness($username)
   {
-    $result = User::where('username', '=', $username)->take(1)->count();
+    $query = User::Check_username_uniqueness($username)->count();
 
-    if($result)
+    if(!$query)
     {
-      return Response::json(['unique' => true]);
+      $result = ['unique' => true];
     }
     else
     {
-      return Response::json(['unique' => false]);
-    }
-  }
-
-  public static function validate_user_password($userPass, $systemPass)
-  {
-    $salt = substr($systemPass, strpos($systemPass, ":") + 1);
-    $userPass = md5($userPass . $salt) . ":" . $salt;
-    // Compare passwords
-    if($userPass === $systemPass)
-    {
-      return true;
+      $result = ['unique' => false];
     }
 
-    return false;
+    return Response::json($result);
   }
 }
