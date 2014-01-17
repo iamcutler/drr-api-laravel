@@ -2,6 +2,20 @@
 
 class AuthController extends \BaseController {
 
+  public static function auth_user_hash_filter()
+  {
+    if(Input::has('user_hash')) {
+      $hash = Input::get('user_hash');
+
+      // Check if user has assigned hash
+      if(User::Check_hash_uniqueness($hash)->count()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   protected function login()
   {
     $username = Input::get('username');

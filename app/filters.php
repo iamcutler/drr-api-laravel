@@ -33,9 +33,9 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('auth', function()
+Route::filter('user-hash-auth', function()
 {
-	if (Auth::guest()) return Redirect::guest('login');
+	if (!AuthController::auth_user_hash_filter()) return Response::json(['error' => 'You don\'t have access to this API'], 401);
 });
 
 
