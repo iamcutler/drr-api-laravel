@@ -62,6 +62,27 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
   /**
    * Model methods
    */
+  public static function generate_hash($name, $username)
+  {
+    $saltLength = 9;
+    $salt = substr(md5(uniqid(rand(), true)), 0, $saltLength);
+    $hash = $salt . sha1($salt . $name . rand(5, 20) . $username . date("Y-m-d"));
+
+    // Check if hash is unique, if not, generate new hash till a unique hash is found
+    if(User::Check_hash_uniqueness($hash)->count()) {
+      return User::generate_hash($name, $username);
+    } else {
+      return $hash;
+    }
+  }
+
+  public static function generate_password($password)
+  {
+    $salt = AuthHelper::genRandomPassword(32);
+    $crypt = AuthHelper::getCryptedPassword($password, $salt);
+    return $crypt . ':' . $salt;
+  }
+
   public static function validate_user_password($userPass, $systemPass)
   {
     $salt = substr($systemPass, strpos($systemPass, ":") + 1);
@@ -93,8 +114,12 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     return $query->where('email', '=', $email);
   }
 
-  public function scopeFind_User_Hash_by_id($query, $id)
+  public function scopeFind_hash_by_id($query, $id)
   {
-    return $query->where('id', '=', $id)->take(1);
+    return $query->where('id', '=', $id)->first(['user_hash'])->user_hash;
+  }
+
+  public function scopeCheck_hash_uniqueness($query, $hash) {
+    return $query->where('user_hash', '=', $hash)->get(['user_hash'])->take(1);
   }
 }
