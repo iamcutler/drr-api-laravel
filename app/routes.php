@@ -24,7 +24,7 @@ Route::get('/', function()
 Route::post('/user/login', 'AuthController@login');
 
 // Check username uniqueness
-Route::get('/check/username/{username}', 'UserController@check_username_uniqueness');
+Route::post('/check/username/{username}', 'UserController@check_username_uniqueness');
 
 /*
 |--------------------------------------------------------------------------
