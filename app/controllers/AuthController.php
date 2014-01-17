@@ -13,7 +13,7 @@ class AuthController extends \BaseController {
     {
       $user = $user->first();
 
-      if(UserController::validate_user_password($password, $user['password']))
+      if(User::validate_user_password($password, $user['password']))
       {
         // Get relational comm_user data
         $comm_user = User::find($user->id)->comm_user()->first();
