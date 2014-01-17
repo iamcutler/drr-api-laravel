@@ -7,16 +7,16 @@ class AuthController extends \BaseController {
     $username = Input::get('username');
     $password = Input::get('password');
 
-    $user = User::where('username', '=', $username)->take(1);
+    $user = User::where('username', '=', $username);
 
     if($user->count() == 1)
     {
-      $user = $user->get()[0];
+      $user = $user->first();
 
       if(UserController::validate_user_password($password, $user['password']))
       {
         // Get relational comm_user data
-        $comm_user = User::Find_comm_user($user->id);
+        $comm_user = User::find($user->id)->comm_user()->first();
 
         $result = ['status' => true,
           'user' => [
