@@ -60,7 +60,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
   /**
-  * query scopes
    * Model methods
    */
   public static function validate_user_password($userPass, $systemPass)
@@ -81,17 +80,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
   */
   public function scopeFind_comm_user($query, $id)
   {
-    return $query->find($id)->comm_user()->get()[0];
+    return $query->find($id)->comm_user()->first();
   }
 
   public function scopeCheck_username_uniqueness($query, $username)
   {
-    return $query->where('username', '=', $username)->take(1);
+    return $query->where('username', '=', $username);
   }
 
   public function scopeCheck_email_uniqueness($query, $email)
   {
-    return $query->where('email', '=', $email)->take(1);
+    return $query->where('email', '=', $email);
   }
 
   public function scopeFind_User_Hash_by_id($query, $id)
