@@ -46,7 +46,7 @@ class UserController extends \BaseController {
 
         if($save)
         {
-          $results = ['status' => true, 'name' => $name, 'username' => $username, 'slug' => $save->id .':'. str_replace(' ', '-', $name), 'user_hash' => User::Find_hash_by_id($save->id)];
+          $results = ['status' => true, 'name' => $name, 'username' => $username, 'slug' => $save->id .':'. str_replace(' ', '-', $name), 'hash' => User::Find_hash_by_id($save->id)];
         }
         else
         {
