@@ -5,12 +5,14 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
+	// The database table used by the model.
 	protected $table = 'users';
+
+  // Fillable Attributes
+  protected $fillable = ['name', 'username', 'email', 'password', 'usertype', 'registerDate', 'lastvisitDate', 'params', 'user_hash'];
+
+  // Disable table timestamps
+  public $timestamps = false;
 
   /**
   * Assign Relationships
