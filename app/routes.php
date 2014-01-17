@@ -11,10 +11,12 @@
 |
 */
 
+// Home
 Route::get('/', function()
 {
-	return View::make('hello');
+  return View::make('hello');
 });
+
 /*
 |--------------------------------------------------------------------------
 | Authentication
@@ -22,13 +24,31 @@ Route::get('/', function()
 */
 // Login
 Route::post('/user/login', 'AuthController@login');
-
 // Check username uniqueness
 Route::post('/check/username/{username}', 'UserController@check_username_uniqueness');
 
 /*
 |--------------------------------------------------------------------------
-| Dirty Girls
+| User
 |--------------------------------------------------------------------------
 */
-Route::post('/dirty-girls', 'DirtyGirlController@get_dirty_girls');
+// Registration
+Route::post('/user/new', 'UserController@create');
+
+// Group all API routing to run hash and auth filters for permissions
+Route::group(['before' => 'user-hash-auth'], function() {
+  /*
+  |--------------------------------------------------------------------------
+  | User
+  |--------------------------------------------------------------------------
+  */
+  // Profile
+  Route::get('/profile/{slug}', 'ProfileController@get_profile_by_slug');
+
+  /*
+  |--------------------------------------------------------------------------
+  | Dirty Girls
+  |--------------------------------------------------------------------------
+  */
+  Route::post('/dirty-girls', 'DirtyGirlController@get_dirty_girls');
+});
