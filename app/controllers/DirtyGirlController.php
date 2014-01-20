@@ -22,43 +22,31 @@ class DirtyGirlController extends \BaseController {
     return Response::json($girls);
   }
 
-  public function current_voting()
+  /**
+   * Display the specified resource.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function show($id)
   {
-    $current_poll = VotingPoll::Get_current();
+    $query = DirtyGirl::find($id);
 
-    $poll = [];
-    if($current_poll->count() == 1)
-    {
-      $p = $current_poll->first();
-      $poll['poll']['id'] = $p->id;
-      $poll['poll']['name'] = $p->name;
-      $poll['poll']['question'] = $p->question;
-      $poll['poll']['date_start'] = $p->date_start;
-      $poll['poll']['date_end'] = $p->date_end;
-      $poll['poll']['number_answers'] = $p->number_answers;
-      $poll['poll']['voting_period'] = $p->voting_period;
-      $poll['poll']['created'] = $p->created;
+    $result = [];
+    $result['id'] = $query->id;
+    $result['campaign_month'] = $query->campaign_month;
+    $result['campaign_year'] = $query->campaign_year;
+    $result['name'] = $query->dirty_girl_name;
+    $result['biography'] = $query->dirty_girl_bio;
+    $result['type'] = $query->dirty_type;
+    $result['order'] = $query->ordering;
+    $result['media']['thumbnail'] = Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" .$query->thumbnail_image;
+    $result['media']['image_1'] = ($query->image_1 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_1 : "";
+    $result['media']['image_2'] = ($query->image_2 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_2 : "";
+    $result['media']['image_3'] = ($query->image_3 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_3 : "";
+    $result['media']['image_4'] = ($query->image_4 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_4 : "";
+    $result['media']['image_5'] = ($query->image_5 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_5 : "";
 
-      // Get poll answers
-      $poll['answers'] = [];
-      $answers = VotingPoll::Get_answers($p->id);
-      if($answers->count() > 0)
-      {
-        foreach($answers->get() as $key => $val)
-        {
-          $poll['answers'][$key]['id'] = $val->id;
-          $poll['answers'][$key]['id_poll'] = $val->id_poll;
-          $poll['answers'][$key]['name'] = $val->name;
-          $poll['answers'][$key]['thumbnail'] = $val->thumbnail;
-          $poll['answers'][$key]['username'] = $val->username;
-          $poll['answers'][$key]['caption'] = $val->caption;
-          $poll['answers'][$key]['created'] = $val->created;
-          //Current vote number for answers
-          $poll['answers'][$key]['votes'] = VotingVote::Answer_vote_count($val->id);
-        }
-      }
-    }
-
-    return Response::json($poll);
+    return Response::json($result);
   }
 }
