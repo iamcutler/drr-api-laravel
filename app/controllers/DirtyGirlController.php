@@ -1,7 +1,8 @@
 <?php
 
 class DirtyGirlController extends \BaseController {
-  public function get_dirty_girls()
+  // Get all dirty girls
+  public function index()
   {
     $results = DirtyGirl::Get_all_girls();
 
