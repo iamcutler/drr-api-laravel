@@ -35,7 +35,11 @@ Route::post('/check/username/{username}', 'UserController@check_username_uniquen
 // Registration
 Route::post('/user/new', 'UserController@create');
 
-// Group all API routing to run hash and auth filters for permissions
+/*
+|--------------------------------------------------------------------------
+| Group all API routing to run hash and auth filters for permissions
+|--------------------------------------------------------------------------
+ */
 Route::group(['before' => 'user-hash-auth'], function() {
   /*
   |--------------------------------------------------------------------------
@@ -50,5 +54,9 @@ Route::group(['before' => 'user-hash-auth'], function() {
   | Dirty Girls
   |--------------------------------------------------------------------------
   */
-  Route::post('/dirty-girls', 'DirtyGirlController@get_dirty_girls');
+  Route::resource('dirty-girls', 'DirtyGirlController', ['only' => ['index', 'show']]);
+  Route::group(['prefix' => 'dirty-girls'], function() {
+    // Dirty girl voting
+    Route::resource('current-voting', 'VoteController', ['only' => ['index']]);
+  });
 });
