@@ -16,11 +16,6 @@ class DirtyGirlController extends \BaseController {
       $girls[$key]['type'] = $val->dirty_type;
       $girls[$key]['order'] = $val->ordering;
       $girls[$key]['media']['thumbnail'] = Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" .$val->thumbnail_image;
-      $girls[$key]['media']['image_1'] = ($val->image_1 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $val->image_1 : "";
-      $girls[$key]['media']['image_2'] = ($val->image_2 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $val->image_2 : "";
-      $girls[$key]['media']['image_3'] = ($val->image_3 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $val->image_3 : "";
-      $girls[$key]['media']['image_4'] = ($val->image_4 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $val->image_4 : "";
-      $girls[$key]['media']['image_5'] = ($val->image_5 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $val->image_5 : "";
     }
 
     return Response::json($girls);
