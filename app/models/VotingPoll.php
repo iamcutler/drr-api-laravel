@@ -31,6 +31,7 @@ class VotingPoll extends Eloquent {
     return $query
       ->find($id)
       ->answer()
-      ->where('published', '=', 1);
+      ->where('published', '=', 1)
+      ->orderBy('name', 'ASC');
   }
 }
