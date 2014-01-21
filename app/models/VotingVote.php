@@ -7,6 +7,9 @@ class VotingVote extends Eloquent {
   protected $table = "sexy_votes";
   protected $primaryKey = "id_answer";
 
+  // Disable table timestamps
+  public $timestamps = false;
+
   /**
    * Mass assignment
    */
