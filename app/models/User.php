@@ -122,4 +122,73 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
   public function scopeCheck_hash_uniqueness($query, $hash) {
     return $query->where('user_hash', '=', $hash)->get(['user_hash'])->take(1);
   }
+
+  public function scopeFind_profile_data_by_slug($query, $slug)
+  {
+    return $query->where('alias', '=', $slug)->first();
+  }
+
+  public function scopeFind_user_profile_by_slug($query, $slug)
+  {
+    return DB::table('community_users')
+      ->join('users', function($join)
+      {
+        $join->on('community_users.userid', '=', 'users.id');
+      })->where('alias', '=', $slug)->first([
+        'users.id',
+        'users.name',
+        'users.username',
+        'community_users.status',
+        'community_users.points',
+        'community_users.avatar',
+        'community_users.thumb as thumbnail',
+        'users.params',
+        'community_users.view',
+        'community_users.friends',
+        'community_users.groups',
+        'community_users.events',
+        'community_users.friendcount',
+        'community_users.alias as slug',
+        'users.user_hash',
+        'users.lastvisitDate as last_visit',
+        'users.registerDate as registered'
+      ]);
+  }
+
+  public function scopeFind_friend_by_id($query, $id)
+  {
+    return DB::table('community_users')
+      ->join('users', function($join)
+      {
+        $join->on('community_users.userid', '=', 'users.id');
+      })->where('id', '=', $id)->get([
+        'users.id',
+        'users.name',
+        'community_users.avatar',
+        'community_users.thumb as thumbnail',
+        'community_users.status',
+        'community_users.alias as slug'
+      ]);
+  }
+
+  public function scopeFind_all($query, $offset, $limit)
+  {
+    return $query
+      ->join('community_users', function($join)
+      {
+        $join->on('users.id', '=', 'community_users.userid');
+      })->skip($offset)->take($limit)->get([
+        'users.id',
+        'users.name',
+        'community_users.avatar',
+        'community_users.thumb as thumbnail',
+        'community_users.status',
+        'community_users.alias as slug'
+      ]);
+  }
+
+  public function scopeFind_by_username($query, $username)
+  {
+    return $query->where('username', '=', $username)->first();
+  }
 }

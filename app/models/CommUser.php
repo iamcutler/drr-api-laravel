@@ -40,4 +40,11 @@ class CommUser extends Eloquent {
     return $this->hasMany('UserEvent', 'creator');
   }
 
+  /**
+   * Scope queries
+   */
+  public function scopeFind_friend_by_id($query, $id)
+  {
+    return $query->find($id)->first();
+  }
 }
