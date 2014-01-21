@@ -2,13 +2,13 @@
 
 class VoteController extends \BaseController {
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
-	public function index()
-	{
+  /**
+   * Display a listing of the resource.
+   *
+   * @return Response
+   */
+  public function index()
+  {
     $current_poll = VotingPoll::Get_current();
 
     $poll = [];
@@ -35,7 +35,7 @@ class VoteController extends \BaseController {
           $poll['answers'][$key]['id_poll'] = $val->id_poll;
           $poll['answers'][$key]['name'] = $val->name;
           $poll['answers'][$key]['thumbnail'] = $val->thumbnail;
-          $poll['answers'][$key]['username'] = $val->username;
+          $poll['answers'][$key]['slug'] = '';
           $poll['answers'][$key]['caption'] = $val->caption;
           $poll['answers'][$key]['created'] = $val->created;
           //Current vote number for answers
@@ -45,70 +45,81 @@ class VoteController extends \BaseController {
     }
 
     return Response::json($poll);
-	}
+  }
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
-	}
+  /**
+   * Show the form for creating a new resource.
+   *
+   * @return Response
+   */
+  public function create()
+  {
+    //
+  }
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
-		//
-	}
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @return Response
+   */
+  public function store()
+  {
+    $answer = Input::get('id_answer');
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
+    // Save new vote
+    VotingVote::create([
+      'id_answer' => $answer,
+      'ip' => '',
+      'date' => date("Y-m-d H:i:s"),
+      'country' => '',
+      'city' => '',
+      'region' => '',
+      'countrycode' => ''
+    ]);
+  }
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
+  /**
+   * Display the specified resource.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function show($id)
+  {
+    //
+  }
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
-	}
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function edit($id)
+  {
+    //
+  }
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-		//
-	}
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function update($id)
+  {
+    //
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function destroy($id)
+  {
+    //
+  }
 
 }
