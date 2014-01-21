@@ -57,6 +57,6 @@ Route::group(['before' => 'user-hash-auth'], function() {
   Route::resource('dirty-girls', 'DirtyGirlController', ['only' => ['index', 'show']]);
   Route::group(['prefix' => 'dirty-girls'], function() {
     // Dirty girl voting
-    Route::resource('current-voting', 'VoteController', ['only' => ['index']]);
+    Route::resource('voting/current', 'VoteController', ['only' => ['index', 'store']]);
   });
 });
