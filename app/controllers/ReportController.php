@@ -11,9 +11,12 @@ class ReportController extends \BaseController {
 
       if($validator->passes())
       {
+        // Find user by passed in hash
+        $user = User::Find_id_by_hash($input['user_hash']);
+
         // Save model
         Report::create([
-          'user_id' => User::Find_id_by_hash($input['user_hash'])->id,
+          'user_id' => $user->id,
           'category' => $input['category'],
           'message' => $input['message'],
           'ip' => Request::getClientIp(),
