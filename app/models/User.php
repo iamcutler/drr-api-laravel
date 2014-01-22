@@ -119,7 +119,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     return $query->where('id', '=', $id)->first(['user_hash'])->user_hash;
   }
 
-  public function scopeCheck_hash_uniqueness($query, $hash) {
+  public function scopeFind_id_by_hash($query, $hash)
+  {
+    return $query->where('user_hash', '=', $hash)->first();
+  }
+
+  public function scopeCheck_hash_uniqueness($query, $hash)
+  {
     return $query->where('user_hash', '=', $hash)->get(['user_hash'])->take(1);
   }
 
