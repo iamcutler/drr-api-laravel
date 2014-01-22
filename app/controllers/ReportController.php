@@ -21,6 +21,23 @@ class ReportController extends \BaseController {
           'report_type' => $input['bug_type']
         ]);
 
+        // Data to pass to mailer
+        $mailer = [
+          'user_id' => $user->id,
+          'user_name' => $user->name,
+          'category' => $input['category'],
+          'comments' => $input['message'],
+          'report_type' => $input['bug_type'],
+          'client' => $_SERVER['HTTP_USER_AGENT'],
+          'ip' => Request::getClientIp()
+        ];
+
+        // Send notification email to us
+        Mail::send('emails.report.bug', $mailer, function($message)
+        {
+          $message->to('allan@211enterprises.com', 'Allan Cutler')->subject('A mobile app bug has been reported');
+        });
+
         return Response::json(['status' => true, 'message' => '']);
       }
       else
