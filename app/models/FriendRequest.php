@@ -22,7 +22,7 @@ class FriendRequest extends Eloquent {
       ->get([
         'community_connection.connection_id as id',
         'users.name',
-        'community_users.alias',
+        'community_users.alias as slug',
         'community_users.avatar',
         'community_users.thumb as thumbnail',
         'community_connection.msg'
