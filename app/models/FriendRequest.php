@@ -5,6 +5,7 @@ class FriendRequest extends Eloquent {
    * Table used by model
    */
   protected $table = "community_connection";
+  protected $primaryKey = "connection_id";
 
   /**
    * Scoped queries
