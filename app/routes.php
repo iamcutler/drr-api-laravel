@@ -59,4 +59,12 @@ Route::group(['before' => 'user-hash-auth'], function() {
     // Dirty girl voting
     Route::resource('voting/current', 'VoteController', ['only' => ['index', 'store']]);
   });
+
+  /*
+  |--------------------------------------------------------------------------
+  | Application
+  |--------------------------------------------------------------------------
+  */
+  // Report a bug
+  Route::post('report/bug', 'ReportController@bug');
 });
