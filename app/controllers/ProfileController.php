@@ -108,15 +108,4 @@ class ProfileController extends \BaseController {
 
     return Response::json($profile);
   }
-
-  // Current friend requests
-  protected function friend_requests()
-  {
-    if(Input::has('user_hash'))
-    {
-      $hash = Input::get('user_hash');
-
-      return FriendRequest::Find_by_id(User::Find_id_by_hash($hash)->id);
-    }
-  }
 }
