@@ -1,6 +1,6 @@
 <?php
 
-class FriendRequestController extends \BaseController {
+class UserConnectionController extends \BaseController {
 
   /**
    * Display a listing of the resource.
@@ -13,18 +13,8 @@ class FriendRequestController extends \BaseController {
     {
       $hash = Input::get('user_hash');
 
-      return Response::json(FriendRequest::Find_by_id(User::Find_id_by_hash($hash)->id));
+      return Response::json(UserConnection::Find_by_id(User::Find_id_by_hash($hash)->id));
     }
-  }
-
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return Response
-   */
-  public function create()
-  {
-    //
   }
 
   /**
@@ -32,31 +22,11 @@ class FriendRequestController extends \BaseController {
    *
    * @return Response
    */
-  public function store()
+  public function store($id)
   {
-    //
-  }
+    $user_hash = Input::get('user_hash');
 
-  /**
-   * Display the specified resource.
-   *
-   * @param  int  $id
-   * @return Response
-   */
-  public function show($id)
-  {
-    //
-  }
 
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  int  $id
-   * @return Response
-   */
-  public function edit($id)
-  {
-    //
   }
 
   /**
@@ -67,7 +37,40 @@ class FriendRequestController extends \BaseController {
    */
   public function update($id)
   {
-    //
+    $user_hash = Input::get('user_hash');
+    $request = UserConnection::find($id);
+    $user = User::Find_id_by_hash($user_hash);
+
+    if(!is_null($request->first()) && !is_null($user->first()))
+    {
+      // Update request
+      if($request->status == 0)
+      {
+        $request->update([
+          'status' => 1
+        ]);
+
+        // Create or update reverse connection to users
+        UserConnection::UpdateOrCreateConnection([
+          'connect_from' => $request->connect_to,
+          'connect_to' => $user->id,
+          'status' => 1,
+          'group' => 0,
+          'msg' => '',
+          'created' => date("Y-m-d H:i:s")
+        ]);
+
+        return ['status' => true];
+      }
+      else
+      {
+        return ['status' => false];
+      }
+    }
+    else
+    {
+      return ['status' => false];
+    }
   }
 
   /**
@@ -82,7 +85,7 @@ class FriendRequestController extends \BaseController {
     $user_hash = Input::get('user_hash');
 
     // Query existing request and find user for comparison
-    $request = FriendRequest::find($id);
+    $request = UserConnection::find($id);
     $user = User::Find_id_by_hash($user_hash);
 
     if(!is_null($request))

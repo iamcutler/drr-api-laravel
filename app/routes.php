@@ -48,6 +48,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
   */
   // Profile
   Route::get('/profile/{slug}', 'ProfileController@get_profile_by_slug');
+  Route::resource('connections', 'UserConnectionController', ['only' => ['index', 'update', 'destroy']]);
 
   /*
   |--------------------------------------------------------------------------
