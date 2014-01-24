@@ -26,7 +26,7 @@ class UserConnection extends Eloquent {
       ->where('community_connection.connect_to', '=', $id)
       ->where('community_connection.status', '=', 0)
       ->where('users.block', '=', 0)
-      ->orderBy('community_connection.created', 'DESC')
+      ->orderBy('community_connection.created', 'ASC')
       ->get([
         'community_connection.connection_id as id',
         'users.name',
