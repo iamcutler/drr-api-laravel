@@ -52,8 +52,8 @@ class UserConnectionController extends \BaseController {
 
         // Create or update reverse connection to users
         UserConnection::UpdateOrCreateConnection([
-          'connect_from' => $request->connect_to,
-          'connect_to' => $user->id,
+          'connect_from' => $user->id,
+          'connect_to' => $request->connect_from,
           'status' => 1,
           'group' => 0,
           'msg' => '',
