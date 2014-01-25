@@ -15,6 +15,7 @@ class Message extends Eloquent {
       msg.id,
       rep.msg_from,
       rep.to,
+      msg.parent,
       msg.subject,
       msg.body,
       rep.bcc,
@@ -28,6 +29,7 @@ class Message extends Eloquent {
           FROM drr_community_msg_recepient
           WHERE rep.msg_from = ? or rep.to = ?
           GROUP BY msg_parent
-      )', [ $id, $id ]);
+      )
+      ORDER BY posted_on DESC', [ $id, $id ]);
   }
 }
