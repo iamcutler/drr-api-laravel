@@ -164,17 +164,18 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
   public function scopeFind_friend_by_id($query, $id)
   {
     return DB::table('community_users')
-      ->join('users', function($join)
-      {
-        $join->on('community_users.userid', '=', 'users.id');
-      })->where('id', '=', $id)->get([
+      ->select([
         'users.id',
         'users.name',
         'community_users.avatar',
         'community_users.thumb as thumbnail',
         'community_users.status',
         'community_users.alias as slug'
-      ]);
+      ])
+      ->join('users', function($join)
+      {
+        $join->on('community_users.userid', '=', 'users.id');
+      })->where('id', '=', $id);
   }
 
   public function scopeFind_all($query, $offset, $limit)
