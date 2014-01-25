@@ -51,7 +51,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
     Route::get('/profile/{slug}', 'ProfileController@get_profile_by_slug');
 
     Route::resource('connections', 'UserConnectionController', ['only' => ['index', 'update', 'destroy']]);
-    Route::resource('messages', 'MessageController', ['only' => ['show']]);
+    Route::resource('messages', 'MessageController', ['only' => ['index']]);
   });
 
   /*
