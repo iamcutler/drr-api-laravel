@@ -31,8 +31,7 @@ class UserController extends \BaseController {
       // Check if user email adrress has been used
       if(!User::Check_email_uniqueness($email)->count())
       {
-        // Save user data
-        $save = User::create([
+        $new_user = [
           'name' => $name,
           'username' => $username,
           'email' => $email,
@@ -42,10 +41,18 @@ class UserController extends \BaseController {
           'lastvisitDate' => date("Y-m-d H:i:s"),
           'params' => '',
           'user_hash' => User::generate_hash($name, $username)
-        ]);
+        ];
+
+        // Save user data
+        $save = User::create($new_user);
 
         if($save)
         {
+          // Send confirm / welcome email
+          Email::send('emails.auth.welcome', $new_user, function($message) {
+            $message->to($email, $name)->subject('Welcome to Dirty Rotten Rides');
+          });
+
           $results = ['status' => true, 'name' => $name, 'username' => $username, 'slug' => $save->id .':'. str_replace(' ', '-', $name), 'hash' => User::Find_hash_by_id($save->id)];
         }
         else
