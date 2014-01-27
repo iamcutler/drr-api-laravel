@@ -38,6 +38,7 @@ class AuthController extends \BaseController {
             'name' => $user->name,
             'slug' => $comm_user->alias,
             'thumbnail' => $comm_user->thumb,
+            'username' => $user->username,
             'hash' => $user->user_hash
           ]
         ];
