@@ -107,6 +107,7 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
     'Barryvdh\Cors\CorsServiceProvider',
+    'Profiler\ProfilerServiceProvider',
 
 	),
 
@@ -173,6 +174,7 @@ return array(
 		'URL'             => 'Illuminate\Support\Facades\URL',
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
+    'Profiler' => 'Profiler\Facades\Profiler',
 
 	),
 
