@@ -98,9 +98,45 @@ class MessageController extends \BaseController {
    * @param  int  $id
    * @return Response
    */
-  public function show($id)
+  public function show($username)
   {
-    //
+    $user_hash = Input::get('user_hash');
+    $user = User::Find_id_by_hash($user_hash)->first();
+    $recepient = User::Find_by_username($username);
+
+    $thread = Message::Find_thread_by_id($user->id, $recepient->id);
+    $result = [];
+
+    // Check if user has permissions and finds recepient
+    if(!is_null($user) && !is_null($recepient))
+    {
+      // Fetch user
+      $result['user']['id'] = $recepient->id;
+      $result['user']['name'] = $recepient->name;
+      $result['user']['avatar'] = $recepient->avatar;
+      $result['user']['thumbnail'] = $recepient->thumb;
+      $result['user']['slug'] = $recepient->alias;
+
+      // Format messages collection
+      foreach($thread as $key => $val)
+      {
+        // Message formatting
+        $result['messages'][$key]['id'] = $val->id;
+        $result['messages'][$key]['subject'] = $val->subject;
+        $result['messages'][$key]['message'] = $val->body;
+        $result['messages'][$key]['from'] = $val->msg_from;
+        $result['messages'][$key]['to'] = $val->to;
+        $result['messages'][$key]['bcc'] = $val->bcc;
+        $result['messages'][$key]['is_read'] = $val->is_read;
+        $result['messages'][$key]['posted_on'] = strtotime($val->posted_on);
+      }
+    }
+    else
+    {
+      $result = ['status' => false, 'message' => 'No message thread found'];
+    }
+
+    return Response::json($result);
   }
 
   /**
