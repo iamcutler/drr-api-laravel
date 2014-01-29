@@ -172,7 +172,7 @@ class MessageController extends \BaseController {
         $result['messages'][$key]['to'] = $val->to;
         $result['messages'][$key]['bcc'] = $val->bcc;
         $result['messages'][$key]['is_read'] = $val->is_read;
-        $result['messages'][$key]['posted_on'] = strtotime($val->posted_on);
+        $result['messages'][$key]['posted_on'] = $val->posted_on;
       }
     }
     else
