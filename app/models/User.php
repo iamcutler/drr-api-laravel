@@ -196,6 +196,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
   public function scopeFind_by_username($query, $username)
   {
-    return $query->where('username', '=', $username)->first();
+    return $query
+      ->join('community_users', function($join) {
+        $join->on('community_users.userid', '=', 'id');
+      })
+      ->where('community_users.alias', '=', $username)
+      ->first();
   }
 }
