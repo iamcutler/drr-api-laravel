@@ -4,7 +4,21 @@ class Message extends Eloquent {
   /**
    * Table used by model
    */
-  protected $table = "community_msg as msg";
+  protected $table = "community_msg";
+  public $timestamps = false;
+
+  /**
+   * Mass assignment
+   */
+  public $fillable = ['from', 'parent', 'deleted', 'from_name', 'posted_on', 'subject', 'body'];
+
+  /**
+   * ORM
+   */
+  public function recepient()
+  {
+    return $this->hasOne('MessageRecepient', 'msg_id');
+  }
 
   /**
    * Scoped queries
@@ -31,5 +45,47 @@ class Message extends Eloquent {
           GROUP BY msg_parent
       )
       ORDER BY posted_on DESC', [ $id, $id ]);
+  }
+
+  public function scopeFind_thread_by_id($query, $user, $recepient)
+  {
+    return $query
+      ->select(
+        'id',
+        'parent',
+        'subject',
+        'body',
+        'community_msg_recepient.msg_from',
+        'community_msg_recepient.to',
+        'community_msg_recepient.bcc',
+        'community_msg_recepient.is_read',
+        'posted_on'
+      )
+      ->join('community_msg_recepient', function($join) {
+        $join->on('community_msg_recepient.msg_id', '=', 'id');
+      })
+      ->where('community_msg_recepient.msg_from', '=', $recepient)
+      ->Where('community_msg_recepient.to', '=', $user)
+      ->orWhere(function($query) use ($user, $recepient) {
+        $query->Where('community_msg_recepient.msg_from', '=', $user)
+              ->Where('community_msg_recepient.to', '=', $recepient);
+      })
+      ->where('community_msg_recepient.deleted', '=', 0)
+      ->orderBy('posted_on', 'DESC')
+      ->get();
+  }
+
+  public function scopeFind_latest($query, $user, $recepient) {
+    return $query
+      ->join('community_msg_recepient', function($join) {
+        $join->on('community_msg_recepient.msg_id', '=', 'id');
+      })
+      ->where('community_msg_recepient.msg_from', '=', $recepient)
+      ->Where('community_msg_recepient.to', '=', $user)
+      ->orWhere(function($query) use ($user, $recepient) {
+        $query->Where('community_msg_recepient.msg_from', '=', $user)
+          ->Where('community_msg_recepient.to', '=', $recepient);
+      })
+      ->orderBy('posted_on', 'DESC');
   }
 }
