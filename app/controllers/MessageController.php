@@ -89,7 +89,51 @@ class MessageController extends \BaseController {
    */
   public function store()
   {
-    //
+    $params = Input::all();
+    // Find users
+    $user = User::Find_id_by_hash($params['user_hash']);
+
+    $result = [];
+
+    if(Input::has('user') && Input::has('recepient') && Input::has('message') && Input::has('user_hash'))
+    {
+      if(!is_null($user))
+      {
+        // Get last message in the tread
+        $last = Message::Find_latest(819, 821)->first();
+
+        // Save new message
+        $save = Message::Create([
+          'from' => $params['user'],
+          'parent' => $last->parent,
+          'deleted' => 0,
+          'from_name' => $user->name,
+          'subject' => $last->subject,
+          'body' => $params['message'],
+          'posted_on' => date("Y-m-d H:i:s")
+        ]);
+
+        if($save) {
+          // Save relation
+          $recepient = new MessageRecepient([
+            'msg_id' => $save->id,
+            'msg_parent' => $last->parent,
+            'msg_from' => $params['user'],
+            'to' => $params['recepient']
+          ]);
+
+          $save->recepient()->save($recepient);
+
+          $result = ['status' => true];
+        }
+      }
+    }
+    else
+    {
+      $result = ['status' => false, 'message' => 'Missing parameters'];
+    }
+
+    return Response::json($result);
   }
 
   /**
