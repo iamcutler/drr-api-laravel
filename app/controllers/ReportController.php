@@ -1,21 +1,28 @@
 <?php
 
 class ReportController extends \BaseController {
+
+  public function __construct(Report $report, User $user)
+  {
+    $this->report = $report;
+    $this->user = $user;
+  }
+
   public function bug()
   {
     if(Input::has('category') && Input::has('message') && Input::has('bug_type') && Input::has('user_hash'))
     {
       $input = Input::all();
 
-      $validator = Report::validate($input);
+      $validator = $this->report->validate($input);
 
       if($validator->passes())
       {
         // Find user by passed in hash
-        $user = User::Find_id_by_hash($input['user_hash']);
+        $user = $this->user->Find_id_by_hash($input['user_hash']);
 
         // Save model
-        Report::create([
+        $this->report->create([
           'user_id' => $user->id,
           'category' => $input['category'],
           'message' => $input['message'],

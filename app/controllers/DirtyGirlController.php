@@ -1,10 +1,16 @@
 <?php
 
 class DirtyGirlController extends \BaseController {
+
+  public function __construct(DirtyGirl $DirtyGirl)
+  {
+    $this->DirtyGirl = $DirtyGirl;
+  }
+
   // Get all dirty girls
   public function index()
   {
-    $results = DirtyGirl::Get_all_girls();
+    $results = $this->DirtyGirl->Get_all_girls();
 
     $girls = [];
     foreach($results as $key => $val)
@@ -30,7 +36,7 @@ class DirtyGirlController extends \BaseController {
    */
   public function show($id)
   {
-    $query = DirtyGirl::find($id);
+    $query = $this->DirtyGirl->find($id);
 
     $result = [];
     $result['id'] = $query->id;

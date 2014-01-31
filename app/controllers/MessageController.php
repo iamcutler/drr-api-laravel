@@ -2,6 +2,12 @@
 
 class MessageController extends \BaseController {
 
+  public function __construct(Message $message, MessageRecepient $recepient, User $user)
+  {
+    $this->message = $message;
+    $this->user = $user;
+    $this->recepient = $recepient;
+  }
   /**
    * Display a listing of the resource.
    *
@@ -11,8 +17,8 @@ class MessageController extends \BaseController {
   {
     $user_hash = Input::get('user_hash');
 
-    $user = User::Find_id_by_hash($user_hash);
-    $messages = Message::Find_all_by_id($user->id);
+    $user = $this->user->Find_id_by_hash($user_hash);
+    $messages = $this->message->Find_all_by_id($user->id);
     $result = [];
 
     // Check if user has permissions
@@ -34,7 +40,7 @@ class MessageController extends \BaseController {
           }
 
           // Get recepient data
-          $recep = User::Find_friend_by_id($recepient)->first();
+          $recep = $this->user->Find_friend_by_id($recepient)->first();
 
           // Make sure user is found
           if(!is_null($recep))
@@ -91,7 +97,7 @@ class MessageController extends \BaseController {
   {
     $params = Input::all();
     // Find users
-    $user = User::Find_id_by_hash($params['user_hash']);
+    $user = $this->user->Find_id_by_hash($params['user_hash']);
 
     $result = [];
 
@@ -100,10 +106,10 @@ class MessageController extends \BaseController {
       if(!is_null($user))
       {
         // Get last message in the tread
-        $last = Message::Find_latest(819, 821)->first();
+        $last = $this->message->Find_latest(819, 821)->first();
 
         // Save new message
-        $save = Message::Create([
+        $save = $this->message->Create([
           'from' => $params['user'],
           'parent' => $last->parent,
           'deleted' => 0,
@@ -115,7 +121,7 @@ class MessageController extends \BaseController {
 
         if($save) {
           // Save relation
-          $recepient = new MessageRecepient([
+          $recepient = new $this->recepient([
             'msg_id' => $save->id,
             'msg_parent' => $last->parent,
             'msg_from' => $params['user'],
@@ -145,10 +151,10 @@ class MessageController extends \BaseController {
   public function show($username)
   {
     $user_hash = Input::get('user_hash');
-    $user = User::Find_id_by_hash($user_hash)->first();
-    $recepient = User::Find_by_username($username);
+    $user = $this->user->Find_id_by_hash($user_hash)->first();
+    $recepient = $this->user->Find_by_username($username);
 
-    $thread = Message::Find_thread_by_id($user->id, $recepient->id);
+    $thread = $this->message->Find_thread_by_id($user->id, $recepient->id);
     $result = [];
 
     // Check if user has permissions and finds recepient

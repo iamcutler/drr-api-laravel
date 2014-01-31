@@ -1,6 +1,12 @@
 <?php
 
 class VoteController extends \BaseController {
+  
+  public function __construct(VotingPoll $poll, VotingVote $vote)
+  {
+    $this->poll = $poll;
+    $this->vote = $vote;
+  }
 
   /**
    * Display a listing of the resource.
@@ -9,7 +15,7 @@ class VoteController extends \BaseController {
    */
   public function index()
   {
-    $current_poll = VotingPoll::Get_current();
+    $current_poll = $this->poll->Get_current();
 
     $poll = [];
     if($current_poll->count() == 1)
@@ -26,7 +32,7 @@ class VoteController extends \BaseController {
 
       // Get poll answers
       $poll['answers'] = [];
-      $answers = VotingPoll::Get_answers($p->id);
+      $answers = $this->poll->Get_answers($p->id);
       if($answers->count() > 0)
       {
         foreach($answers->get() as $key => $val)
@@ -39,7 +45,7 @@ class VoteController extends \BaseController {
           $poll['answers'][$key]['caption'] = $val->caption;
           $poll['answers'][$key]['created'] = $val->created;
           //Current vote number for answers
-          $poll['answers'][$key]['votes'] = VotingVote::Answer_vote_count($val->id);
+          $poll['answers'][$key]['votes'] = $this->vote->Answer_vote_count($val->id);
         }
       }
     }
@@ -67,7 +73,7 @@ class VoteController extends \BaseController {
     $answer = Input::get('id_answer');
 
     // Save new vote
-    VotingVote::create([
+    $this->vote->create([
       'id_answer' => $answer,
       'ip' => '',
       'date' => date("Y-m-d H:i:s"),

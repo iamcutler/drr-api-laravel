@@ -1,8 +1,13 @@
 <?php
 
 class ProfileController extends \BaseController {
+  public function __construct(User $user)
+  {
+    $this->user = $user;
+  }
+
   public function get_profile_by_slug($slug) {
-    $user = User::Find_user_profile_by_slug($slug);
+    $user = $this->user->Find_user_profile_by_slug($slug);
 
     // Profile array
     $profile = [];

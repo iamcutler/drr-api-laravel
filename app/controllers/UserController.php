@@ -2,6 +2,11 @@
 
 class UserController extends \BaseController {
 
+  public function __construct(User $user)
+  {
+    $this->user = $user;
+  }
+
   /**
    * Display a listing of the resource.
    *
@@ -37,25 +42,25 @@ class UserController extends \BaseController {
     $dob = Input::get('dob');
 
     // Check if username is taken
-    if(!User::Check_username_uniqueness($username)->count())
+    if(!$this->user->Check_username_uniqueness($username)->count())
     {
       // Check if user email adrress has been used
-      if(!User::Check_email_uniqueness($email)->count())
+      if(!$this->user->Check_email_uniqueness($email)->count())
       {
         $new_user = [
           'name' => $name,
           'username' => $username,
           'email' => $email,
-          'password' => User::generate_password($password),
+          'password' => $this->user->generate_password($password),
           'usertype' => 2,
           'registerDate' => date("Y-m-d H:i:s"),
           'lastvisitDate' => date("Y-m-d H:i:s"),
           'params' => '',
-          'user_hash' => User::generate_hash($name, $username)
+          'user_hash' => $this->user->generate_hash($name, $username)
         ];
 
         // Save user data
-        $save = User::create($new_user);
+        $save = $this->user->create($new_user);
 
         if($save)
         {
@@ -64,7 +69,7 @@ class UserController extends \BaseController {
             $message->to($email, $name)->subject('Welcome to Dirty Rotten Rides');
           });
 
-          $results = ['status' => true, 'name' => $name, 'username' => $username, 'slug' => $save->id .':'. str_replace(' ', '-', $name), 'hash' => User::Find_hash_by_id($save->id)];
+          $results = ['status' => true, 'name' => $name, 'username' => $username, 'slug' => $save->id .':'. str_replace(' ', '-', $name), 'hash' => $this->user->Find_hash_by_id($save->id)];
         }
         else
         {
@@ -131,7 +136,7 @@ class UserController extends \BaseController {
   // Check if username is unique
   protected function check_username_uniqueness($username)
   {
-    $query = User::Check_username_uniqueness($username)->count();
+    $query = $this->user->Check_username_uniqueness($username)->count();
 
     if(!$query)
     {

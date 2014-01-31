@@ -2,6 +2,12 @@
 
 class UserConnectionController extends \BaseController {
 
+  public function __construct(UserConnection $connection, User $user)
+  {
+    $this->connection = $connection;
+    $this->user = $user;
+  }
+
   /**
    * Display a listing of the resource.
    *
@@ -13,7 +19,7 @@ class UserConnectionController extends \BaseController {
     {
       $hash = Input::get('user_hash');
 
-      return Response::json(UserConnection::Find_by_id(User::Find_id_by_hash($hash)->id));
+      return Response::json($this->connection->Find_by_id($this->user->Find_id_by_hash($hash)->id));
     }
   }
 
@@ -25,6 +31,7 @@ class UserConnectionController extends \BaseController {
   public function store($id)
   {
     $user_hash = Input::get('user_hash');
+    $user = $this->user->find_id_by_hash($user_hash);
 
 
   }
@@ -38,8 +45,8 @@ class UserConnectionController extends \BaseController {
   public function update($id)
   {
     $user_hash = Input::get('user_hash');
-    $request = UserConnection::find($id);
-    $user = User::Find_id_by_hash($user_hash);
+    $request = $this->connection->find($id);
+    $user = $this->user->Find_id_by_hash($user_hash);
 
     if(!is_null($request->first()) && !is_null($user->first()))
     {
@@ -51,7 +58,7 @@ class UserConnectionController extends \BaseController {
         ]);
 
         // Create or update reverse connection to users
-        UserConnection::UpdateOrCreateConnection([
+        $this->connection->UpdateOrCreateConnection([
           'connect_from' => $user->id,
           'connect_to' => $request->connect_from,
           'status' => 1,
@@ -85,8 +92,8 @@ class UserConnectionController extends \BaseController {
     $user_hash = Input::get('user_hash');
 
     // Query existing request and find user for comparison
-    $request = UserConnection::find($id);
-    $user = User::Find_id_by_hash($user_hash);
+    $request = $this->connection->find($id);
+    $user = $this->user->Find_id_by_hash($user_hash);
 
     if(!is_null($request))
     {
