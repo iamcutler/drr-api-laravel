@@ -178,6 +178,23 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
       })->where('id', '=', $id);
   }
 
+  public function scopeFind_comm_by_hash($query, $hash)
+  {
+    return DB::table('community_users')
+      ->select([
+        'users.id',
+        'users.name',
+        'community_users.avatar',
+        'community_users.thumb as thumbnail',
+        'community_users.status',
+        'community_users.alias as slug'
+      ])
+      ->join('users', function($join)
+      {
+        $join->on('community_users.userid', '=', 'users.id');
+      })->where('user_hash', '=', $hash);
+  }
+
   public function scopeFind_all($query, $offset, $limit)
   {
     return $query
