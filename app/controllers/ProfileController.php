@@ -1,9 +1,14 @@
 <?php
 
 class ProfileController extends \BaseController {
-  public function __construct(User $user)
+
+  public function __construct(User $user, UserPhoto $photo, UserVideo $video, UserGroup $group, UserConnection $connection)
   {
     $this->user = $user;
+    $this->photo = $photo;
+    $this->video = $video;
+    $this->group = $group;
+    $this->connection = $connection;
   }
 
   public function get_profile_by_slug($slug) {
