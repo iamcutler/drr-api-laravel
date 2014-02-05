@@ -7,6 +7,9 @@
 		"laravel/framework": "4.1.*",
 		"barryvdh/laravel-cors": "dev-master",
         "loic-sharma/profiler": "dev-master"
+        "loic-sharma/profiler": "dev-master",
+        "phpunit/phpunit": "3.7.*@dev",
+        "Mockery/Mockery": ">=0.7.2"
 	},
 	"autoload": {
 		"classmap": [
