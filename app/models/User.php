@@ -155,6 +155,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
         'community_users.events',
         'community_users.friendcount',
         'community_users.alias as slug',
+        'community_users.params as profile_params',
         'users.user_hash',
         'users.lastvisitDate as last_visit',
         'users.registerDate as registered'
