@@ -177,6 +177,7 @@ class ProfileController extends \BaseController {
     $results['name'] = $album->name;
     $results['permissions'] = $album->permissions;
 
+    $results['photos'] = [];
     // Loop output to photos array
     foreach($photos->get() as $key => $val)
     {
