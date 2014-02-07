@@ -2,120 +2,191 @@
 
 class ProfileController extends \BaseController {
 
-  public function __construct(User $user, UserPhoto $photo, UserVideo $video, UserGroup $group, UserConnection $connection)
+  public function __construct(User $user, CommUser $comm_user, UserPhotoAlbum $album, UserPhoto $photo, UserVideo $video, UserGroup $group, UserConnection $connection, UserField $field)
   {
     $this->user = $user;
+    $this->comm_user = $comm_user;
     $this->photo = $photo;
+    $this->album = $album;
     $this->video = $video;
     $this->group = $group;
     $this->connection = $connection;
+    $this->field = $field;
   }
 
   public function get_profile_by_slug($slug) {
+
+    $requester = $this->user->Find_id_by_hash(Input::get('user_hash'));
     $user = $this->user->Find_user_profile_by_slug($slug);
 
     // Profile array
     $profile = [];
-    $profile['user']['id'] = $user->id;
-    $profile['user']['name'] = $user->name;
-    $profile['user']['username'] = $user->username;
-    $profile['user']['slug'] = $user->slug;
-    $profile['user']['avatar'] = $user->avatar;
-    $profile['user']['thumbnail'] = $user->thumbnail;
-    // Profile array
-    $profile['profile']['status'] = $user->status;
-    $profile['profile']['views'] = $user->view;
-    $profile['profile']['friends'] = $user->friends;
-    $profile['profile']['friend_count'] = $user->friendcount;
-    $profile['profile']['last_visit'] = $user->last_visit;
-    $profile['profile']['registered'] = $user->registered;
-    // Friends array
-    $profile['friends'] = [];
-    if($user->friends != NULL) {
-      foreach(str_getcsv($user->friends, ',') as $key => $val) {
-        $friend = User::Find_friend_by_id($val);
 
-        $profile['friends'][$key] = $friend;
-      }
-    }
-    // Media array
-    $profile['media'] = [];
-    // Photos albums array
-    $profile['media']['photo_albums'] = [];
-    foreach(UserPhotoAlbum::Find_all_by_user_id($user->id) as $key => $val) {
-      $profile['media']['photo_albums'][$key]['id'] = $val->id;
-      $profile['media']['photo_albums'][$key]['name'] = $val->name;
-      $profile['media']['photo_albums'][$key]['description'] = $val->description;
-      $profile['media']['photo_albums'][$key]['path'] = $val->path;
-      $profile['media']['photo_albums'][$key]['hits'] = $val->hits;
-      $profile['media']['photo_albums'][$key]['location'] = $val->location;
-      $profile['media']['photo_albums'][$key]['default'] = $val->default;
-      $profile['media']['photo_albums'][$key]['created'] = $val->created;
-    }
-    // Photos array
-    $profile['media']['photos'] = [];
-    foreach(UserPhoto::Find_all_by_user_id($user->id) as $key => $val) {
-      $profile['media']['photos'][$key]['id'] = $val->id;
-      $profile['media']['photos'][$key]['albumid'] = $val->albumid;
-      $profile['media']['photos'][$key]['caption'] = $val->caption;
-      $profile['media']['photos'][$key]['image'] = $val->image;
-      $profile['media']['photos'][$key]['thumbnail'] = $val->thumbnail;
-      $profile['media']['photos'][$key]['original'] = $val->original;
-      $profile['media']['photos'][$key]['hits'] = $val->hits;
-      $profile['media']['photos'][$key]['created'] = $val->created;
-    }
-    // Videos array
-    $profile['media']['videos'] = [];
-    foreach(UserVideo::Find_all_by_user_id($user->id) as $key => $val) {
-      $profile['media']['videos'][$key]['id'] = $val->id;
-      $profile['media']['videos'][$key]['title'] = $val->title;
-      $profile['media']['videos'][$key]['type'] = $val->type;
-      $profile['media']['videos'][$key]['video_id'] = $val->video_id;
-      $profile['media']['videos'][$key]['description'] = $val->description;
-      $profile['media']['videos'][$key]['permissions'] = $val->permissions;
-      $profile['media']['videos'][$key]['category_id'] = $val->category_id;
-      $profile['media']['videos'][$key]['hits'] = $val->hits;
-      $profile['media']['videos'][$key]['featured'] = $val->featured;
-      $profile['media']['videos'][$key]['duration'] = $val->duration;
-      $profile['media']['videos'][$key]['status'] = $val->status;
-      $profile['media']['videos'][$key]['thumbnail'] = $val->thumb;
-      $profile['media']['videos'][$key]['path'] = $val->path;
-      $profile['media']['videos'][$key]['groupid'] = $val->groupid;
-      $profile['media']['videos'][$key]['location'] = $val->location;
-      $profile['media']['videos'][$key]['created'] = $val->created;
-    }
-    // Groups array
-    $profile['groups'] = [];
-    if($user->groups != NULL) {
-      foreach(str_getcsv($user->groups, ',') as $key => $val) {
-        $group = UserGroup::Find_by_id($val);
+    if(!is_null($user) && !is_null($requester))
+    {
+      $profile['user']['id'] = $user->id;
+      $profile['user']['name'] = $user->name;
+      $profile['user']['username'] = $user->username;
+      $profile['user']['slug'] = $user->slug;
+      $profile['user']['avatar'] = $user->avatar;
+      $profile['user']['thumbnail'] = $user->thumbnail;
 
-        $profile['groups'][$key]['ownerid'] = $group->ownerid;
-        $profile['groups'][$key]['categoryid'] = $group->categoryid;
-        $profile['groups'][$key]['name'] = $group->name;
-        $profile['groups'][$key]['description'] = $group->description;
-        $profile['groups'][$key]['email'] = $group->email;
-        $profile['groups'][$key]['website'] = $group->website;
-        $profile['groups'][$key]['approvals'] = $group->approvals;
-        $profile['groups'][$key]['avatar'] = $group->avatar;
-        $profile['groups'][$key]['thumbnail'] = $group->thumb;
-        $profile['groups'][$key]['discusscount'] = $group->discusscount;
-        $profile['groups'][$key]['wallcount'] = $group->wallcount;
-        $profile['groups'][$key]['membercount'] = $group->membercount;
-        $profile['groups'][$key]['params'] = $group->params;
-        $profile['groups'][$key]['created'] = $group->created;
-      }
-    }
-    /* Events array
-    $profile['events'] = [];
-    if($user->events != NULL) {
-      foreach(str_getcsv($user->events, ',') as $key => $val) {
-        $event = UserEvent::Find_by_id($val);
+      // Relation array to tell relationship to requester
+      $profile['relation'] = [];
+      $profile['relation']['self'] = false;
+      $profile['relation']['friends'] = false;
+      $profile['relation']['request_sent'] = false;
 
-        $profile['events'][$key]['id'] = $event->id;
+      // Detect if requester is also the user
+      if($requester->id == $user->id)
+      {
+        $profile['relation']['self'] = true;
       }
-    }*/
+
+      // Check if requester and user are friends
+      foreach(str_getcsv($user->friends, ',') as $key => $val)
+      {
+        if($val == $requester->id)
+        {
+          $profile['relation']['friends'] = true;
+        }
+      }
+
+      // Change friend request to true if detected
+      if($this->connection->Find_existing_connection($user->id, $requester->id)->count() > 0)
+      {
+        $profile['relation']['request_sent'] = true;
+      }
+
+      // Profile array
+      $profile['profile']['status'] = $user->status;
+      $profile['profile']['views'] = $user->view;
+      $profile['profile']['friends'] = $user->friends;
+      $profile['profile']['friend_count'] = $user->friendcount;
+      $profile['profile']['last_visit'] = $user->last_visit;
+      $profile['profile']['registered'] = $user->registered;
+
+      $profile['profile']['settings'] = json_decode($user->profile_params);
+
+      // Count array
+      $profile['profile']['counts']['photos'] = $this->photo->Find_all_by_user_id($user->id)->count();
+      $profile['profile']['counts']['videos'] = $this->video->Find_all_by_user_id($user->id)->count();
+
+      $friend_count = 0;
+      foreach(str_getcsv($user->friends, ',') as $val ) { $friend_count++; }
+      $profile['profile']['counts']['friends'] = $friend_count;
+
+      $group_count = 0;
+      foreach(str_getcsv($user->groups, ',') as $val ) { $group_count++; }
+      $profile['profile']['counts']['groups'] = $group_count;
+
+      $events_count = 0;
+      foreach(str_getcsv($user->events, ',') as $val ) { $events_count++; }
+      $profile['profile']['counts']['events'] = $events_count;
+    }
+    else
+    {
+      $profile['status'] = false;
+      $profile['message'] = 'User was not found';
+    }
 
     return Response::json($profile);
+  }
+
+  public function about($slug)
+  {
+    $user = $this->user->Find_user_profile_by_slug($slug);
+    $result = [];
+
+    if(!is_null($user))
+    {
+      return $result = $this->field->all();
+    }
+    else
+    {
+      $result = ['status' => false, 'message' => 'User was not found'];
+    }
+
+    return Response::json($result);
+  }
+
+  public function friends($slug)
+  {
+    $user = $this->user->Find_user_profile_by_slug($slug);
+    $users = [];
+    $result = [];
+
+    if(!is_null($user))
+    {
+      $users[] = $user->friends;
+      $result = $this->user->Find_profile_friends_by_id_array($users);
+    }
+    else
+    {
+      $result = ['status' => false, 'message' => 'User not found'];
+    }
+
+    return Response::json($result);
+  }
+
+  public function photo_albums($slug)
+  {
+    $user = $this->user->Find_user_profile_by_slug($slug);
+    $result = [];
+
+    if(is_null($user))
+    {
+      $result = ['status' => false, 'message' => 'User not found'];
+    }
+    else
+    {
+      foreach($this->album->Find_all_by_user_id($user->id) as $key => $val)
+      {
+        $result[$key]['id'] = $val['id'];
+        $result[$key]['name'] = $val['name'];
+
+        if(!is_null($this->photo->find($val['photoid'])))
+        {
+          $result[$key]['thumbnail'] = $this->photo->find($val['photoid'])->thumbnail;
+        }
+        else
+        {
+          $result[$key]['thumbnail'] = null;
+        }
+
+        $result[$key]['hits'] = $val['hits'];
+        $result[$key]['location'] = $val['location'];
+        $result[$key]['photo_count'] = 0;
+        $result[$key]['permissions'] = $val['permissions'];
+        $result[$key]['params'] = json_decode($val['params']);
+        $result[$key]['default'] = $val['default'];
+        $result[$key]['created'] = $val['created'];
+      }
+    }
+
+    return Response::json($result);
+  }
+
+  public function album_photos($id)
+  {
+    $album = $this->album->find($id);
+    $photos = $this->photo->Find_all_by_album_id($id);
+    $results = [];
+
+    // Output album information
+    $results['name'] = $album->name;
+    $results['permissions'] = $album->permissions;
+
+    // Loop output to photos array
+    foreach($photos->get() as $key => $val)
+    {
+      $results['photos'][$key]['id'] = $val['id'];
+      $results['photos'][$key]['thumbnail'] = $val['thumbnail'];
+      $results['photos'][$key]['params'] = json_decode($val['params']);
+      $results['photos'][$key]['permissions'] = $val['permissions'];
+      $results['photos'][$key]['created'] = $val['created'];
+    }
+
+    return Response::json($results);
   }
 }
