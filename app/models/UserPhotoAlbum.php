@@ -21,16 +21,21 @@ class UserPhotoAlbum extends Eloquent {
   public function scopeFind_all_by_user_id($query, $id)
   {
     return $query
+      ->select([
+        'id',
+        'photoid',
+        'name',
+        'description',
+        'permissions',
+        'path',
+        'hits',
+        'location',
+        'params',
+        'default',
+        'created'
+      ])
       ->where('creator', '=', $id)
-      ->get([
-      'id',
-      'name',
-      'description',
-      'path',
-      'hits',
-      'location',
-      'default',
-      'created'
-    ]);
+      ->orderBy('created', 'ASC')
+      ->get();
   }
 }
