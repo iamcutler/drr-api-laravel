@@ -33,4 +33,12 @@ class UserPhoto extends Eloquent {
         'created'
       ]);
   }
+
+  public function scopeFind_all_by_album_id($query, $id)
+  {
+    return $query
+      ->where('albumid', '=', $id)
+      ->where('published', '=', 1)
+      ->orderBy('created', 'DESC');
+  }
 }
