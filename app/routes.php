@@ -47,11 +47,17 @@ Route::group(['before' => 'user-hash-auth'], function() {
   |--------------------------------------------------------------------------
   */
   Route::group(['prefix' => 'user'], function() {
-    // Profile
-    Route::get('/profile/{slug}', 'ProfileController@get_profile_by_slug');
-
     Route::resource('connections', 'UserConnectionController', ['only' => ['index', 'store', 'update', 'destroy']]);
     Route::resource('messages', 'MessageController', ['only' => ['index', 'show', 'store']]);
+
+    // Profile
+    Route::group(['prefix' => 'profile'], function() {
+      Route::get('{slug}', 'ProfileController@get_profile_by_slug');
+      Route::get('about/{slug}', 'ProfileController@about');
+      Route::get('friends/{slug}', 'ProfileController@friends');
+      Route::get('albums/{slug}', 'ProfileController@photo_albums');
+      Route::get('album/{id}', 'ProfileController@album_photos');
+    });
   });
 
   /*
