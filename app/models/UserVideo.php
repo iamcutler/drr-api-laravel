@@ -5,7 +5,6 @@ class UserVideo extends Eloquent {
    * The database table used by the model.
    */
   protected $table = "community_videos";
-  protected $primaryKey = 'creator';
 
   /**
    * ORM relations
@@ -22,7 +21,6 @@ class UserVideo extends Eloquent {
   {
     return $query
       ->where('creator', '=', $id)
-      ->where('published', '=', 1)
-      ->get();
+      ->where('published', '=', 1);
   }
 }
