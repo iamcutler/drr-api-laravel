@@ -47,4 +47,9 @@ class CommUser extends Eloquent {
   {
     return $query->find($id)->first();
   }
+
+  public function scopeFind_by_slug($query, $slug)
+  {
+    return $query->where('alias', '=', $slug)->first();
+  }
 }
