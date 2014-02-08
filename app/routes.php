@@ -57,6 +57,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
       Route::get('friends/{slug}', 'ProfileController@friends');
       Route::get('albums/{slug}', 'ProfileController@photo_albums');
       Route::get('album/{slug}/{id}', 'ProfileController@album_photos');
+      Route::get('videos/{slug}', 'ProfileController@videos');
     });
   });
 

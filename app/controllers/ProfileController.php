@@ -197,4 +197,17 @@ class ProfileController extends \BaseController {
 
     return Response::json($results);
   }
+
+  public function videos($slug)
+  {
+    $user = $this->comm_user->Find_by_slug($slug);
+    $result = [];
+
+    if(!is_null($user))
+    {
+      $result = $this->video->Find_all_by_user_id($user->userid)->get();
+    }
+
+    return Response::json($result);
+  }
 }
