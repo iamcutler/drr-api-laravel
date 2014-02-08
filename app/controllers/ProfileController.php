@@ -167,15 +167,22 @@ class ProfileController extends \BaseController {
     return Response::json($result);
   }
 
-  public function album_photos($id)
+  public function album_photos($slug, $id)
   {
     $album = $this->album->find($id);
+    $user = $this->comm_user->find($album->creator);
     $photos = $this->photo->Find_all_by_album_id($id);
     $results = [];
 
     // Output album information
     $results['name'] = $album->name;
     $results['permissions'] = $album->permissions;
+    $results['album_owner'] = false;
+
+    if($user->alias == $slug)
+    {
+      $results['album_owner'] = true;
+    }
 
     $results['photos'] = [];
     // Loop output to photos array
