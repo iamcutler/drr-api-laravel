@@ -156,7 +156,7 @@ class ProfileController extends \BaseController {
 
         $result[$key]['hits'] = $val['hits'];
         $result[$key]['location'] = $val['location'];
-        $result[$key]['photo_count'] = 0;
+        $result[$key]['photo_count'] = $this->photo->Find_all_by_album_id($val['id'])->count();
         $result[$key]['permissions'] = $val['permissions'];
         $result[$key]['params'] = json_decode($val['params']);
         $result[$key]['default'] = $val['default'];
