@@ -49,6 +49,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
   Route::group(['prefix' => 'user'], function() {
     Route::resource('connections', 'UserConnectionController', ['only' => ['index', 'store', 'update', 'destroy']]);
     Route::resource('messages', 'MessageController', ['only' => ['index', 'show', 'store']]);
+    route::resource('events', 'EventController');
 
     // Profile
     Route::group(['prefix' => 'profile'], function() {
