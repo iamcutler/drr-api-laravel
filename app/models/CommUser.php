@@ -30,9 +30,11 @@ class CommUser extends Eloquent {
     return $this->hasMany('UserVideo', 'creator');
   }
 
-  public function user_group()
+  public function group_member()
   {
-    return $this->hasMany('UserGroup', 'ownerid');
+    return $this->hasMany('GroupMember', 'memberid', 'userid')
+      ->where('approved', '=', 1)
+      ->get();
   }
 
   public function user_event()
