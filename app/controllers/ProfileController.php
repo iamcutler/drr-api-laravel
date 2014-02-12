@@ -73,7 +73,18 @@ class ProfileController extends \BaseController {
       // Count array
       $profile['profile']['counts']['photos'] = $this->photo->Find_all_by_user_id($user->id)->count();
       $profile['profile']['counts']['videos'] = $this->video->Find_all_by_user_id($user->id)->count();
-      $profile['profile']['counts']['events'] = $this->eventMember->Find_by_user_id($user->id)->count();
+
+      // User upcoming events
+      $event_count = 0;
+      foreach($this->eventMember->Find_by_user_id($user->id) as $k => $v)
+      {
+        foreach($v->event() as $val)
+        {
+          $event_count++;
+        }
+      }
+
+      $profile['profile']['counts']['events'] = $event_count;
       $profile['profile']['counts']['groups'] = $this->groupMember->Find_by_user_id($user->id)->count();
 
       $friend_count = 0;
