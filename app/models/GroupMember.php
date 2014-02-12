@@ -25,4 +25,15 @@ class GroupMember extends Eloquent {
   {
     return $this->hasOne('User', 'id', 'memberid')->first();
   }
+
+  /**
+   * Scoped queries
+   */
+  public function scopeFind_by_user_id($query, $id)
+  {
+    return $query
+      ->where('memberid', '=', $id)
+      ->where('approved', '=', 1)
+      ->get();
+  }
 }

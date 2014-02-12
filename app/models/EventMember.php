@@ -40,4 +40,12 @@ class EventMember extends Eloquent {
       ->where('eventid', '=', $id)
       ->get();
   }
+
+  public function scopeFind_by_user_id($query, $id)
+  {
+    return $query
+      ->where('memberid', '=', $id)
+      ->where('status', '=', 1)
+      ->get();
+  }
 }

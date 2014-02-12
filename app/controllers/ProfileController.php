@@ -2,16 +2,18 @@
 
 class ProfileController extends \BaseController {
 
-  public function __construct(User $user, CommUser $comm_user, UserPhotoAlbum $album, UserPhoto $photo, UserVideo $video, UserGroup $group, UserConnection $connection, UserField $field)
+  public function __construct(User $user, CommUser $comm_user, UserPhotoAlbum $album, UserPhoto $photo, UserVideo $video,
+                              UserConnection $connection, UserField $field, EventMember $eventMember, GroupMember $groupMember)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
     $this->photo = $photo;
     $this->album = $album;
     $this->video = $video;
-    $this->group = $group;
     $this->connection = $connection;
     $this->field = $field;
+    $this->eventMember = $eventMember;
+    $this->groupMember = $groupMember;
   }
 
   public function get_profile_by_slug($slug) {
@@ -71,18 +73,12 @@ class ProfileController extends \BaseController {
       // Count array
       $profile['profile']['counts']['photos'] = $this->photo->Find_all_by_user_id($user->id)->count();
       $profile['profile']['counts']['videos'] = $this->video->Find_all_by_user_id($user->id)->count();
+      $profile['profile']['counts']['events'] = $this->eventMember->Find_by_user_id($user->id)->count();
+      $profile['profile']['counts']['groups'] = $this->groupMember->Find_by_user_id($user->id)->count();
 
       $friend_count = 0;
       foreach(str_getcsv($user->friends, ',') as $val ) { $friend_count++; }
       $profile['profile']['counts']['friends'] = $friend_count;
-
-      $group_count = 0;
-      foreach(str_getcsv($user->groups, ',') as $val ) { $group_count++; }
-      $profile['profile']['counts']['groups'] = $group_count;
-
-      $events_count = 0;
-      foreach(str_getcsv($user->events, ',') as $val ) { $events_count++; }
-      $profile['profile']['counts']['events'] = $events_count;
     }
     else
     {
