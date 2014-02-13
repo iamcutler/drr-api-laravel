@@ -51,6 +51,9 @@ Route::group(['before' => 'user-hash-auth'], function() {
     Route::resource('messages', 'MessageController', ['only' => ['index', 'show', 'store']]);
     route::resource('events', 'EventController');
     route::resource('groups', 'GroupController');
+    Route::group(['prefix' => 'like'], function() {
+      route::post('like/{element}/{id}/{type}', 'LikeController@like');
+    });
 
     // Profile
     Route::group(['prefix' => 'profile'], function() {
