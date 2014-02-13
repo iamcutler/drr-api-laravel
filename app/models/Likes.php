@@ -35,6 +35,8 @@ class Likes extends Eloquent {
     $result = $query
       ->where('element', '=', $args['element'])
       ->where('uid', '=', $args['uid'])
+      ->where('like', '=', $args['like'])
+      ->whereOr('dislike', '=', $args['dislike'])
       ->first();
 
     if(is_null($result))
