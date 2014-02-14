@@ -2,7 +2,7 @@
 
 class EventController extends \BaseController {
 
-  public function __construct(Events $event, EventMember $member, User $user)
+  public function __construct(Events $event, EventMember $member, CommUser $user)
   {
     $this->event = $event;
     $this->event_member = $member;
@@ -143,6 +143,37 @@ class EventController extends \BaseController {
   public function destroy($id)
   {
     //
+  }
+
+  /**
+   * Get events by user slug
+   */
+  public function user_events($slug)
+  {
+    $user = $this->user->Find_by_slug($slug);
+    $result = [];
+
+    if(!is_null($user))
+    {
+      foreach($this->event_member->Find_by_user_id($user->userid) as $key => $val)
+      {
+        $event = $val->event()->first();
+
+        if(!is_null($event))
+        {
+          $result[$key]['id'] = $event->id;
+          $result[$key]['title'] = $event->title;
+          $result[$key]['avatar'] = $event->avatar;
+          $result[$key]['thumbnail'] = $event->thumb;
+          $result[$key]['start_date'] = $event->startdate;
+          $result[$key]['end_date'] = $event->enddate;
+          $result[$key]['status'] = $val->status;
+          $result[$key]['permission'] = $val->permission;
+        }
+      }
+    }
+
+    return Response::json($result);
   }
 
   public function activity()
