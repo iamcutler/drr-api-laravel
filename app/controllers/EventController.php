@@ -93,6 +93,7 @@ class EventController extends \BaseController {
       $user = $val->user();
       $comm_user = $user->comm_user()->first();
 
+      $results['event']['members'][$key]['id'] = $user->id;
       $results['event']['members'][$key]['name'] = $user->name;
       $results['event']['members'][$key]['avatar'] = $comm_user->avatar;
       $results['event']['members'][$key]['thumbnail'] = $comm_user->thumb;
