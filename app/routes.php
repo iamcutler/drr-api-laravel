@@ -55,6 +55,10 @@ Route::group(['before' => 'user-hash-auth'], function() {
       route::post('like/{element}/{id}/{type}', 'LikeController@like');
     });
 
+    Route::group(['prefix' => 'activity'], function() {
+      route::get('event', 'EventController@activity');
+    });
+
     // Profile
     Route::group(['prefix' => 'profile'], function() {
       Route::get('{slug}', 'ProfileController@get_profile_by_slug');
