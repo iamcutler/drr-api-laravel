@@ -105,59 +105,8 @@ class EventController extends \BaseController {
       $results['event']['members'][$key]['created'] = $val['created'];
     }
 
-    // Event activity
-    $results['activity'] = [];
-    foreach($event->activity() as $key => $val)
-    {
-      $comm_user = $val->actor_comm();
-
-      $results['activity'][$key]['id'] = $val['id'];
-      $results['activity'][$key]['user']['name'] = $val->actor()->name;
-      $results['activity'][$key]['user']['avatar'] = $comm_user->avatar;
-      $results['activity'][$key]['user']['thumbnail'] = $comm_user->thumb;
-
-      $results['activity'][$key]['comments'] = [];
-      foreach($val->wall() as $k => $value)
-      {
-        $user = $value->user();
-        $comm_user = $user->comm_user()->first();
-
-        $results['activity'][$key]['comments'][$k]['user']['name'] = $user->name;
-        $results['activity'][$key]['comments'][$k]['user']['avatar'] = $comm_user->avatar;
-        $results['activity'][$key]['comments'][$k]['user']['thumbnail'] = $comm_user->thumb;
-        $results['activity'][$key]['comments'][$k]['user']['slug'] = $comm_user->alias;
-
-        $results['activity'][$key]['comments'][$k]['comment'] = $value['comment'];
-        $results['activity'][$key]['comments'][$k]['date'] = $value['date'];
-      }
-
-      $results['activity'][$key]['user']['slug'] = $comm_user->alias;
-      $results['activity'][$key]['title'] = $val['title'];
-      $results['activity'][$key]['comment_id'] = $val['comment_id'];
-      $results['activity'][$key]['comment_type'] = $val['comment_type'];
-      $results['activity'][$key]['like_id'] = $val['like_id'];
-      $results['activity'][$key]['like_type'] = $val['like_type'];
-      $results['activity'][$key]['created'] = $val['created'];
-
-      // Get comment stats
-      $results['activity'][$key]['stats'] = [];
-      $results['activity'][$key]['stats']['likes'] = [];
-      foreach($val->likes()->where('element', '=', 'events.wall')->get() as $i => $v)
-      {
-        // Likes
-        $user = $v->user_like();
-
-        if(!is_null($user))
-        {
-          $comm_user = $user->comm_user()->first();
-
-          $results['activity'][$key]['stats']['likes']['user']['name'] = $user->name;
-          $results['activity'][$key]['stats']['likes']['user']['avatar'] = $comm_user->avatar;
-          $results['activity'][$key]['stats']['likes']['user']['thumbnail'] = $comm_user->thumb;
-          $results['activity'][$key]['stats']['likes']['user']['slug'] = $comm_user->alias;
-        }
-      }
-    }
+    // Event activity - Initial call will paginate 10 records.
+    $results['activity'] = $this->get_feed_activity($event, 0);
 
     return Response::json($results);
   }
@@ -195,4 +144,81 @@ class EventController extends \BaseController {
     //
   }
 
+  public function activity()
+  {
+    $input = Input::all();
+    $rules = [
+      'id' => 'required|integer',
+      'offset' => 'required|integer'
+    ];
+    $validator = Validator::make($input, $rules);
+
+    if(!$validator->fails())
+    {
+      $event = $this->event->find($input['id']);
+      $result['activity'] = $this->get_feed_activity($event, $input['offset']);
+
+      return Response::json($result);
+    }
+  }
+
+  // Paginate event activity
+  protected function get_feed_activity(Events $event, $offset)
+  {
+    // Event activity - Initial call will paginate 10 records.
+    $results = [];
+    foreach($event->activity($offset, 10) as $key => $val)
+    {
+      $comm_user = $val->actor_comm();
+
+      $results[$key]['id'] = $val['id'];
+      $results[$key]['user']['name'] = $val->actor()->name;
+      $results[$key]['user']['avatar'] = $comm_user->avatar;
+      $results[$key]['user']['thumbnail'] = $comm_user->thumb;
+
+      $results[$key]['comments'] = [];
+      foreach($val->wall() as $k => $value)
+      {
+        $user = $value->user();
+        $comm_user = $user->comm_user()->first();
+
+        $results[$key]['comments'][$k]['user']['name'] = $user->name;
+        $results[$key]['comments'][$k]['user']['avatar'] = $comm_user->avatar;
+        $results[$key]['comments'][$k]['user']['thumbnail'] = $comm_user->thumb;
+        $results[$key]['comments'][$k]['user']['slug'] = $comm_user->alias;
+
+        $results[$key]['comments'][$k]['comment'] = $value['comment'];
+        $results[$key]['comments'][$k]['date'] = $value['date'];
+      }
+
+      $results[$key]['user']['slug'] = $comm_user->alias;
+      $results[$key]['title'] = $val['title'];
+      $results[$key]['comment_id'] = $val['comment_id'];
+      $results[$key]['comment_type'] = $val['comment_type'];
+      $results[$key]['like_id'] = $val['like_id'];
+      $results[$key]['like_type'] = $val['like_type'];
+      $results[$key]['created'] = $val['created'];
+
+      // Get comment stats
+      $results[$key]['stats'] = [];
+      $results[$key]['stats']['likes'] = [];
+      foreach($val->likes()->where('element', '=', 'events.wall')->get() as $i => $v)
+      {
+        // Likes
+        $user = $v->user_like();
+
+        if(!is_null($user))
+        {
+          $comm_user = $user->comm_user()->first();
+
+          $results[$key]['stats']['likes']['user']['name'] = $user->name;
+          $results[$key]['stats']['likes']['user']['avatar'] = $comm_user->avatar;
+          $results[$key]['stats']['likes']['user']['thumbnail'] = $comm_user->thumb;
+          $results[$key]['stats']['likes']['user']['slug'] = $comm_user->alias;
+        }
+      }
+    }
+
+    return $results;
+  }
 }
