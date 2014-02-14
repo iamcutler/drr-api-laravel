@@ -52,6 +52,7 @@ class EventController extends \BaseController {
     $results = [];
 
     // Format output
+    $results['event']['id'] = $event['id'];
     $results['event']['category'] = $event->category()->name;
     $results['event']['type'] = $event['type'];
     $results['event']['title'] = $event['title'];
