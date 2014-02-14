@@ -58,11 +58,13 @@ class Events extends Eloquent {
     return $this->hasOne('EventCategory', 'id', 'catid')->first();
   }
 
-  public function activity()
+  public function activity($skip = 0, $limit = 10)
   {
     return $this->hasMany('Activity', 'eventid')
       ->where('app', '=', 'events.wall')
       ->orderBy('created', 'DESC')
+      ->skip($skip)
+      ->take($limit)
       ->get();
   }
 
