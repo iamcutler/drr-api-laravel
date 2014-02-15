@@ -40,6 +40,16 @@ class Activity extends Eloquent {
     return $this->hasMany('Likes', 'uid', 'like_id');
   }
 
+  public function event()
+  {
+    return $this->hasOne('Events', 'id', 'eventid')->first();
+  }
+
+  public function group()
+  {
+    return $this->hasOne('Group', 'id', 'groupid')->first();
+  }
+
   public function event_likes()
   {
     return $this->hasMany('Likes', 'uid', 'like_id')
