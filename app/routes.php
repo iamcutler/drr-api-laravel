@@ -55,6 +55,8 @@ Route::group(['before' => 'user-hash-auth'], function() {
       route::post('like/{element}/{id}/{type}', 'LikeController@like');
     });
 
+    // Activity
+    Route::resource('activity', 'ActivityContainer', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
     Route::group(['prefix' => 'activity'], function() {
       route::get('event', 'EventController@activity');
     });
