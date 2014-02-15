@@ -188,7 +188,7 @@ class EventController extends \BaseController {
     if(!$validator->fails())
     {
       $event = $this->event->find($input['id']);
-      $result['activity'] = $this->get_feed_activity($event, $input['offset']);
+      $result = $this->get_feed_activity($event, $input['offset']);
 
       return Response::json($result);
     }
