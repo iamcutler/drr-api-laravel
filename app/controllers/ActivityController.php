@@ -2,6 +2,12 @@
 
 class ActivityController extends \BaseController {
 
+  public function __construct(Activity $activity, User $user)
+  {
+    $this->activity = $activity;
+    $this->user = $user;
+  }
+
 	/**
 	 * Display a listing of the resource.
 	 *
