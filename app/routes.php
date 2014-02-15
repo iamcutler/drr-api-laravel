@@ -49,8 +49,9 @@ Route::group(['before' => 'user-hash-auth'], function() {
   Route::group(['prefix' => 'user'], function() {
     Route::resource('connections', 'UserConnectionController', ['only' => ['index', 'store', 'update', 'destroy']]);
     Route::resource('messages', 'MessageController', ['only' => ['index', 'show', 'store']]);
-    route::resource('events', 'EventController');
-    route::resource('groups', 'GroupController');
+    Route::resource('events', 'EventController');
+    Route::resource('groups', 'GroupController');
+
     Route::group(['prefix' => 'like'], function() {
       route::post('like/{element}/{id}/{type}', 'LikeController@like');
     });
@@ -58,7 +59,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
     // Activity
     Route::resource('activity', 'ActivityContainer', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
     Route::group(['prefix' => 'activity'], function() {
-      route::get('event', 'EventController@activity');
+      Route::get('event', 'EventController@activity');
     });
 
     // Profile
