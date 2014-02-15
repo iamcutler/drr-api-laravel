@@ -207,6 +207,7 @@ class EventController extends \BaseController {
       $results[$key]['user']['name'] = $val->actor()->name;
       $results[$key]['user']['avatar'] = $comm_user->avatar;
       $results[$key]['user']['thumbnail'] = $comm_user->thumb;
+      $results[$key]['user']['slug'] = $comm_user->alias;
 
       $results[$key]['comments'] = [];
       foreach($val->wall() as $k => $value)
@@ -223,7 +224,6 @@ class EventController extends \BaseController {
         $results[$key]['comments'][$k]['date'] = $value['date'];
       }
 
-      $results[$key]['user']['slug'] = $comm_user->alias;
       $results[$key]['title'] = $val['title'];
       $results[$key]['comment_id'] = $val['comment_id'];
       $results[$key]['comment_type'] = $val['comment_type'];
