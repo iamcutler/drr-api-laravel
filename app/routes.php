@@ -57,7 +57,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
     });
 
     // Activity
-    Route::resource('activity', 'ActivityContainer', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
+    Route::resource('activity', 'ActivityController', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
     Route::group(['prefix' => 'activity'], function() {
       Route::get('event', 'EventController@activity');
     });
