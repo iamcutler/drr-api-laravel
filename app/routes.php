@@ -53,12 +53,12 @@ Route::group(['before' => 'user-hash-auth'], function() {
     Route::resource('groups', 'GroupController');
 
     Route::group(['prefix' => 'like'], function() {
-      route::post('like/{element}/{id}/{type}', 'LikeController@like');
+      Route::get('like/{element}/{id}/{type}', 'LikeController@like');
     });
 
     // Activity
     Route::resource('activity', 'ActivityController', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
-    Route::group(['prefix' => 'activity'], function() {
+    Route::group(['prefix' => 'feed_activity'], function() {
       Route::get('event', 'EventController@activity');
     });
 
