@@ -202,9 +202,11 @@ class EventController extends \BaseController {
     foreach($event->activity($offset, 10) as $key => $val)
     {
       $comm_user = $val->actor_comm();
+      $actor = $val->actor();
 
       $results[$key]['id'] = $val['id'];
-      $results[$key]['user']['name'] = $val->actor()->name;
+      $results[$key]['user']['id'] = $actor->id;
+      $results[$key]['user']['name'] = $actor->name;
       $results[$key]['user']['avatar'] = $comm_user->avatar;
       $results[$key]['user']['thumbnail'] = $comm_user->thumb;
       $results[$key]['user']['slug'] = $comm_user->alias;
