@@ -235,8 +235,9 @@ class EventController extends \BaseController {
 
       // Get comment stats
       $results[$key]['stats'] = [];
-      $results[$key]['stats']['likes'] = [];
-      foreach($val->likes()->where('element', '=', 'events.wall')->get() as $i => $v)
+      $results[$key]['stats']['likes'] = $val->event_likes()->count();
+
+      foreach($val->event_likes()->get() as $i => $v)
       {
         // Likes
         $user = $v->user_like();
