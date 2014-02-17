@@ -226,6 +226,7 @@ class EventController extends \BaseController {
         $results[$key]['comments'][$k]['date'] = $value['date'];
       }
 
+      $results[$key]['app'] = $val['app'];
       $results[$key]['title'] = $val['title'];
       $results[$key]['comment_id'] = $val['comment_id'];
       $results[$key]['comment_type'] = $val['comment_type'];
