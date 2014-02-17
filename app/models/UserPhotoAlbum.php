@@ -5,7 +5,6 @@ class UserPhotoAlbum extends Eloquent {
    * The database table used by the model.
    */
   protected $table = "community_photos_albums";
-  protected $primaryKey = 'creator';
 
   /**
    * ORM relations
