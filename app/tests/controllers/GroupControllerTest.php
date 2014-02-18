@@ -1,5 +1,5 @@
 <?php
 
-class GroupControllerTest extends TestCase {
+/*class GroupControllerTest extends TestCase {
 
-}
+}*/
