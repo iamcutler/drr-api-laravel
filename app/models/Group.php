@@ -51,6 +51,28 @@ class Group extends Eloquent {
       ->get();
   }
 
+  public function discussion()
+  {
+    return $this->hasMany('Activity', 'groupid')
+      ->where('app', '=', 'groups.discussion')
+      ->get();
+  }
+
+  public function discussion_replys($id)
+  {
+    return $this->hasMany('Activity', 'groupid')
+      ->where('cid', '=', $id)
+      ->where('app', '=', 'groups.discussion.reply')
+      ->get();
+  }
+
+  public function events()
+  {
+    return $this->hasMany('Events', 'contentid')
+      ->where('type', '=', 'group')
+      ->get();
+  }
+
   public function likes()
   {
     return $this->hasMany('Likes', 'uid')

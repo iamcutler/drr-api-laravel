@@ -2,9 +2,10 @@
 
 class GroupController extends \BaseController {
 
-  public function __construct(Group $group, CommUser $comm_user, GroupMember $member)
+  public function __construct(Group $group, User $user, CommUser $comm_user, GroupMember $member)
   {
     $this->group = $group;
+    $this->user = $user;
     $this->comm_user = $comm_user;
     $this->group_member = $member;
   }
@@ -89,23 +90,56 @@ class GroupController extends \BaseController {
       $results['members'][$key]['permissions'] = $val->permissions;
     }
 
-    // Group Bulletin
-    $results['bulletin'] = [];
-    foreach($group->bulletin() as $k => $v)
+    // Group announcements
+    $results['announcements'] = [];
+    foreach($group->bulletin()->take(30) as $k => $v)
     {
       $user = $v->user();
       $comm_user = $user->comm_user()->first();
 
-      $results['bulletin'][$k]['title'] = $v->title;
-      $results['bulletin'][$k]['message'] = $v->message;
-      $results['bulletin'][$k]['params'] = json_decode($v->params);
-      $results['bulletin'][$k]['date'] = $v->date;
+      $results['announcements'][$k]['id'] = $v->id;
+      $results['announcements'][$k]['title'] = $v->title;
+      $results['announcements'][$k]['message'] = $v->message;
+      $results['announcements'][$k]['params'] = json_decode($v->params);
+      $results['announcements'][$k]['date'] = $v->date;
 
-      $results['bulletin'][$k]['user']['name'] = $user->name;
-      $results['bulletin'][$k]['user']['avatar'] = $comm_user->avatar;
-      $results['bulletin'][$k]['user']['thumbnail'] = $comm_user->thumb;
-      $results['bulletin'][$k]['user']['slug'] = $comm_user->alias;
+      $results['announcements'][$k]['user']['name'] = $user->name;
+      $results['announcements'][$k]['user']['avatar'] = $comm_user->avatar;
+      $results['announcements'][$k]['user']['thumbnail'] = $comm_user->thumb;
+      $results['announcements'][$k]['user']['slug'] = $comm_user->alias;
     }
+
+    // Group discussions
+    $results['discussions'] = [];
+    foreach($group->discussion() as $discuss_key => $discuss)
+    {
+      $user = $this->user->find($discuss->actor);
+      $comm_user = $user->comm_user()->first();
+
+      $results['discussions'][$discuss_key]['id'] = $discuss->id;
+      $results['discussions'][$discuss_key]['content'] = $discuss->content;
+      $results['discussions'][$discuss_key]['app'] = $discuss->app;
+      $results['discussions'][$discuss_key]['cid'] = $discuss->cid;
+      $results['discussions'][$discuss_key]['groupid'] = $discuss->groupid;
+      $results['discussions'][$discuss_key]['group_access'] = $discuss->group_access;
+      $results['discussions'][$discuss_key]['access'] = $discuss->access;
+      $results['discussions'][$discuss_key]['params'] = json_decode($discuss->params);
+      $results['discussions'][$discuss_key]['comment_id'] = $discuss->comment_id;
+      $results['discussions'][$discuss_key]['comment_type'] = $discuss->comment_type;
+      $results['discussions'][$discuss_key]['comment_count'] = $group->discussion_replys($discuss->cid)->count();
+      $results['discussions'][$discuss_key]['like_id'] = $discuss->like_id;
+      $results['discussions'][$discuss_key]['like_type'] = $discuss->like_type;
+      $results['discussions'][$discuss_key]['created'] = $discuss->created;
+
+      // Actor
+      $results['discussions'][$discuss_key]['user']['name'] = $user->name;
+      $results['discussions'][$discuss_key]['user']['avatar'] = $comm_user->avatar;
+      $results['discussions'][$discuss_key]['user']['thumbnail'] = $comm_user->thumb;
+      $results['discussions'][$discuss_key]['user']['slug'] = $comm_user->alias;
+    }
+
+    // Group events
+    $results['events'] = $this->get_events($group->events());
 
     // Group Activity
     $results['activity'] = [];
