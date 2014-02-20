@@ -2,10 +2,11 @@
 
 class ActivityController extends \BaseController {
 
-  public function __construct(Activity $activity, User $user)
+  public function __construct(Activity $activity, User $user, Events $event)
   {
     $this->activity = $activity;
     $this->user = $user;
+    $this->event = $event;
   }
 
   /**
@@ -273,6 +274,37 @@ class ActivityController extends \BaseController {
     }
 
     return false;
+  }
+
+  public function event_attendance($id)
+  {
+    $user = $this->user->Find_id_by_hash(Input::get('user_hash'));
+    $event = $this->event->find($id);
+    $result = ['result' => false];
+    $attending = 0;
+
+    if(!is_null($event))
+    {
+      foreach($event->member() as $key => $value)
+      {
+        if($value->memberid == $user->id)
+        {
+          if($value->status != 1)
+          {
+            $attending = 1;
+          }
+
+          // Save new attendance for event member
+          $value->status = $attending;
+          $value->save();
+
+          $result['result'] = true;
+          $result['attending'] = $attending;
+        }
+      }
+    }
+
+    return $result;
   }
 
   // Paginate event activity
