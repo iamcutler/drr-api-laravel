@@ -107,6 +107,7 @@ class ActivityController extends \BaseController {
       $user = $activity->actor();
       $comm_user = $user->comm_user()->first();
 
+      $results['activity']['id'] = $activity->id;
       $results['activity']['title'] = $activity->title;
       $results['activity']['content'] = $activity->content;
       $results['activity']['app'] = $activity->app;
