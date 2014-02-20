@@ -58,6 +58,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
 
     // Activity
     Route::resource('activity', 'ActivityController', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
+    Route::resource('wall', 'WallController', ['only' => ['index', 'store', 'destroy']]);
     Route::group(['prefix' => 'feed_activity'], function() {
       Route::get('event', 'EventController@activity');
     });

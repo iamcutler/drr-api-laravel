@@ -98,7 +98,91 @@ class ActivityController extends \BaseController {
    */
   public function show($id)
   {
+    $activity = $this->activity->find($id);
+    $results = [];
 
+    if(!is_null($activity))
+    {
+      $user = $activity->actor();
+      $comm_user = $user->comm_user()->first();
+
+      $results['activity']['title'] = $activity->title;
+      $results['activity']['content'] = $activity->content;
+      $results['activity']['app'] = $activity->app;
+      $results['activity']['verb'] = $activity->verb;
+      $results['activity']['cid'] = $activity->cid;
+      $results['activity']['groupid'] = $activity->groupid;
+      $results['activity']['eventid'] = $activity->eventid;
+      $results['activity']['group_access'] = $activity->group_access;
+      $results['activity']['event_access'] = $activity->event_access;
+      $results['activity']['access'] = $activity->access;
+      $results['activity']['params'] = json_decode($activity->params);
+      $results['activity']['points'] = $activity->points;
+      $results['activity']['archived'] = $activity->archived;
+      $results['activity']['location'] = $activity->location;
+      $results['activity']['comment_id'] = $activity->comment_id;
+      $results['activity']['comment_type'] = $activity->comment_type;
+      $results['activity']['like_id'] = $activity->like_id;
+      $results['activity']['like_type'] = $activity->like_type;
+      $results['activity']['actors'] = $activity->actors;
+      $results['activity']['created'] = $activity->created;
+
+      $results['activity']['user']['id'] = $user->id;
+      $results['activity']['user']['name'] = $user->name;
+      $results['activity']['user']['avatar'] = $comm_user->avatar;
+      $results['activity']['user']['thumbnail'] = $comm_user->thumb;
+      $results['activity']['user']['slug'] = $comm_user->alias;
+
+      $results['activity']['target'] = [];
+      if($activity->target != 0 || $activity->actor == $activity->target)
+      {
+        $target = $activity->target();
+        $target_comm = $target->comm_user()->first();
+
+        $results['activity']['target']['id'] = $target->id;
+        $results['activity']['target']['name'] = $target->name;
+        $results['activity']['target']['avatar'] = $target_comm->avatar;
+        $results['activity']['target']['thumbnail'] = $target_comm->thumb;
+        $results['activity']['target']['slug'] = $target_comm->alias;
+      }
+      else {
+        $results['activity']['target']['id'] = $user->id;
+        $results['activity']['target']['name'] = $user->name;
+        $results['activity']['target']['avatar'] = $comm_user->avatar;
+        $results['activity']['target']['thumbnail'] = $comm_user->thumb;
+        $results['activity']['target']['slug'] = $comm_user->alias;
+      }
+
+      // Activity Stats
+      $results['activity']['stats']['likes'] = (int) $activity->likes()->where('like', '!=', '')->count();
+      $results['activity']['stats']['dislikes'] = (int) $activity->likes()->where('dislike', '!=', '')->count();
+
+      // Activity comments
+      $results['activity']['comments'] = [];
+      foreach($activity->wall() as $key => $value)
+      {
+        $user = $value->user();
+        $comm_user = $user->comm_user()->first();
+
+        $results['activity']['comments'][$key]['id'] = $value->id;
+        $results['activity']['comments'][$key]['comment'] = $value->comment;
+        $results['activity']['comments'][$key]['date'] = $value->date;
+        $results['activity']['comments'][$key]['type'] = $value->type;
+
+        $results['activity']['comments'][$key]['user']['id'] = $user->id;
+        $results['activity']['comments'][$key]['user']['name'] = $user->name;
+        $results['activity']['comments'][$key]['user']['thumbnail'] = $comm_user->thumb;
+        $results['activity']['comments'][$key]['user']['avatar'] = $comm_user->avatar;
+        $results['activity']['comments'][$key]['user']['slug'] = $comm_user->alias;
+        $results['activity']['comments'][$key]['user']['slug'] = $comm_user->alias;
+
+        // Comment stats
+        $results['activity']['comments'][$key]['stats']['likes'] = (int) $value->activity_likes()->where('element', '=', $activity->comment_type)->where('like', '!=', '')->count();
+        $results['activity']['comments'][$key]['stats']['dislikes'] = (int) $value->activity_likes()->where('element', '=', $activity->comment_type)->where('dislike', '!=', '')->count();
+      }
+    }
+
+    return Response::json($results);
   }
 
   /**

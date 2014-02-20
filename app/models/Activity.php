@@ -30,10 +30,16 @@ class Activity extends Eloquent {
     return $this->hasOne('CommUser', 'userid', 'actor')->first();
   }
 
+  public function target()
+  {
+    return $this->hasOne('User', 'id', 'target')->first();
+  }
+
   public function wall()
   {
     return $this->hasMany('CommWall', 'contentid', 'id')
       ->where('published', '=', 1)
+      ->orderBy('date', 'ASC')
       ->get();
   }
 

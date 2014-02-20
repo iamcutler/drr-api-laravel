@@ -31,4 +31,14 @@ class CommWall extends Eloquent {
     return $this->hasMany('Likes', 'uid', 'contentid')
       ->where('element', '=', 'events.wall')->get();
   }
+
+  public function activity_likes()
+  {
+    return $this->hasMany('Likes', 'uid');
+  }
+
+  public function activity()
+  {
+    return $this->hasOne('Activity', 'id', 'contentid');
+  }
 }
