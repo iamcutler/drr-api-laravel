@@ -39,7 +39,7 @@ class Activity extends Eloquent {
   {
     return $this->hasMany('CommWall', 'contentid', 'id')
       ->where('published', '=', 1)
-      ->orderBy('date', 'ASC')
+      ->orderBy('date', 'DESC')
       ->get();
   }
 
