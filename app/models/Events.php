@@ -87,6 +87,6 @@ class Events extends Eloquent {
   public function scopeUpcoming($query)
   {
     return $query
-      ->where('startdate', '>=', date('Y-m-d'));
+      ->where('enddate', '>=', date('Y-m-d h:i:s'));
   }
 }

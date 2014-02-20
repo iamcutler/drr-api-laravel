@@ -12,7 +12,9 @@ class EventMember extends Eloquent {
    */
   public function event()
   {
-    return $this->belongsTo('Events', 'eventid')->get();
+    return $this->belongsTo('Events', 'eventid')
+      ->where('enddate', '>=', date("Y-m-d H:i:s"))
+      ->get();
   }
 
   public function user()
