@@ -98,20 +98,26 @@ class MessageController extends \BaseController {
     $params = Input::all();
     // Find users
     $user = $this->user->Find_id_by_hash($params['user_hash']);
-
+    $rules = [
+      'user' => 'required|integer',
+      'recepient' => 'required|integer',
+      'parent' => 'required|integer',
+      'message' => 'required'
+    ];
+    $validator = Validator::make($params, $rules);
     $result = [];
 
-    if(Input::has('user') && Input::has('recepient') && Input::has('message') && Input::has('user_hash'))
+    if(!$validator->fails())
     {
       if(!is_null($user))
       {
         // Get last message in the tread
-        $last = $this->message->Find_latest(819, 821)->first();
+        $last = $this->message->Find_latest($params['user'], $params['recepient'])->first();
 
         // Save new message
         $save = $this->message->Create([
           'from' => $params['user'],
-          'parent' => $last->parent,
+          'parent' => $params['parent'],
           'deleted' => 0,
           'from_name' => $user->name,
           'subject' => $last->subject,
@@ -121,14 +127,14 @@ class MessageController extends \BaseController {
 
         if($save) {
           // Save relation
-          $recepient = new $this->recepient([
+          $recepient = $this->recepient->Create([
             'msg_id' => $save->id,
-            'msg_parent' => $last->parent,
+            'msg_parent' => $params['parent'],
             'msg_from' => $params['user'],
             'to' => $params['recepient']
           ]);
 
-          $save->recepient()->save($recepient);
+          //$save->recepient()->save($recepient);
 
           $result = ['status' => true];
         }
@@ -148,37 +154,55 @@ class MessageController extends \BaseController {
    * @param  int  $id
    * @return Response
    */
-  public function show($username)
+  public function show($id)
   {
     $user_hash = Input::get('user_hash');
     $user = $this->user->Find_id_by_hash($user_hash)->first();
-    $recepient = $this->user->Find_by_username($username);
-
-    $thread = $this->message->Find_thread_by_id($user->id, $recepient->id);
+    //$recepient = $this->user->Find_by_username($username);
+    $messages = $this->message->Find_by_parent($id);
+    $mess_recepient = $messages[0]->recepient();
     $result = [];
 
     // Check if user has permissions and finds recepient
-    if(!is_null($user) && !is_null($recepient))
+    if(!is_null($user))
     {
-      // Fetch user
-      $result['user']['id'] = $recepient->id;
-      $result['user']['name'] = $recepient->name;
-      $result['user']['avatar'] = $recepient->avatar;
-      $result['user']['thumbnail'] = $recepient->thumb;
-      $result['user']['slug'] = $recepient->alias;
-
-      // Format messages collection
-      foreach($thread as $key => $val)
+      if($mess_recepient->msg_from = $user->id || $mess_recepient->to = $user->id)
       {
-        // Message formatting
-        $result['messages'][$key]['id'] = $val->id;
-        $result['messages'][$key]['subject'] = $val->subject;
-        $result['messages'][$key]['message'] = $val->body;
-        $result['messages'][$key]['from'] = $val->msg_from;
-        $result['messages'][$key]['to'] = $val->to;
-        $result['messages'][$key]['bcc'] = $val->bcc;
-        $result['messages'][$key]['is_read'] = $val->is_read;
-        $result['messages'][$key]['posted_on'] = $val->posted_on;
+        $result['status'] = true;
+
+        foreach($messages as $key => $value)
+        {
+          $msg_recepient = $value->recepient();
+          $from = $msg_recepient->from();
+          $from_comm = $from->comm_user()->first();
+          $to = $msg_recepient->to();
+          $to_comm = $to->comm_user()->first();
+
+          // Message formatting
+          $result['messages'][$key]['id'] = $value->id;
+          $result['messages'][$key]['subject'] = $value->subject;
+          $result['messages'][$key]['message'] = $value->body;
+          $result['messages'][$key]['from'] = $msg_recepient->msg_from;
+          $result['messages'][$key]['to'] = $msg_recepient->to;
+          $result['messages'][$key]['bcc'] = $msg_recepient->bcc;
+          $result['messages'][$key]['is_read'] = $msg_recepient->is_read;
+          $result['messages'][$key]['posted_on'] = $value->posted_on;
+
+          // From
+          $result['messages'][$key]['user_from']['id'] = $from->id;
+          $result['messages'][$key]['user_from']['name'] = $from->name;
+          $result['messages'][$key]['user_from']['thumbnail'] = $from_comm->thumb;
+          $result['messages'][$key]['user_from']['avatar'] = $from_comm->avatar;
+          $result['messages'][$key]['user_from']['slug'] = $from_comm->alias;
+
+          // To
+          // From
+          $result['messages'][$key]['user_to']['id'] = $to->id;
+          $result['messages'][$key]['user_to']['name'] = $to->name;
+          $result['messages'][$key]['user_to']['thumbnail'] = $to_comm->thumb;
+          $result['messages'][$key]['user_to']['avatar'] = $to_comm->avatar;
+          $result['messages'][$key]['user_to']['slug'] = $to_comm->alias;
+        }
       }
     }
     else

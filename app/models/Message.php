@@ -17,12 +17,20 @@ class Message extends Eloquent {
    */
   public function recepient()
   {
-    return $this->hasOne('MessageRecepient', 'msg_id');
+    return $this->hasOne('MessageRecepient', 'msg_id')->first();
   }
 
   /**
    * Scoped queries
    */
+  public function scopeFind_by_parent($query, $id)
+  {
+    return $query
+      ->where('parent', '=', $id)
+      ->orderBy('posted_on', 'DESC')
+      ->get();
+  }
+
   public function scopeFind_all_by_id($query, $id)
   {
     return DB::select('SELECT
@@ -55,8 +63,8 @@ class Message extends Eloquent {
         'parent',
         'subject',
         'body',
-        'community_msg_recepient.msg_from',
         'community_msg_recepient.to',
+        'community_msg_recepient.msg_from',
         'community_msg_recepient.bcc',
         'community_msg_recepient.is_read',
         'posted_on'

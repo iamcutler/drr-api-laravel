@@ -19,4 +19,14 @@ class MessageRecepient extends Eloquent {
   {
     return $this->belongsTo('Message');
   }
+
+  public function from()
+  {
+    return $this->hasOne('User', 'id', 'msg_from')->first();
+  }
+
+  public function to()
+  {
+    return $this->hasOne('User', 'id', 'to')->first();
+  }
 }
