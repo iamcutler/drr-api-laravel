@@ -5,6 +5,7 @@ class UserVideo extends Eloquent {
    * The database table used by the model.
    */
   protected $table = "community_videos";
+  public $timestamps = false;
 
   /**
    * ORM relations

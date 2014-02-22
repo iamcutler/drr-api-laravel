@@ -63,4 +63,34 @@ class Activity extends Eloquent {
     return $this->hasMany('Likes', 'uid', 'like_id')
       ->where('element', '=', 'events.wall');
   }
+
+  public function photo()
+  {
+    return $this->hasOne('UserPhoto', 'id', 'comment_id')
+      ->where('permissions', '=', 0)
+      ->where('published', '=', 1)
+      ->first();
+  }
+
+  public function video()
+  {
+    return $this->hasOne('UserVideo', 'id', 'comment_id')
+      ->where('permissions', '=', 0)
+      ->where('published', '=', 1)
+      ->first();
+  }
+
+  /**
+   * Scoped queries
+   */
+  public function scopeMedia_feed($query, $offset = 0, $limit = 10)
+  {
+    return $query
+      ->where('access', '=', 0)
+      ->where('app', '=', 'photos')
+      ->orWhere('app', '=', 'videos')
+      ->orderBy('created', 'DESC')
+      ->take($limit)
+      ->skip($offset);
+  }
 }

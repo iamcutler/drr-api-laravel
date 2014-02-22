@@ -63,6 +63,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
 
     Route::group(['prefix' => 'feed_activity'], function() {
       Route::get('event', 'EventController@activity');
+      Route::get('media/{offset}', 'FeedController@media');
     });
 
     // Profile

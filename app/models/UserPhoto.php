@@ -5,6 +5,7 @@ class UserPhoto extends Eloquent {
    * The database table used by the model.
    */
   protected $table = "community_photos";
+  public $timestamps = false;
 
   /**
    * ORM relations
