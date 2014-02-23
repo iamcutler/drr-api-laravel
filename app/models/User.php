@@ -14,11 +14,20 @@ class User extends Eloquent {
   public $timestamps = false;
 
   /**
-  * Assign Relationships
+  * ORM
   */
   public function comm_user()
   {
     return $this->hasOne('CommUser', 'userid');
+  }
+
+  public function connections($id)
+  {
+    return $this->hasMany('UserConnection')
+      ->where('status', '=', 1)
+      ->where('connect_from', '=', $id)
+      ->whereOr('connect_to', '=', $id)
+      ->get();
   }
 
   /**
