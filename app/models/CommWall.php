@@ -5,7 +5,7 @@ class CommWall extends Eloquent {
    * Table used by model
    */
   protected $table = "community_wall";
-  public $timestamp = false;
+  public $timestamps = false;
 
   /**
    * Mass assignment
