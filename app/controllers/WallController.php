@@ -2,10 +2,11 @@
 
 class WallController extends \BaseController {
 
-  public function __construct(CommWall $comment, User $user)
+  public function __construct(CommWall $comment, Activity $activity, User $user)
   {
     $this->comment = $comment;
     $this->user = $user;
+    $this->activity = $activity;
   }
   /**
    * Display a listing of the resource.
@@ -34,7 +35,59 @@ class WallController extends \BaseController {
    */
   public function store()
   {
-    //
+    $input = Input::all();
+    $rules = [
+      'cid' => 'required|integer',
+      'user' => 'required|integer',
+      'app' => 'required',
+      'comment' => 'required'
+    ];
+    $validator = Validator::make($input, $rules);
+    $result = ['result' => false];
+
+    if(!$validator->fails())
+    {
+      $activity = $this->activity->find(Input::get('cid'));
+
+      if(!is_null($activity))
+      {
+        // Check and make sure app type comparison
+        if(Input::get('app') == $activity->comment_type)
+        {
+          $act_access = $activity->access;
+
+          $save = $this->comment->create([
+            'contentid' => Input::get('cid'),
+            'post_by' => Input::get('user'),
+            'ip' => Request::getClientIp(),
+            'comment' => Input::get('comment'),
+            'date' => date('Y-m-d h:i:s'),
+            'published' => 1,
+            'type' => $activity->comment_type
+          ]);
+
+          if($save)
+          {
+            $user = $save->user();
+            $comm_user = $user->comm_user()->first();
+
+            $result['result'] = true;
+            $result['wall']['id'] = $save->id;
+            $result['wall']['type'] = $save->type;
+            $result['wall']['comment'] = $save->comment;
+            $result['wall']['created'] = $save->date;
+
+            $result['wall']['user']['id'] = $user->id;
+            $result['wall']['user']['name'] = $user->name;
+            $result['wall']['user']['thumbnail'] = $comm_user->thumb;
+            $result['wall']['user']['avatar'] = $comm_user->avatar;
+            $result['wall']['user']['slug'] = $comm_user->alias;
+          }
+        }
+      }
+    }
+
+    return Response::json($result);
   }
 
   /**
