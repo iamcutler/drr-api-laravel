@@ -26,31 +26,22 @@ class LikeController extends \BaseController {
     {
       // Get actor / user
       $user = $this->user->Find_id_by_hash($input['user_hash']);
+      $record = false;
 
-      // Assign array for like or dislike based on type.
-      if($type)
-      {
-        $like = [
-          'element' => $element,
-          'uid' => $id,
-          'like' => $user->id,
-          'dislike' => '',
-          'type' => 'like'
-        ];
-      }
-      else
-      {
-        $like = [
-          'element' => $element,
-          'uid' => $id,
-          'like' => '',
-          'dislike' => $user->id,
-          'type' => 'dislike'
-        ];
-      }
+      // Assign array for like or dislike
+      $like = [
+        'element' => $element,
+        'uid' => $id,
+        'user' => $user->id
+      ];
 
-      // Create, overwrite opposite or remove existing like/dislike
-      $record = $this->like->CreateOrOverwriteOrRemoveLike($like);
+      if($type == 1)
+      {
+        $record = $this->like->CreateOrOverwriteOrRemoveLike(1, $like);
+      }
+      elseif($type == 0) {
+        $record = $this->like->CreateOrOverwriteOrRemoveLike(0, $like);
+      }
 
       if($record)
       {

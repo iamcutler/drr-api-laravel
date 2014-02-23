@@ -29,14 +29,14 @@ class Likes extends Eloquent {
   /**
    * Scoped queries
    */
-  public function scopeCreateOrOverwriteOrRemoveLike($query, Array $args)
+  public function scopeCreateOrOverwriteOrRemoveLike($query, $type, Array $args)
   {
     // Find an existing like or dislike
     $result = $query
       ->where('element', '=', $args['element'])
       ->where('uid', '=', $args['uid'])
-      ->where('like', '=', $args['like'])
-      ->whereOr('dislike', '=', $args['dislike'])
+      ->where('like', '=', $args['user'])
+      ->orWhere('dislike', '=', $args['user'])
       ->first();
 
     if(is_null($result))
@@ -46,8 +46,14 @@ class Likes extends Eloquent {
 
       $like->element = $args['element'];
       $like->uid = $args['uid'];
-      $like->like = $args['like'];
-      $like->dislike = $args['dislike'];
+
+      if($type) {
+        $like->like = $args['user'];
+        $like->dislike = '';
+      } else {
+        $like->like = '';
+        $like->dislike = $args['user'];
+      }
 
       $like->save();
 
@@ -56,22 +62,21 @@ class Likes extends Eloquent {
     else
     {
       // Check if this is a like, if not, it must be a dislike
-      if($args['type'] == 'like' && $result->like != '')
+      if($type == 1 && $result->like == $args['user'] || $type == 0 && $result->dislike == $args['user'])
       {
         // Remove if found
         $result->delete();
         return true;
       }
-      elseif($args['type'] == 'dislike' && $result->dislike != '')
-      {
-        $result->delete();
-        return true;
-      }
       else
       {
-        // Replace existing like with a dislike or visa versa
-        $result->like = $args['like'];
-        $result->dislike = $args['dislike'];
+        if($type == 1) {
+          $result->like = $args['user'];
+          $result->dislike = '';
+        } else {
+          $result->like = '';
+          $result->dislike = $args['user'];
+        }
 
         $result->save();
         return true;
