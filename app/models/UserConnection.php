@@ -42,11 +42,11 @@ class UserConnection extends Eloquent {
     return $query
       ->where('connect_from', '=', $to)
       ->where('connect_to', '=', $from)
-      ->where('status', '', $status)
+      ->where('status', '=', $status)
       ->orWhere(function($query) use ($to, $from, $status) {
         $query->where('connect_to', '=', $to)
               ->Where('connect_from', '=', $from)
-              ->where('status', '', $status);
+              ->where('status', '=', $status);
       });
   }
 
