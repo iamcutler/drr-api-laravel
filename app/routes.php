@@ -47,7 +47,11 @@ Route::group(['before' => 'user-hash-auth'], function() {
   |--------------------------------------------------------------------------
   */
   Route::group(['prefix' => 'user'], function() {
+    // Rest connections
     Route::resource('connections', 'UserConnectionController', ['only' => ['index', 'store', 'update', 'destroy']]);
+    // Remove user connections
+    Route::delete('connections/remove/{id}', 'UserConnectionController@remove_friend_connection');
+
     Route::resource('messages', 'MessageController', ['only' => ['index', 'show', 'store']]);
     Route::resource('events', 'EventController');
     Route::resource('groups', 'GroupController');
