@@ -125,17 +125,22 @@ class UserConnectionController extends \BaseController {
   public function remove_friend_connection($id)
   {
     $user = $this->user->Find_id_by_hash(Input::get('user_hash'));
+    $friend = $this->user->find($id);
     $connection = $this->connection->Find_friend_connection_by_id($user->id, $id);
     $result = ['result' => false];
 
     if($connection->count() > 0)
     {
       $commUser = $user->comm_user()->first();
+      $commFriend = $friend->comm_user()->first();
 
-      // Save new friends array
-      $commUser->friends = $this->comm_user->Modify_friend_array($commUser, $id, 0);
+      // Save new friends array for user and friend being removed
+      $commUser->friends = (string) $this->comm_user->Modify_friend_array($commUser, $id);
       $commUser->friendcount = $commUser->friendcount - 1;
-      if($commUser->save())
+      $commFriend->friends = (string) $this->comm_user->Modify_friend_array($commFriend, $user->id);
+      $commFriend->friendcount = $commFriend->friendcount - 1;
+
+      if($commUser->save() && $commFriend->save())
       {
         // Loop through connections and remove
         foreach($connection as $key => $value)
