@@ -83,7 +83,7 @@ class CommUser extends Eloquent {
     }
     else {
       // Remove user from friend user friend array
-      array_splice($friends, $num);
+      unset($friends[$num]);
     }
 
     return implode(',', $friends);
