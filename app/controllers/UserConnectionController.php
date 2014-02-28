@@ -129,7 +129,7 @@ class UserConnectionController extends \BaseController {
     $connection = $this->connection->Find_friend_connection_by_id($user->id, $id);
     $result = ['result' => false];
 
-    if($connection->count() > 0)
+    if($friend && $connection->count() > 0)
     {
       $commUser = $user->comm_user()->first();
       $commFriend = $friend->comm_user()->first();
