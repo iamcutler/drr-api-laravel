@@ -134,6 +134,7 @@ class UserConnectionController extends \BaseController {
 
       // Save new friends array
       $commUser->friends = $this->comm_user->Modify_friend_array($commUser, $id, 0);
+      $commUser->friendcount = $commUser->friendcount - 1;
       if($commUser->save())
       {
         // Loop through connections and remove
