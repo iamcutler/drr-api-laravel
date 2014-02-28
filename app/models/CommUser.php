@@ -6,6 +6,7 @@ class CommUser extends Eloquent {
    */
   protected $table = "community_users";
   protected $primaryKey = 'userid';
+  public $timestamps = false;
 
   /**
   * ORM
