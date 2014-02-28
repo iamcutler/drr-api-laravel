@@ -65,5 +65,13 @@ class UserConnection extends Eloquent {
       // Update existing connection7
       $result->update([ 'status' => $connection['status'] ]);
     }
+  public function scopeFind_friend_connection_by_id($query, $user_id, $friend_id)
+  {
+    return $query
+      ->where('connect_from', '=', $user_id)
+      ->where('connect_to', '=', $friend_id)
+      ->orWhere('connect_from', '=', $friend_id)
+      ->where('connect_to', '=', $user_id)
+      ->get();
   }
 }

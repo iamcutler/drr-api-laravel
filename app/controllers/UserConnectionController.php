@@ -2,10 +2,11 @@
 
 class UserConnectionController extends \BaseController {
 
-  public function __construct(UserConnection $connection, User $user)
+  public function __construct(UserConnection $connection, User $user, CommUser $comm)
   {
     $this->connection = $connection;
     $this->user = $user;
+    $this->comm_user = $comm;
   }
 
   /**
@@ -121,4 +122,30 @@ class UserConnectionController extends \BaseController {
     return Response::json($result);
   }
 
+  public function remove_friend_connection($id)
+  {
+    $user = $this->user->Find_id_by_hash(Input::get('user_hash'));
+    $connection = $this->connection->Find_friend_connection_by_id($user->id, $id);
+    $result = ['result' => false];
+
+    if($connection->count() > 0)
+    {
+      $commUser = $user->comm_user()->first();
+
+      // Save new friends array
+      $commUser->friends = $this->comm_user->Modify_friend_array($commUser, $id, 0);
+      if($commUser->save())
+      {
+        // Loop through connections and remove
+        foreach($connection as $key => $value)
+        {
+          $value->delete();
+        }
+
+        $result['result'] = true;
+      };
+    }
+
+    return Response::json($result);
+  }
 }

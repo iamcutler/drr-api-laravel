@@ -54,4 +54,37 @@ class CommUser extends Eloquent {
   {
     return $query->where('alias', '=', $slug)->first();
   }
+
+  public function scopeModify_friend_array($query, CommUser $user, $id, $action = 0)
+  {
+    // Convert user friends CSV string to array
+    $friends = explode(',', $user->friends);
+    $count = 0;
+    $num = 0;
+
+    // Loop friends array
+    foreach($friends as $key => $value)
+    {
+      if($value == $id)
+      {
+        $count = 1;
+        $num = $key;
+      }
+    }
+
+    if($action)
+    {
+      //Add to user friends array
+      if(!$count)
+      {
+        array_push($friends, $id);
+      }
+    }
+    else {
+      // Remove user from friend user friend array
+      array_splice($friends, $num);
+    }
+
+    return implode(',', $friends);
+  }
 }
