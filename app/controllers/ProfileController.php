@@ -120,13 +120,18 @@ class ProfileController extends \BaseController {
   public function friends($slug)
   {
     $user = $this->user->Find_user_profile_by_slug($slug);
-    $users = [];
     $result = [];
 
     if(!is_null($user))
     {
-      $users[] = $user->friends;
-      $result = $this->user->Find_profile_friends_by_id_array($users);
+      foreach($this->user->Find_profile_friends_by_id_array($user->friends) as $key => $value)
+      {
+        $result[$key]['name'] = $value->name;
+        $result[$key]['username'] = $value->username;
+        $result[$key]['avatar'] = $value->avatar;
+        $result[$key]['thumbnail'] = $value->thumbnail;
+        $result[$key]['alias'] = $value->alias;
+      }
     }
     else
     {

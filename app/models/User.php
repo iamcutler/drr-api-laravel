@@ -229,4 +229,23 @@ class User extends Eloquent {
       ->where('community_users.alias', '=', $username)
       ->first();
   }
+
+  public function scopeFind_profile_friends_by_id_array($query, $ids)
+  {
+    return $query
+      ->select([
+        'name',
+        'username',
+        'community_users.avatar',
+        'community_users.thumb as thumbnail',
+        'community_users.alias'
+      ])
+      ->join('community_users', function($join)
+      {
+        $join->on('userid', '=', 'id');
+      })
+      ->whereIn('id', explode(',', $ids))
+      ->orderBy('name', 'ASC')
+      ->get();
+  }
 }
