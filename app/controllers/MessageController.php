@@ -106,6 +106,8 @@ class MessageController extends \BaseController {
     ];
     $validator = Validator::make($params, $rules);
     $result = [];
+    // Assign parent to param, or override if new thread
+    $parent = $params['parent'];
 
     if(!$validator->fails())
     {
@@ -114,22 +116,46 @@ class MessageController extends \BaseController {
         // Get last message in the tread
         $last = $this->message->Find_latest($params['user'], $params['recepient'])->first();
 
+        if(is_null($last))
+        {
+          if(!is_null(Input::get('subject')))
+          {
+            $subject = Input::get('subject');
+          }
+          else {
+            $subject = "N/A";
+          }
+        }
+        else {
+          $subject = $last->subject;
+        }
+
         // Save new message
         $save = $this->message->Create([
           'from' => $params['user'],
-          'parent' => $params['parent'],
+          'parent' => $parent,
           'deleted' => 0,
           'from_name' => $user->name,
-          'subject' => $last->subject,
+          'subject' => $subject,
           'body' => $params['message'],
           'posted_on' => date("Y-m-d H:i:s")
         ]);
 
         if($save) {
+          // If parent is 0, fetch new parent
+          if($parent == 0)
+          {
+            // Update parent to new thread
+            $save->parent = $save->id;
+            $save->save();
+
+            $parent = $save->id;
+          }
+
           // Save relation
           $recepient = $this->recepient->Create([
             'msg_id' => $save->id,
-            'msg_parent' => $params['parent'],
+            'msg_parent' => $parent,
             'msg_from' => $params['user'],
             'to' => $params['recepient']
           ]);
