@@ -43,8 +43,8 @@ class FeedController extends \BaseController {
       $result[$key]['user']['slug'] = $user_comm->alias;
 
       // Resource stats
-      $result[$key]['stats']['likes'] = (int) $value->likes()->where('like', '!=', '')->count();
-      $result[$key]['stats']['dislikes'] = (int) $value->likes()->where('dislike', '!=', '')->count();
+      $result[$key]['stats']['likes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('like', '!=', '')->count();
+      $result[$key]['stats']['dislikes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('dislike', '!=', '')->count();
 
       // Resource comments
       $result[$key]['comments'] = [];

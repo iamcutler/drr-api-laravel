@@ -156,8 +156,8 @@ class ActivityController extends \BaseController {
       }
 
       // Activity Stats
-      $results['activity']['stats']['likes'] = (int) $activity->likes()->where('like', '!=', '')->count();
-      $results['activity']['stats']['dislikes'] = (int) $activity->likes()->where('dislike', '!=', '')->count();
+      $results['activity']['stats']['likes'] = (int) $activity->likes()->where('element', '=', $activity->like_type)->where('like', '!=', '')->count();
+      $results['activity']['stats']['dislikes'] = (int) $activity->likes()->where('element', '=', $activity->like_type)->where('dislike', '!=', '')->count();
 
       // Activity comments
       $results['activity']['comments'] = [];
