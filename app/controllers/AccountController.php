@@ -36,4 +36,36 @@ class AccountController extends \BaseController {
 
     return Response::json($result);
   }
+
+  public function update_profile_settings()
+  {
+    $user = $this->user->find_id_by_hash(Input::get('user_hash'));
+    $params = Input::all();
+    $result = ['status' => true];
+    $validator = Validator::make($params, ['settings' => 'required']);
+
+    if(!$validator->fails())
+    {
+      foreach($params['settings'] as $key => $value)
+      {
+        $user_field = $this->field->find($value['id']);
+
+        if(!is_null($user_field))
+        {
+          $fieldVal = $user_field->value($user->id)->first();
+          if(!is_null($fieldVal))
+          {
+            $fieldVal->value = $value['value'];
+            $fieldVal->access = $value['access'];
+            $fieldVal->save();
+          }
+        }
+      }
+    }
+    else {
+      $result['status'] = false;
+    }
+
+    return Response::json($result);
+  }
 }
