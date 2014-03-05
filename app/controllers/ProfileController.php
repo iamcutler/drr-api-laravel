@@ -103,15 +103,26 @@ class ProfileController extends \BaseController {
   public function about($slug)
   {
     $user = $this->user->Find_user_profile_by_slug($slug);
+    $fields = $this->field->where('visible', '=', 1)->where('published', '=', 1)->get();
     $result = [];
 
-    if(!is_null($user))
+    foreach($fields as $key => $field)
     {
-      return $result = $this->field->all();
-    }
-    else
-    {
-      $result = ['status' => false, 'message' => 'User was not found'];
+      $result[$key]['id'] = $field->id;
+      $result[$key]['type'] = $field->type;
+      $result[$key]['name'] = $field->name;
+      $result[$key]['tip'] = $field->tips;
+      $result[$key]['min'] = (int) $field->min;
+      $result[$key]['max'] = (int) $field->max;
+      $result[$key]['required'] = (int) $field->required;
+      $result[$key]['fieldcode'] = $field->fieldcode;
+      $result[$key]['params'] = json_decode($field->params);
+
+      // Get field value
+      $val = $field->value($user->id)->first();
+
+      $result[$key]['value']['value'] = (is_null($val)) ? '' : $val->value;
+      $result[$key]['value']['access'] = (is_null($val)) ? 0 : (int) $val->access;
     }
 
     return Response::json($result);
