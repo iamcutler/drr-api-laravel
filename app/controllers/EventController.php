@@ -2,11 +2,12 @@
 
 class EventController extends \BaseController {
 
-  public function __construct(Events $event, EventMember $member, CommUser $user)
+  public function __construct(Events $event, EventMember $member, CommUser $user, EventCategory $category)
   {
     $this->event = $event;
     $this->event_member = $member;
     $this->user = $user;
+    $this->event_category = $category;
   }
   /**
    * Display a listing of the resource.
@@ -256,5 +257,17 @@ class EventController extends \BaseController {
     }
 
     return $results;
+  }
+
+  public function categories()
+  {
+    $categories = $this->event_category->all();
+
+    if(is_null($categories))
+    {
+      $categories = [];
+    }
+
+    return Response::json($categories);
   }
 }
