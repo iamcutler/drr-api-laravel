@@ -8,7 +8,9 @@
 		"barryvdh/laravel-cors": "dev-master",
         "loic-sharma/profiler": "dev-master",
         "phpunit/phpunit": "3.7.*@dev",
-        "Mockery/Mockery": ">=0.7.2"
+        "Mockery/Mockery": ">=0.7.2",
+        "aws/aws-sdk-php-laravel": "1.*",
+        "intervention/image": "dev-master"
 	},
 	"autoload": {
 		"classmap": [

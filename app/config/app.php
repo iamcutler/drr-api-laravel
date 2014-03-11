@@ -108,7 +108,8 @@ return array(
 		'Illuminate\Workbench\WorkbenchServiceProvider',
     'Barryvdh\Cors\CorsServiceProvider',
     'Profiler\ProfilerServiceProvider',
-
+    'Aws\Laravel\AwsServiceProvider',
+    'Intervention\Image\ImageServiceProvider',
 	),
 
 	/*
@@ -174,8 +175,9 @@ return array(
 		'URL'             => 'Illuminate\Support\Facades\URL',
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
-    'Profiler' => 'Profiler\Facades\Profiler',
-
+    'Profiler'        => 'Profiler\Facades\Profiler',
+    'AWS'             => 'Aws\Laravel\AwsFacade',
+    'Image' => 'Intervention\Image\Facades\Image',
 	),
 
 );
