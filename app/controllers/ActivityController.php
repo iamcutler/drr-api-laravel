@@ -2,11 +2,13 @@
 
 class ActivityController extends \BaseController {
 
-  public function __construct(Activity $activity, User $user, Events $event)
+  public function __construct(Activity $activity, User $user, Events $event, UserPhoto $photo, UserPhotoAlbum $album)
   {
     $this->activity = $activity;
     $this->user = $user;
     $this->event = $event;
+    $this->photo = $photo;
+    $this->photo_album = $album;
   }
 
   /**
@@ -36,41 +38,42 @@ class ActivityController extends \BaseController {
    */
   public function store()
   {
-    $input = Input::all();
-    $user = $this->user->Find_id_by_hash($input['user_hash']);
-    $rules = [
-      'event_id' => 'required|integer',
-      'app' => 'required',
-      'actor' => 'required|integer',
-      'message' => 'required'
-    ];
-    $validator = Validator::make($input, $rules);
+    $params = Input::all();
+    $user = $this->user->Find_id_by_hash($params['user_hash']);
     $result = ['result' => false];
 
-    if(!$validator->fails())
+    // Switch on app type
+    switch($params['app'])
     {
-      switch($input['app'])
-      {
-        case 'events.wall':
+      // Text status
+      case 'status':
+        $rules = [
+          'app' => 'required',
+          'status' => 'required'
+        ];
+        $validator = Validator::make($params, $rules);
+
+        if(!$validator->fails())
+        {
           $save = $this->activity->create([
-            'actor' => $input['actor'],
-            'target' => 0,
-            'title' => $input['message'],
+            'actor' => $user->id,
+            'target' => $user->id,
+            'title' => $params['status'],
             'content' => '',
-            'app' => $input['app'],
+            'app' => 'profile',
             'verb' => '',
-            'cid' => $input['event_id'],
+            'cid' => $user->id,
             'groupid' => 0,
-            'eventid' => $input['event_id'],
+            'eventid' => 0,
             'created' => date('Y-m-d h:i:s'),
             'access' => 0,
             'params' => '',
             'archived' => 0,
             'location' => '',
             'comment_id' => 0,
-            'comment_type' => $input['app'],
+            'comment_type' => 'profile.status',
             'like_id' => 0,
-            'like_type' => $input['app'],
+            'like_type' => 'profile.status',
             'actors' => ''
           ]);
 
@@ -84,8 +87,148 @@ class ActivityController extends \BaseController {
             $result['result'] = true;
             $result['activity'] = $this->get_activity($save);
           }
-          break;
-      }
+        }
+        break;
+
+      case 'photo-status':
+        $params = Input::all();
+        $rules = [
+          'app' => 'required',
+          'file' => 'required|image|max:10000000'
+        ];
+        $validator = Validator::make($params, $rules);
+
+        if(!$validator->fails())
+        {
+          // Check if file was uploaded
+          if(Input::hasFile('file'))
+          {
+            $file = Input::file('file');
+            $file_obj = Image::make($file->getRealPath());
+            $S3 = App::make('aws')->get('s3');
+            $image_path = "images/photos/{$user->id}/1/";
+            $new_file_name = str_replace('/', '', Hash::make($file->getClientOriginalName()));
+            $thumb_file_name = $new_file_name . '_thumb.' . $file->getClientOriginalExtension();
+
+            // Less than 10MB files
+            if($file->getSize() <= 10000000)
+            {
+              // Create thumbnail
+              $file_obj->resize(64, 64, true)->save(public_path() . '/' . $thumb_file_name);
+
+              // Upload file to AWS S3
+              try {
+                // Save image to AWS S3
+                $S3->upload(Config::get('constant.AWS.bucket'), $image_path . $new_file_name . '.' . $file->getClientOriginalExtension(), fopen($file->getRealPath(), 'r'), 'public-read');
+                $S3->upload(Config::get('constant.AWS.bucket'), $image_path . $thumb_file_name, fopen(public_path() . '/' . $thumb_file_name, 'r'), 'public-read');
+
+                $result['result'] = true;
+              } catch(S3Exception $e) {
+                $result['code'] = 100;
+              }
+
+              // Destroy local copy of generated thumbnail
+              unlink(public_path() . '/' . $thumb_file_name);
+
+              // Database transaction to save image
+              DB::transaction(function() use ($params, $user, $file, $file_obj, $image_path, $new_file_name, $thumb_file_name) {
+                // Use image name if caption is null
+                $caption = (Input::has('caption')) ? $params['caption'] : $file->getClientOriginalName();
+
+                $this->photo->create([
+                  'caption' => $caption,
+                  'published' => 1,
+                  'creator' => $user->id,
+                  'permissions' => 0,
+                  'image' => '',
+                  'thumbnail' => $image_path . $thumb_file_name,
+                  'original' => $image_path . $new_file_name . '.' . $file->getClientOriginalExtension(),
+                  'filesize' => $file->getSize(),
+                  'storage' => 'file',
+                  'created' => date("Y-m-d H:s:i"),
+                  'status' => '',
+                  'params' => '{}'
+                ]);
+              });
+
+              // Destroy file object
+              $file_obj->destroy();
+
+              /* Find or create photo album to upload too
+              $album = $this->photo_album->FindOrCreateDefaultAlbum($user->id, [
+                'photoid' => 0,
+                'creator' => $user->id,
+                'name' => 'Mobile Uploads',
+                'description' => '',
+                'permissions' => 0,
+                'created' => date("Y-m-d H:s:i"),
+                'path' => "images/photos/{$user->id}/",
+                'type' => 'user',
+                'location' => '',
+                'default' => 1,
+                'params' => json_encode([
+                  "count" => 1,
+                  "lastupdated" => date('Y-m-d H:s:i'),
+                  "thumbnail" => "",
+                  "thumbnail_id" => 0
+                ])
+              ]);*/
+            }
+            else {
+              $result['code'] = 101;
+            }
+          }
+          else {
+            $result['code'] = 100;
+          }
+        }
+        break;
+
+      case 'events.wall':
+        $rules = [
+          'event_id' => 'required|integer',
+          'app' => 'required',
+          'actor' => 'required|integer',
+          'message' => 'required'
+        ];
+        $validator = Validator::make($params, $rules);
+
+        if(!$validator->fails())
+        {
+          $save = $this->activity->create([
+            'actor' => $params['actor'],
+            'target' => 0,
+            'title' => $params['message'],
+            'content' => '',
+            'app' => $params['app'],
+            'verb' => '',
+            'cid' => $params['event_id'],
+            'groupid' => 0,
+            'eventid' => $params['event_id'],
+            'created' => date('Y-m-d h:i:s'),
+            'access' => 0,
+            'params' => '',
+            'archived' => 0,
+            'location' => '',
+            'comment_id' => 0,
+            'comment_type' => $params['app'],
+            'like_id' => 0,
+            'like_type' => $params['app'],
+            'actors' => ''
+          ]);
+
+          if($save)
+          {
+            $save->like_id = $save->id;
+            $save->comment_id = $save->id;
+            $save->save();
+
+            // Return true and saved record
+            $result['result'] = true;
+            $result['activity'] = $this->get_activity($save);
+          }
+        }
+        break;
     }
 
     return Response::json($result);
