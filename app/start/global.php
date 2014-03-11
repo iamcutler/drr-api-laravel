@@ -79,3 +79,19 @@ App::down(function()
 */
 
 require app_path().'/filters.php';
+
+/*
+|--------------------------------------------------------------------------
+| Require The Constant File By Environment
+|--------------------------------------------------------------------------
+*/
+if(App::environment('local'))
+{
+  require app_path().'/config/local/constant.php';
+}
+elseif(App::environment('staging')) {
+  require app_path().'/config/staging/constant.php';
+}
+else {
+  require app_path().'/config/constant.php';
+}
