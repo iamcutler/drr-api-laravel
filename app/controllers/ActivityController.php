@@ -115,32 +115,38 @@ class ActivityController extends \BaseController {
             // Less than 10MB files
             if($file->getSize() <= 10000000)
             {
-              if(AppHelper::uploadS3Imgs($user, $file, $file_options))
+              // Upload/Generate uploaded files to AWS S3
+              $upload = AppHelper::uploadS3Imgs($user, $file, $file_options);
+
+              if($upload['result'])
               {
+                // Database transaction to save image
+                DB::transaction(function() use ($params, $user, $upload) {
+                  // Use image name if caption is null
+                  $caption = (Input::has('caption')) ? $params['caption'] : $file->getClientOriginalName();
+
+                  $this->photo->create([
+                    'caption' => $caption,
+                    'published' => 1,
+                    'creator' => $user->id,
+                    'permissions' => 0,
+                    'image' => $upload['file']['image_path'] . $upload['file']['name'],
+                    'thumbnail' => $upload['file']['image_path'] . $upload['file']['thumbnail'],
+                    'original' => $upload['file']['image_path'] . $upload['file']['name'],
+                    'filesize' => $upload['file']['size'],
+                    'storage' => 'file',
+                    'created' => date("Y-m-d H:s:i"),
+                    'status' => '',
+                    'params' => '{}'
+                  ]);
+                });
+
                 $result['result'] = true;
               }
+              else {
+                $result['code'] = 101;
+              }
             }
-
-            /* Database transaction to save image
-              DB::transaction(function() use ($params, $user, $file, $file_obj, $image_path, $new_file_name, $thumb_file_name) {
-                // Use image name if caption is null
-                $caption = (Input::has('caption')) ? $params['caption'] : $file->getClientOriginalName();
-
-                $this->photo->create([
-                  'caption' => $caption,
-                  'published' => 1,
-                  'creator' => $user->id,
-                  'permissions' => 0,
-                  'image' => '',
-                  'thumbnail' => $image_path . $thumb_file_name,
-                  'original' => $image_path . $new_file_name . '.' . $file->getClientOriginalExtension(),
-                  'filesize' => $file->getSize(),
-                  'storage' => 'file',
-                  'created' => date("Y-m-d H:s:i"),
-                  'status' => '',
-                  'params' => '{}'
-                ]);
-              });*/
           }
           else {
             $result['code'] = 100;

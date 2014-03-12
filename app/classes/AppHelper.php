@@ -3,7 +3,7 @@
 class AppHelper {
   public static function uploadS3Imgs(User $user, $file, Array $options = [])
   {
-    $result = false;
+    $result['result'] = false;
 
     $file_obj = Image::make($file->getRealPath());
     $S3 = App::make('aws')->get('s3');
@@ -31,7 +31,14 @@ class AppHelper {
       }
 
       // Return truthy
-      $result = true;
+      $result['result'] = true;
+
+      $result['file'] = [
+        'image_path' => $image_path,
+        'name' => $new_file_name . '.' . $file->getClientOriginalExtension(),
+        'thumbnail' => $thumb_file_name,
+        'size' => $file->getSize()
+      ];
     } catch(S3Exception $e) {
 
     }
