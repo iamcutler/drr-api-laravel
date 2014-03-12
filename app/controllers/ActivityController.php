@@ -104,33 +104,24 @@ class ActivityController extends \BaseController {
           if(Input::hasFile('file'))
           {
             $file = Input::file('file');
-            $file_obj = Image::make($file->getRealPath());
-            $S3 = App::make('aws')->get('s3');
-            $image_path = "images/photos/{$user->id}/1/";
-            $new_file_name = str_replace('/', '', Hash::make($file->getClientOriginalName()));
-            $thumb_file_name = $new_file_name . '_thumb.' . $file->getClientOriginalExtension();
+            $file_options = [
+              'thumb' => true,
+              'thumb_size' => [
+                'width' => 64,
+                'height' => 64
+              ]
+            ];
 
             // Less than 10MB files
             if($file->getSize() <= 10000000)
             {
-              // Create thumbnail
-              $file_obj->resize(64, 64, true)->save(public_path() . '/' . $thumb_file_name);
-
-              // Upload file to AWS S3
-              try {
-                // Save image to AWS S3
-                $S3->upload(Config::get('constant.AWS.bucket'), $image_path . $new_file_name . '.' . $file->getClientOriginalExtension(), fopen($file->getRealPath(), 'r'), 'public-read');
-                $S3->upload(Config::get('constant.AWS.bucket'), $image_path . $thumb_file_name, fopen(public_path() . '/' . $thumb_file_name, 'r'), 'public-read');
-
+              if(AppHelper::uploadS3Imgs($user, $file, $file_options))
+              {
                 $result['result'] = true;
-              } catch(S3Exception $e) {
-                $result['code'] = 100;
               }
+            }
 
-              // Destroy local copy of generated thumbnail
-              unlink(public_path() . '/' . $thumb_file_name);
-
-              // Database transaction to save image
+            /* Database transaction to save image
               DB::transaction(function() use ($params, $user, $file, $file_obj, $image_path, $new_file_name, $thumb_file_name) {
                 // Use image name if caption is null
                 $caption = (Input::has('caption')) ? $params['caption'] : $file->getClientOriginalName();
@@ -149,34 +140,7 @@ class ActivityController extends \BaseController {
                   'status' => '',
                   'params' => '{}'
                 ]);
-              });
-
-              // Destroy file object
-              $file_obj->destroy();
-
-              /* Find or create photo album to upload too
-              $album = $this->photo_album->FindOrCreateDefaultAlbum($user->id, [
-                'photoid' => 0,
-                'creator' => $user->id,
-                'name' => 'Mobile Uploads',
-                'description' => '',
-                'permissions' => 0,
-                'created' => date("Y-m-d H:s:i"),
-                'path' => "images/photos/{$user->id}/",
-                'type' => 'user',
-                'location' => '',
-                'default' => 1,
-                'params' => json_encode([
-                  "count" => 1,
-                  "lastupdated" => date('Y-m-d H:s:i'),
-                  "thumbnail" => "",
-                  "thumbnail_id" => 0
-                ])
-              ]);*/
-            }
-            else {
-              $result['code'] = 101;
-            }
+              });*/
           }
           else {
             $result['code'] = 100;
