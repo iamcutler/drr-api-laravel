@@ -83,6 +83,23 @@ class Activity extends Eloquent {
   /**
    * Scoped queries
    */
+  public function scopeNews_feed($query, $offset = 0, $limit = 10)
+  {
+    return $query
+      ->where("group_access", "=", 0)
+      ->orWhereIn("groupid", [''])
+      ->orWhere("groupid", "=", 0)
+      ->where("event_access", "=", 0)
+      ->orWhereIn("eventid", [''])
+      ->orWhere("eventid", "=", 0)
+      ->where('access','<=', 10)
+      ->groupBy('id')
+      ->orderBy('created', 'DESC')
+      ->orderBy('id', 'DESC')
+      ->skip($offset)
+      ->take($limit);
+  }
+
   public function scopeMedia_feed($query, $offset = 0, $limit = 10)
   {
     return $query
