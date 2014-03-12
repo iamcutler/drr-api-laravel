@@ -8,6 +8,26 @@ class UserPhoto extends Eloquent {
   public $timestamps = false;
 
   /**
+   * Mass Assignment
+   */
+  protected $fillable = [
+    'caption',
+    'published',
+    'creator',
+    'permissions',
+    'image',
+    'thumbnail',
+    'original',
+    'filesize',
+    'storage',
+    'created',
+    'status',
+    'params'
+  ];
+
+  protected $guarded = ['id'];
+
+  /**
    * ORM relations
    */
   public function user_photo()
