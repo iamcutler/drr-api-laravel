@@ -14,7 +14,10 @@ class AppHelper {
     if($options['thumb'] == true)
     {
       // Create thumbnail version
-      $file_obj->resize(64, 64)->save(public_path() . '/' . $thumb_file_name);
+      $thumb_width = (array_key_exists('width', $options['thumb_size']) && is_int($options['thumb_size']['width'])) ? $options['thumb_size']['width'] : 64;
+      $thumb_height = (array_key_exists('height', $options['thumb_size']) && is_int($options['thumb_size']['height'])) ? $options['thumb_size']['height'] : 64;
+
+      $file_obj->resize($thumb_width, $thumb_height)->save(public_path() . '/' . $thumb_file_name);
     }
 
     // Upload file to AWS S3
