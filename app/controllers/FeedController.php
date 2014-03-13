@@ -2,8 +2,9 @@
 
 class FeedController extends \BaseController {
 
-  public function __construct(Activity $activity)
+  public function __construct(User $user, Activity $activity)
   {
+    $this->user = $user;
     $this->activity = $activity;
   }
 
@@ -18,24 +19,30 @@ class FeedController extends \BaseController {
     $user = $this->user->Find_id_by_hash($params['user_hash']);
     $result = [];
 
-    $activity = $this->activity->news_feed()->get();
+    $activity = $this->activity->news_feed($offset)->get();
 
     foreach($activity as $key => $value)
     {
       $actor = $value->actor();
       $actor_comm = $actor->comm_user()->first();
 
-      $result[$key]['id'] = $value->id;
+      $result[$key]['id'] = (int) $value->id;
       $result[$key]['title'] = $value->title;
       $result[$key]['content'] = $value->content;
       $result[$key]['app'] = $value->app;
-      $result[$key]['cid'] = $value->cid;
-      $result[$key]['groupid'] = $value->groupid;
-      $result[$key]['eventid'] = $value->eventid;
+      $result[$key]['cid'] = (int) $value->cid;
+      $result[$key]['groupid'] = (int) $value->groupid;
+      $result[$key]['eventid'] = (int) $value->eventid;
       $result[$key]['group_access'] = $value->group_access;
       $result[$key]['event_access'] = $value->event_access;
       $result[$key]['location'] = $value->location;
       $result[$key]['params'] = json_decode($value->params);
+
+      $result[$key]['like_id'] = (int) $value->like_id;
+      $result[$key]['like_type'] = $value->like_type;
+      $result[$key]['comment_id'] = (int) $value->comment_id;
+      $result[$key]['comment_type'] = $value->comment_type;
+
       $result[$key]['created'] = $value->created;
 
       // Resource owner
