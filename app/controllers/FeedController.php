@@ -63,7 +63,7 @@ class FeedController extends \BaseController {
         $actor = $v->user();
         $actor_comm = $user->comm_user()->first();
 
-        $result[$key]['comments'][$k]['user']['id'] = $actor->id;
+        $result[$key]['comments'][$k]['user']['id'] = (int) $actor->id;
         $result[$key]['comments'][$k]['user']['name'] = $actor->name;
         $result[$key]['comments'][$k]['user']['avatar'] = $actor_comm->avatar;
         $result[$key]['comments'][$k]['user']['thumbnail'] = $actor_comm->thumb;
