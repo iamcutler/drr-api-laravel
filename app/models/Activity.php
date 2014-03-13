@@ -67,7 +67,7 @@ class Activity extends Eloquent {
   public function photo()
   {
     return $this->hasOne('UserPhoto', 'id', 'comment_id')
-      ->where('permissions', '=', 0)
+      ->where('permissions', '<=', 10)
       ->where('published', '=', 1)
       ->first();
   }
