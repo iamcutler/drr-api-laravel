@@ -2,12 +2,13 @@
 
 class EventController extends \BaseController {
 
-  public function __construct(Events $event, EventMember $member, CommUser $user, EventCategory $category)
+  public function __construct(Events $event, EventMember $member, CommUser $user, EventCategory $category, Activity $activity)
   {
     $this->event = $event;
     $this->event_member = $member;
     $this->user = $user;
     $this->event_category = $category;
+    $this->activity = $activity;
   }
   /**
    * Display a listing of the resource.
