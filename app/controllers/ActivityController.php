@@ -135,7 +135,7 @@ class ActivityController extends \BaseController {
                     'original' => $upload['file']['image_path'] . $upload['file']['name'],
                     'filesize' => $upload['file']['size'],
                     'storage' => 'file',
-                    'created' => date("Y-m-d H:s:i"),
+                    'created' => date("Y-m-d H:i:s"),
                     'status' => '',
                     'params' => '{}'
                   ]);
@@ -175,7 +175,7 @@ class ActivityController extends \BaseController {
             'cid' => $params['event_id'],
             'groupid' => 0,
             'eventid' => $params['event_id'],
-            'created' => date('Y-m-d h:i:s'),
+            'created' => date('Y-m-d H:i:s'),
             'access' => 0,
             'params' => '',
             'archived' => 0,
