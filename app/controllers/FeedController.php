@@ -120,7 +120,7 @@ class FeedController extends \BaseController {
 
   public function media($offset = 0)
   {
-    $feed = $this->activity->Media_feed($offset)->get();
+    $feed = $this->activity->media_feed($offset)->get();
     $result = [];
 
     foreach($feed as $key => $value)
