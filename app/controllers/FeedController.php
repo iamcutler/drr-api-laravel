@@ -52,6 +52,23 @@ class FeedController extends \BaseController {
       $result[$key]['actor']['avatar'] = $actor_comm->avatar;
       $result[$key]['actor']['slug'] = $actor_comm->alias;
 
+      // Resource Target
+      if($value->target != 0 && $value->actor != $value->target)
+      {
+        $target = $value->target();
+        $target_comm = $target->comm_user()->first();
+      }
+      else {
+        $target = $actor;
+        $target_comm = $actor_comm;
+      }
+
+      $result[$key]['target']['id'] = (int) $target->id;
+      $result[$key]['target']['name'] = $target->name;
+      $result[$key]['target']['thumbnail'] = $target_comm->thumb;
+      $result[$key]['target']['avatar'] = $target_comm->avatar;
+      $result[$key]['target']['slug'] = $target_comm->alias;
+
       // Resource stats
       $result[$key]['stats']['likes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('like', '!=', '')->count();
       $result[$key]['stats']['dislikes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('dislike', '!=', '')->count();
