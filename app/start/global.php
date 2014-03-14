@@ -82,6 +82,14 @@ App::down(function()
 require app_path().'/filters.php';
 
 /*
+ |--------------------------------------------------------------------------
+ | Contract Binding
+ |--------------------------------------------------------------------------
+*/
+App::bind('AWSRepositoryInterface', 'AmazonWebServices');
+App::bind('UserActivityRepositoryInterface', 'UserActivity');
+
+/*
 |--------------------------------------------------------------------------
 | Require The Constant File By Environment
 |--------------------------------------------------------------------------
