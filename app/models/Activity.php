@@ -110,4 +110,11 @@ class Activity extends Eloquent {
       ->take($limit)
       ->skip($offset);
   }
+
+  public function scopeFind_by_like_id($query, $id)
+  {
+    return $query
+      ->where('like_id', '=', $id)
+      ->first();
+  }
 }
