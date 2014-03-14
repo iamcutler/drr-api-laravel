@@ -1,7 +1,7 @@
 <?php
 
-class AppHelper {
-  public static function uploadS3Imgs(User $user, $file, Array $options = [])
+class AmazonWebServices implements AWSRepositoryInterface {
+  public function S3ImgUpload(User $user, $file, Array $options = [])
   {
     $result['result'] = false;
 

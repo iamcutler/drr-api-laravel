@@ -2,8 +2,9 @@
 
 class ActivityController extends \BaseController {
 
-  public function __construct(Activity $activity, User $user, Events $event, UserPhoto $photo, UserPhotoAlbum $album)
+  public function __construct(Activity $activity, User $user, Events $event, UserPhoto $photo, UserPhotoAlbum $album, AWSRepositoryInterface $amazon)
   {
+    $this->AWS = $amazon;
     $this->activity = $activity;
     $this->user = $user;
     $this->event = $event;
@@ -116,7 +117,7 @@ class ActivityController extends \BaseController {
             if($file->getSize() <= 10000000)
             {
               // Upload/Generate uploaded files to AWS S3
-              $upload = AppHelper::uploadS3Imgs($user, $file, $file_options);
+              $upload = $this->AWS->S3ImgUpload($user, $file, $file_options);
 
               if($upload['result'])
               {
