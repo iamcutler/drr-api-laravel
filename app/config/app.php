@@ -177,7 +177,7 @@ return array(
 		'View'            => 'Illuminate\Support\Facades\View',
     'Profiler'        => 'Profiler\Facades\Profiler',
     'AWS'             => 'Aws\Laravel\AwsFacade',
-    'Image' => 'Intervention\Image\Facades\Image',
+    'Image'           => 'Intervention\Image\Facades\Image',
 	),
 
 );
