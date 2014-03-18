@@ -30,6 +30,19 @@ class User extends Eloquent {
       ->get();
   }
 
+  public function profile_likes() {
+    return $this->hasMany('Likes', 'id', 'like')
+      ->where('element', '=', 'profile')
+      ->get();
+  }
+
+  public function profile_dislikes()
+  {
+    return $this->hasMany('Likes', 'id', 'dislike')
+      ->where('element', '=', 'profile')
+      ->get();
+  }
+
   /**
 	 * The attributes excluded from the model's JSON form.
 	 *
