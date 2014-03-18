@@ -26,6 +26,9 @@ class ProfileController extends \BaseController {
 
     if(!is_null($user) && !is_null($requester))
     {
+      // Get user instance
+      $user_profile = $this->user->find($user->id);
+
       $profile['user']['id'] = $user->id;
       $profile['user']['name'] = $user->name;
       $profile['user']['username'] = $user->username;
@@ -61,7 +64,9 @@ class ProfileController extends \BaseController {
       }
 
       // Profile array
-      $profile['profile']['status'] = $user->status;
+      $profile['profile']['status']['status'] = $user->status;
+      $profile['profile']['status']['created'] = $user->posted_on;
+
       $profile['profile']['views'] = $user->view;
       $profile['profile']['friends'] = $user->friends;
       $profile['profile']['friend_count'] = $user->friendcount;
@@ -69,6 +74,10 @@ class ProfileController extends \BaseController {
       $profile['profile']['registered'] = $user->registered;
 
       $profile['profile']['settings'] = json_decode($user->profile_params);
+
+      // Profile status
+      $profile['profile']['stats']['likes'] = (int) $user_profile->profile_likes()->count();
+      $profile['profile']['stats']['dislikes'] = (int) $user_profile->profile_dislikes()->count();
 
       // Count array
       $profile['profile']['counts']['photos'] = $this->photo->Find_all_by_user_id($user->id)->count();

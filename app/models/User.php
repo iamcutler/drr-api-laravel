@@ -153,6 +153,7 @@ class User extends Eloquent {
         'users.name',
         'users.username',
         'community_users.status',
+        'community_users.posted_on',
         'community_users.points',
         'community_users.avatar',
         'community_users.thumb as thumbnail',
