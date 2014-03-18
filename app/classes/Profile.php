@@ -2,10 +2,11 @@
 
 class Profile implements ProfileRepositoryInterface {
 
-  public function __construct(Activity $activity, UserField $field)
+  public function __construct(Activity $activity, UserField $field, User $user)
   {
     $this->activity = $activity;
     $this->field = $field;
+    $this->user = $user;
   }
 
   public function getFeed($id, $offset = 0, $limit = 10)
@@ -120,6 +121,30 @@ class Profile implements ProfileRepositoryInterface {
 
       $result[$key]['value']['value'] = (is_null($val)) ? '' : $val->value;
       $result[$key]['value']['access'] = (is_null($val)) ? 0 : (int) $val->access;
+    }
+
+    return $result;
+  }
+
+  // Get profile friends
+  public function friends($user)
+  {
+    $result = [];
+
+    if(!is_null($user))
+    {
+      foreach($this->user->Find_profile_friends_by_id_array($user->friends) as $key => $value)
+      {
+        $result[$key]['name'] = $value->name;
+        $result[$key]['username'] = $value->username;
+        $result[$key]['avatar'] = $value->avatar;
+        $result[$key]['thumbnail'] = $value->thumbnail;
+        $result[$key]['alias'] = $value->alias;
+      }
+    }
+    else
+    {
+      $result = ['status' => false, 'message' => 'User not found'];
     }
 
     return $result;
