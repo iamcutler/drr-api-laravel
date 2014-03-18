@@ -2,11 +2,12 @@
 
 class Profile implements ProfileRepositoryInterface {
 
-  public function __construct(Activity $activity, UserField $field, User $user)
+  public function __construct(Activity $activity, User $user, UserField $field, UserPhotoAlbum $album)
   {
     $this->activity = $activity;
     $this->field = $field;
     $this->user = $user;
+    $this->album = $album;
   }
 
   public function getFeed($id, $offset = 0, $limit = 10)
@@ -148,5 +149,43 @@ class Profile implements ProfileRepositoryInterface {
     }
 
     return $result;
+  }
+
+  // Get single photo album
+  public function album($slug, $id)
+  {
+    // Find request user
+    $requester = $this->user->find_id_by_hash(Input::get('user_hash'));
+    // Find album
+    $album = $this->album->find($id);
+    // Find album creator
+    $user = $this->user->find($album->creator);
+    $user_comm = $user->comm_user()->first();
+    // Get all album photos
+    $photos = $album->photo()->Find_all_by_album_id($id)->get();
+    $results = [];
+
+    // Check if slug matches owner alias
+    if($user_comm->alias == $slug)
+    {
+      // Output album information
+      $results['name'] = $album->name;
+      $results['permissions'] = $album->permissions;
+      $results['album_owner'] = ($requester->id === $album->creator) ? true : false;
+
+      $results['photos'] = [];
+
+      // Loop output to photos array
+      foreach($photos as $key => $val)
+      {
+        $results['photos'][$key]['id'] = $val['id'];
+        $results['photos'][$key]['thumbnail'] = $val['thumbnail'];
+        $results['photos'][$key]['params'] = json_decode($val['params']);
+        $results['photos'][$key]['permissions'] = $val['permissions'];
+        $results['photos'][$key]['created'] = $val['created'];
+      }
+    }
+
+    return $results;
   }
 }
