@@ -3,7 +3,7 @@
 class ProfileController extends \BaseController {
 
   public function __construct(User $user, CommUser $comm_user, UserPhotoAlbum $album, UserPhoto $photo, UserVideo $video,
-                              UserConnection $connection, UserField $field, EventMember $eventMember, GroupMember $groupMember,
+                              UserConnection $connection, EventMember $eventMember, GroupMember $groupMember,
                               ProfileRepositoryInterface $profile)
   {
     $this->user = $user;
@@ -12,7 +12,6 @@ class ProfileController extends \BaseController {
     $this->album = $album;
     $this->video = $video;
     $this->connection = $connection;
-    $this->field = $field;
     $this->eventMember = $eventMember;
     $this->groupMember = $groupMember;
     $this->profile = $profile;
@@ -117,27 +116,7 @@ class ProfileController extends \BaseController {
   public function about($slug)
   {
     $user = $this->user->Find_user_profile_by_slug($slug);
-    $fields = $this->field->where('visible', '=', 1)->where('published', '=', 1)->get();
-    $result = [];
-
-    foreach($fields as $key => $field)
-    {
-      $result[$key]['id'] = $field->id;
-      $result[$key]['type'] = $field->type;
-      $result[$key]['name'] = $field->name;
-      $result[$key]['tip'] = $field->tips;
-      $result[$key]['min'] = (int) $field->min;
-      $result[$key]['max'] = (int) $field->max;
-      $result[$key]['required'] = (int) $field->required;
-      $result[$key]['fieldcode'] = $field->fieldcode;
-      $result[$key]['params'] = json_decode($field->params);
-
-      // Get field value
-      $val = $field->value($user->id)->first();
-
-      $result[$key]['value']['value'] = (is_null($val)) ? '' : $val->value;
-      $result[$key]['value']['access'] = (is_null($val)) ? 0 : (int) $val->access;
-    }
+    $result = $this->profile->about($user);
 
     return Response::json($result);
   }

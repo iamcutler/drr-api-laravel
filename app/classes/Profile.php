@@ -2,9 +2,10 @@
 
 class Profile implements ProfileRepositoryInterface {
 
-  public function __construct(Activity $activity)
+  public function __construct(Activity $activity, UserField $field)
   {
     $this->activity = $activity;
+    $this->field = $field;
   }
 
   public function getFeed($id, $offset = 0, $limit = 10)
@@ -91,6 +92,34 @@ class Profile implements ProfileRepositoryInterface {
           $result[$key] = [];
         }
       }
+    }
+
+    return $result;
+  }
+
+  // Get user about fields
+  public function about($user)
+  {
+    $fields = $this->field->where('visible', '=', 1)->where('published', '=', 1)->get();
+    $result = [];
+
+    foreach($fields as $key => $field)
+    {
+      $result[$key]['id'] = $field->id;
+      $result[$key]['type'] = $field->type;
+      $result[$key]['name'] = $field->name;
+      $result[$key]['tip'] = $field->tips;
+      $result[$key]['min'] = (int) $field->min;
+      $result[$key]['max'] = (int) $field->max;
+      $result[$key]['required'] = (int) $field->required;
+      $result[$key]['fieldcode'] = $field->fieldcode;
+      $result[$key]['params'] = json_decode($field->params);
+
+      // Get field value
+      $val = $field->value($user->id)->first();
+
+      $result[$key]['value']['value'] = (is_null($val)) ? '' : $val->value;
+      $result[$key]['value']['access'] = (is_null($val)) ? 0 : (int) $val->access;
     }
 
     return $result;
