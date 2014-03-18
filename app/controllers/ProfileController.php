@@ -3,7 +3,8 @@
 class ProfileController extends \BaseController {
 
   public function __construct(User $user, CommUser $comm_user, UserPhotoAlbum $album, UserPhoto $photo, UserVideo $video,
-                              UserConnection $connection, UserField $field, EventMember $eventMember, GroupMember $groupMember)
+                              UserConnection $connection, UserField $field, EventMember $eventMember, GroupMember $groupMember,
+                              ProfileRepositoryInterface $profile)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
@@ -14,6 +15,7 @@ class ProfileController extends \BaseController {
     $this->field = $field;
     $this->eventMember = $eventMember;
     $this->groupMember = $groupMember;
+    $this->profile = $profile;
   }
 
   public function get_profile_by_slug($slug) {
@@ -82,6 +84,9 @@ class ProfileController extends \BaseController {
       // Count array
       $profile['profile']['counts']['photos'] = $this->photo->Find_all_by_user_id($user->id)->count();
       $profile['profile']['counts']['videos'] = $this->video->Find_all_by_user_id($user->id)->count();
+
+      // Profile Feed
+      $profile['profile']['feed'] = $this->profile->getFeed($user->id);
 
       // User upcoming events
       $event_count = 0;

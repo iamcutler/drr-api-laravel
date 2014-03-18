@@ -117,4 +117,20 @@ class Activity extends Eloquent {
       ->where('like_id', '=', $id)
       ->first();
   }
+
+  // Fetch user profile feed
+  public function scopeProfile_feed($query, $id, $offset = 0, $limit = 10)
+  {
+    $type = ['profile', 'profile.avatar.upload', 'videos', 'photos'];
+
+    return $query
+      ->whereIn('app', $type)
+      ->where('actor', '=', $id)
+      ->orWhereIn('app', $type)
+      ->where('target', '=', $id)
+      ->groupBy('id')
+      ->skip($offset)
+      ->take($limit)
+      ->get();
+  }
 }
