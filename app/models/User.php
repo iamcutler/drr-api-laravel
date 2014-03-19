@@ -81,6 +81,14 @@ class User extends Eloquent {
 	}
 
   /**
+   * ORM
+   */
+  public function photo_album()
+  {
+    return $this->hasMany('UserPhotoAlbum', 'id', 'creator');
+  }
+
+  /**
    * Model methods
    */
   public static function generate_hash($name, $username)
