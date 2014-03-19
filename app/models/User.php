@@ -270,4 +270,13 @@ class User extends Eloquent {
       ->orderBy('name', 'ASC')
       ->get();
   }
+
+  public function scopeFindBySlug($query, $slug)
+  {
+    return $query
+      ->join('community_users', function($join) {
+        $join->on('userid', '=', 'id');
+      })
+      ->where('alias', '=', $slug);
+  }
 }

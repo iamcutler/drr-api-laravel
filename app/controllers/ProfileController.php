@@ -155,4 +155,17 @@ class ProfileController extends \BaseController {
 
     return Response::json($result);
   }
+
+  public function feed($slug, $offset = 10, $limit = 10)
+  {
+    $result = [];
+    $user = $this->user->findBySlug($slug)->first();
+
+    if(!is_null($user))
+    {
+      $result = $this->profile->getFeed($user->id, $offset, $limit);
+    }
+
+    return Response::json($result);
+  }
 }
