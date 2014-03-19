@@ -23,6 +23,9 @@ class Profile implements ProfileRepositoryInterface {
 
       // Resource
       $result[$key]['id'] = (int) $value->id;
+      $result[$key]['actor'] = $value->actor;
+      $result[$key]['target'] = $value->target;
+      $result[$key]['title'] = $value->title;
       $result[$key]['type'] = $value->app;
       $result[$key]['comment_id'] = (int) $value->comment_id;
       $result[$key]['comment_type'] = $value->comment_type;
