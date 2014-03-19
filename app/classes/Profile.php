@@ -23,8 +23,6 @@ class Profile implements ProfileRepositoryInterface {
 
       // Resource
       $result[$key]['id'] = (int) $value->id;
-      $result[$key]['actor'] = $value->actor;
-      $result[$key]['target'] = $value->target;
       $result[$key]['title'] = $value->title;
       $result[$key]['type'] = $value->app;
       $result[$key]['comment_id'] = (int) $value->comment_id;
@@ -39,6 +37,26 @@ class Profile implements ProfileRepositoryInterface {
       $result[$key]['user']['thumbnail'] = $user_comm->thumb;
       $result[$key]['user']['avatar'] = $user_comm->avatar;
       $result[$key]['user']['slug'] = $user_comm->alias;
+
+      // Resource Target
+      if($value->target == $value->actor || $value->target == 0)
+      {
+        $result[$key]['target']['id'] = (int) $user->id;
+        $result[$key]['target']['name'] = $user->name;
+        $result[$key]['target']['thumbnail'] = $user_comm->thumb;
+        $result[$key]['target']['avatar'] = $user_comm->avatar;
+        $result[$key]['target']['slug'] = $user_comm->alias;
+      }
+      else {
+        $target = $value->target();
+        $target_comm = $target->comm_user()->first();
+
+        $result[$key]['target']['id'] = (int) $target->id;
+        $result[$key]['target']['name'] = $target->name;
+        $result[$key]['target']['thumbnail'] = $target_comm->thumb;
+        $result[$key]['target']['avatar'] = $target_comm->avatar;
+        $result[$key]['target']['slug'] = $target_comm->alias;
+      }
 
       // Resource stats
       $result[$key]['stats']['likes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('like', '!=', '')->count();
