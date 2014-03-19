@@ -15,6 +15,11 @@ class UserPhotoAlbum extends Eloquent {
     return $this->belongsTo('CommUser', 'userid');
   }
 
+  public function photo()
+  {
+    return $this->hasMany('UserPhoto', 'albumid', 'id');
+  }
+
   /**
    * Query scopes
    */
