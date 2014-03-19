@@ -2,12 +2,13 @@
 
 class Profile implements ProfileRepositoryInterface {
 
-  public function __construct(Activity $activity, User $user, UserField $field, UserPhotoAlbum $album)
+  public function __construct(Activity $activity, User $user, UserField $field, UserPhoto $photo, UserPhotoAlbum $album)
   {
     $this->activity = $activity;
     $this->field = $field;
     $this->user = $user;
     $this->album = $album;
+    $this->photo = $photo;
   }
 
   public function getFeed($id, $offset = 0, $limit = 10)
@@ -143,9 +144,51 @@ class Profile implements ProfileRepositoryInterface {
         $result[$key]['alias'] = $value->alias;
       }
     }
-    else
+    else {
+      $result = ['status' => false, 'message' => 'User not found'];
+    }
+
+    return $result;
+  }
+
+  // Get user albums
+  public function albums($user)
+  {
+    $result = [];
+
+    if(is_null($user))
     {
       $result = ['status' => false, 'message' => 'User not found'];
+    }
+    else {
+      $albums = $this->album->Find_all_by_user_id($user->id);
+
+      // Loop through and add albums to output
+      foreach($albums as $key => $val)
+      {
+        $result[$key]['id'] = $val['id'];
+        $result[$key]['name'] = $val['name'];
+
+        // Get photo instance
+        $photoObj = $val->photo();
+        $photos = $photoObj->find($val['photoid']);
+
+        if(!is_null($photos))
+        {
+          $result[$key]['thumbnail'] = $photos->thumbnail;
+        }
+        else {
+          $result[$key]['thumbnail'] = null;
+        }
+
+        $result[$key]['hits'] = $val['hits'];
+        $result[$key]['location'] = $val['location'];
+        $result[$key]['photo_count'] = $this->photo->Find_all_by_album_id($val['id'])->count();
+        $result[$key]['permissions'] = $val['permissions'];
+        $result[$key]['params'] = json_decode($val['params']);
+        $result[$key]['default'] = $val['default'];
+        $result[$key]['created'] = $val['created'];
+      }
     }
 
     return $result;

@@ -2,14 +2,13 @@
 
 class ProfileController extends \BaseController {
 
-  public function __construct(User $user, CommUser $comm_user, UserPhotoAlbum $album, UserPhoto $photo, UserVideo $video,
+  public function __construct(User $user, CommUser $comm_user, UserPhoto $photo, UserVideo $video,
                               UserConnection $connection, EventMember $eventMember, GroupMember $groupMember,
                               ProfileRepositoryInterface $profile)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
     $this->photo = $photo;
-    $this->album = $album;
     $this->video = $video;
     $this->connection = $connection;
     $this->eventMember = $eventMember;
@@ -132,37 +131,7 @@ class ProfileController extends \BaseController {
   public function photo_albums($slug)
   {
     $user = $this->user->Find_user_profile_by_slug($slug);
-    $result = [];
-
-    if(is_null($user))
-    {
-      $result = ['status' => false, 'message' => 'User not found'];
-    }
-    else
-    {
-      foreach($this->album->Find_all_by_user_id($user->id) as $key => $val)
-      {
-        $result[$key]['id'] = $val['id'];
-        $result[$key]['name'] = $val['name'];
-
-        if(!is_null($this->photo->find($val['photoid'])))
-        {
-          $result[$key]['thumbnail'] = $this->photo->find($val['photoid'])->thumbnail;
-        }
-        else
-        {
-          $result[$key]['thumbnail'] = null;
-        }
-
-        $result[$key]['hits'] = $val['hits'];
-        $result[$key]['location'] = $val['location'];
-        $result[$key]['photo_count'] = $this->photo->Find_all_by_album_id($val['id'])->count();
-        $result[$key]['permissions'] = $val['permissions'];
-        $result[$key]['params'] = json_decode($val['params']);
-        $result[$key]['default'] = $val['default'];
-        $result[$key]['created'] = $val['created'];
-      }
-    }
+    $result = $this->profile->albums($user);
 
     return Response::json($result);
   }
