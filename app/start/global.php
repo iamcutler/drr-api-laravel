@@ -99,6 +99,7 @@ require app_path().'/filters.php';
 App::bind('AWSRepositoryInterface', 'AmazonWebServices');
 App::bind('UserActivityRepositoryInterface', 'UserActivity');
 App::singleton('ProfileRepositoryInterface', 'Profile');
+App::singleton('PresenterRepositoryInterface', 'Presenter');
 
 /*
 |--------------------------------------------------------------------------
