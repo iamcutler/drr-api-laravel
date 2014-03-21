@@ -2,10 +2,11 @@
 
 class FeedController extends \BaseController {
 
-  public function __construct(User $user, Activity $activity)
+  public function __construct(User $user, Activity $activity, PresenterRepositoryInterface $presenter)
   {
     $this->user = $user;
     $this->activity = $activity;
+    $this->presenter = $presenter;
   }
 
   /**
