@@ -1,6 +1,24 @@
 <?php
 
 class Presenter implements PresenterRepositoryInterface {
+  static function User(User $user, Array $options = [])
+  {
+    $result = [];
+    $result['id'] = (int) $user->id;
+    $result['name'] = $user->name;
+    $result['thumbnail'] = $user->thumb;
+    $result['avatar'] = $user->avatar;
+    $result['slug'] = $user->alias;
+
+    // Pass in additional options for output
+    foreach($options as $key => $val)
+    {
+      $result[$key] = $val;
+    }
+
+    return $result;
+  }
+
   static function Wall($wall)
   {
     $result = [];
