@@ -341,7 +341,7 @@ class Profile implements ProfileRepositoryInterface {
           $result['user'] = $this->presenter->User($user);
 
           // Resource stats
-          $likes = $activity->likes()->where('element', '=', 'photos');
+          $likes = $activity->likes()->where('element', '=', 'photo');
           $result['stats'] = $this->presenter->likeStats($likes);
 
           // Resource comments
