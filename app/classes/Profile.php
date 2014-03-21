@@ -2,13 +2,16 @@
 
 class Profile implements ProfileRepositoryInterface {
 
-  public function __construct(Activity $activity, User $user, UserField $field, UserPhoto $photo, UserPhotoAlbum $album)
+  public function __construct(Activity $activity, User $user, UserField $field, UserPhoto $photo, UserPhotoAlbum $album, UserVideo $video,
+                              PresenterRepositoryInterface $presenter)
   {
     $this->activity = $activity;
     $this->field = $field;
     $this->user = $user;
     $this->album = $album;
     $this->photo = $photo;
+    $this->video = $video;
+    $this->presenter = $presenter;
   }
 
   public function getFeed($id, $offset = 0, $limit = 10)
@@ -251,5 +254,93 @@ class Profile implements ProfileRepositoryInterface {
     }
 
     return $results;
+  }
+
+  // Get single video resource and stats
+  public function video($slug, $id)
+  {
+    $video = $this->video->find($id);
+    $user = $this->user->findBySlug($slug)->first();
+    $result = [];
+
+    if(!is_null($video))
+    {
+      // Check if video is owned by user
+      if($video->creator == $user->id)
+      {
+        $activity = $video->activity();
+
+        $result['id'] = (int) $video->id;
+        $result['title'] = $video->title;
+        $result['type'] = $video->type;
+        $result['video_id'] = $video->video_id;
+        $result['description'] = $video->description;
+        $result['permissions'] = $video->permissions;
+        $result['featured'] = (int) $video->featured;
+        $result['location'] = $video->location;
+
+        $result['comment_id'] = $activity->comment_id;
+        $result['comment_type'] = $activity->comment_type;
+        $result['like_id'] = $activity->like_id;
+        $result['like_type'] = $activity->like_type;
+
+        $result['created'] = $video->created;
+
+
+        $result['media']['thumbnail'] = $video->thumbnail;
+        $result['media']['path'] = $video->path;
+        $result['media']['filesize'] = $video->filesize;
+        $result['media']['duration'] = $video->duration;
+
+        // Resource owner
+        $result['user']['id'] = (int) $user->id;
+        $result['user']['name'] = $user->name;
+        $result['user']['thumbnail'] = $user->thumb;
+        $result['user']['avatar'] = $user->avatar;
+        $result['user']['slug'] = $user->alias;
+
+        // Resource stats
+        $likes = $activity->likes()->where('element', '=', 'videos');
+        $result['stats']['likes'] = (int) $likes->where('like', '!=', '')->count();
+        $result['stats']['dislikes'] = (int) $likes->where('dislike', '!=', '')->count();
+
+        // Resource comments
+        $result['comments'] = $this->presenter->Wall($activity->wall());
+      }
+    }
+
+    return $result;
+  }
+
+  public function photo($slug, $id)
+  {
+    $photo = $this->photo->find($id);
+    $user = $this->user->findBySlug($slug)->first();
+    $result = [];
+
+    if(!is_null($photo))
+    {
+      // Check if slug matches creator
+      if($photo->creator == $user->id)
+      {
+        $result['id'] = $photo->id;
+        $result['caption'] = $photo->caption;
+        $result['permissions'] = $photo->permissions;
+        $result['hits'] = $photo->hits;
+        $result['published'] = (int) $photo->published;
+        $result['created'] = $photo->created;
+
+        // Media array
+        $result['media']['image'] = $photo->image;
+        $result['media']['thumbnail'] = $photo->thumbnail;
+        $result['media']['original'] = $photo->original;
+        $result['media']['filesize'] = (int) $photo->filesize;
+
+        // Resource owner
+        $result['user'] = $this->presenter->User($user);
+      }
+    }
+
+    return $result;
   }
 }

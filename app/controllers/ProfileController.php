@@ -156,6 +156,13 @@ class ProfileController extends \BaseController {
     return Response::json($result);
   }
 
+  public function video($slug, $id)
+  {
+    $result = $this->profile->video($slug, $id);
+
+    return Response::json($result);
+  }
+
   public function feed($slug, $offset = 10, $limit = 10)
   {
     $result = [];
@@ -165,6 +172,13 @@ class ProfileController extends \BaseController {
     {
       $result = $this->profile->getFeed($user->id, $offset, $limit);
     }
+
+    return Response::json($result);
+  }
+
+  public function photo($slug, $id)
+  {
+    $result = $this->profile->photo($slug, $id);
 
     return Response::json($result);
   }

@@ -6,4 +6,6 @@ interface ProfileRepositoryInterface {
   public function friends($user);
   public function albums($user);
   public function album($slug, $id);
+  public function photo($slug, $id);
+  public function video($slug, $id);
 }

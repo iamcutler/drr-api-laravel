@@ -87,6 +87,8 @@ Route::group(['before' => 'user-hash-auth'], function() {
       Route::get('albums/{slug}', 'ProfileController@photo_albums');
       Route::get('album/{slug}/{id}', 'ProfileController@album_photos');
       Route::get('videos/{slug}', 'ProfileController@videos');
+      Route::get('video/{slug}/{id}', 'ProfileController@video');
+      Route::get('photo/{slug}/{id}', 'ProfileController@photo');
       Route::get('groups/{slug}', 'GroupController@user_groups');
       Route::get('events/{slug}', 'EventController@user_events');
     });
