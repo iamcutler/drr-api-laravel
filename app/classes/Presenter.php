@@ -19,6 +19,27 @@ class Presenter implements PresenterRepositoryInterface {
     return $result;
   }
 
+  static function UserImage(UserPhoto $image)
+  {
+    $result = [];
+    $result['image'] = $image->image;
+    $result['thumbnail'] = $image->thumbnail;
+    $result['original'] = $image->original;
+    $result['filesize'] = (int) $image->filesize;
+
+    return $result;
+  }
+
+  static function likeStats($likes)
+  {
+    $result = [];
+
+    $result['likes'] = (int) $likes->where('like', '!=', '')->count();
+    $result['dislikes'] = (int) $likes->where('dislike', '!=', '')->count();
+
+    return $result;
+  }
+
   static function Wall($wall)
   {
     $result = [];
