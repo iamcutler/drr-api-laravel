@@ -19,13 +19,18 @@ class Presenter implements PresenterRepositoryInterface {
     return $result;
   }
 
-  static function UserImage(UserPhoto $image)
+  static function UserImage(UserPhoto $image, Array $options = [])
   {
     $result = [];
     $result['image'] = $image->image;
     $result['thumbnail'] = $image->thumbnail;
     $result['original'] = $image->original;
     $result['filesize'] = (int) $image->filesize;
+
+    foreach($options as $key => $val)
+    {
+      $result[$key] = $val;
+    }
 
     return $result;
   }
