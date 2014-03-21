@@ -106,6 +106,7 @@ class ActivityController extends \BaseController {
           {
             $file = Input::file('file');
             $file_options = [
+              'image_path' => "images/photos/{$user->id}/1/",
               'thumb' => true,
               'thumb_size' => [
                 'width' => 64,
