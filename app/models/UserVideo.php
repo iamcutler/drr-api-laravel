@@ -15,6 +15,14 @@ class UserVideo extends Eloquent {
     return $this->belongsTo('CommUser', 'userid');
   }
 
+  public function activity()
+  {
+    return $this
+      ->hasOne('Activity', 'cid')
+      ->where('app', '=', 'videos')
+      ->first();
+  }
+
   /**
    * Query scopes
    */

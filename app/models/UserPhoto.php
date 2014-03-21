@@ -35,6 +35,11 @@ class UserPhoto extends Eloquent {
     return $this->belongsTo('CommUser', 'userid');
   }
 
+  public function activity()
+  {
+    return $this->hasOne('Activity', 'comment_id', 'id');
+  }
+
   /**
    * Query scopes
    */
