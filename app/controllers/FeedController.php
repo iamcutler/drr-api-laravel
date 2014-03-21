@@ -136,6 +136,7 @@ class FeedController extends \BaseController {
       $result[$key]['comment_type'] = $value->comment_type;
       $result[$key]['like_id'] = (int) $value->like_id;
       $result[$key]['like_type'] = $value->like_type;
+      $result[$key]['created'] = $value->created;
 
       // Resource owner
       $result[$key]['user']['id'] = (int) $user->id;
