@@ -301,8 +301,7 @@ class Profile implements ProfileRepositoryInterface {
 
         // Resource stats
         $likes = $activity->likes()->where('element', '=', 'videos');
-        $result['stats']['likes'] = (int) $likes->where('like', '!=', '')->count();
-        $result['stats']['dislikes'] = (int) $likes->where('dislike', '!=', '')->count();
+        $result['stats'] = $this->presenter->likeStats($likes);
 
         // Resource comments
         $result['comments'] = $this->presenter->Wall($activity->wall());
@@ -323,21 +322,31 @@ class Profile implements ProfileRepositoryInterface {
       // Check if slug matches creator
       if($photo->creator == $user->id)
       {
-        $result['id'] = $photo->id;
-        $result['caption'] = $photo->caption;
-        $result['permissions'] = $photo->permissions;
-        $result['hits'] = $photo->hits;
-        $result['published'] = (int) $photo->published;
-        $result['created'] = $photo->created;
+        // Get resource activity
+        $activity = $photo->activity()->where('app', '=', 'photos')->first();
 
-        // Media array
-        $result['media']['image'] = $photo->image;
-        $result['media']['thumbnail'] = $photo->thumbnail;
-        $result['media']['original'] = $photo->original;
-        $result['media']['filesize'] = (int) $photo->filesize;
+        if(!is_null($activity))
+        {
+          $result['id'] = $photo->id;
+          $result['caption'] = $photo->caption;
+          $result['permissions'] = $photo->permissions;
+          $result['hits'] = $photo->hits;
+          $result['published'] = (int) $photo->published;
+          $result['created'] = $photo->created;
 
-        // Resource owner
-        $result['user'] = $this->presenter->User($user);
+          // Media array
+          $result['media'] = $this->presenter->UserImage($photo);
+
+          // Resource owner
+          $result['user'] = $this->presenter->User($user);
+
+          // Resource stats
+          $likes = $activity->likes()->where('element', '=', 'photos');
+          $result['stats'] = $this->presenter->likeStats($likes);
+
+          // Resource comments
+          $result['comments'] = $this->presenter->Wall($activity->wall());
+        }
       }
     }
 
