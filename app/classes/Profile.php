@@ -341,7 +341,7 @@ class Profile implements ProfileRepositoryInterface {
           $result['created'] = $photo->created;
 
           // Media array
-          $result['media'] = $this->presenter->UserImage($photo);
+          $result['media'] = $this->presenter->UserImage($photo, ['caption' => $photo->caption]);
 
           // Resource owner
           $result['user'] = $this->presenter->User($user);
