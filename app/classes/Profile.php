@@ -332,6 +332,12 @@ class Profile implements ProfileRepositoryInterface {
           $result['permissions'] = $photo->permissions;
           $result['hits'] = $photo->hits;
           $result['published'] = (int) $photo->published;
+
+          $result['like_id'] = (int) $activity->like_id;
+          $result['like_type'] = $activity->like_type;
+          $result['comment_id'] = (int) $activity->comment_id;
+          $result['comment_type'] = $activity->comment_type;
+
           $result['created'] = $photo->created;
 
           // Media array
