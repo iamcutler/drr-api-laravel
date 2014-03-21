@@ -83,9 +83,18 @@ class Activity extends Eloquent {
   /**
    * Scoped queries
    */
-  public function scopeNews_feed($query, $offset = 0, $limit = 10)
+  public function scopeNews_feed($query, Array $friends = [], $offset = 0, $limit = 10)
   {
     return $query
+      ->whereIn('app', ['profile', 'profile.avatar.upload', 'videos', 'photos'])
+      ->where('access', '<=', 30)
+      ->whereIn('actor', $friends)
+      ->orderBy('created', 'DESC')
+      ->skip($offset)
+      ->take($limit);
+
+    // Original query to suit with jomsocial
+    /*return $query
       ->where("group_access", "=", 0)
       ->orWhereIn("groupid", [''])
       ->orWhere("groupid", "=", 0)
@@ -97,7 +106,7 @@ class Activity extends Eloquent {
       ->orderBy('created', 'DESC')
       ->orderBy('id', 'DESC')
       ->skip($offset)
-      ->take($limit);
+      ->take($limit);*/
   }
 
   public function scopeMedia_feed($query, $offset = 0, $limit = 10)
@@ -107,8 +116,8 @@ class Activity extends Eloquent {
       ->where('app', '=', 'photos')
       ->orWhere('app', '=', 'videos')
       ->orderBy('created', 'DESC')
-      ->take($limit)
-      ->skip($offset);
+      ->skip($offset)
+      ->take($limit);
   }
 
   public function scopeFind_by_like_id($query, $id)
@@ -121,14 +130,16 @@ class Activity extends Eloquent {
   // Fetch user profile feed
   public function scopeProfile_feed($query, $id, $offset = 0, $limit = 10)
   {
-    $type = ['profile', 'profile.avatar.upload', 'videos', 'photos'];
+    $type = ['profile.avatar.upload', 'videos', 'photos'];
 
     return $query
       ->whereIn('app', $type)
       ->where('actor', '=', $id)
-      ->orWhereIn('app', $type)
-      ->where('target', '=', $id)
+      ->orWhere('app', '=', 'profile')
+      ->where('actor', '=', $id)
+      ->where('target', '=')
       ->groupBy('id')
+      ->orderBy('created', 'DESC')
       ->skip($offset)
       ->take($limit)
       ->get();
