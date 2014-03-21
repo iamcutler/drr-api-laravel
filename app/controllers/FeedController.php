@@ -18,9 +18,10 @@ class FeedController extends \BaseController {
   {
     $params = Input::all();
     $user = $this->user->Find_id_by_hash($params['user_hash']);
+    $user_comm = $user->comm_user()->first();
     $result = [];
 
-    $activity = $this->activity->news_feed($offset)->get();
+    $activity = $this->activity->news_feed(explode(',', $user_comm->friends), $offset)->get();
 
     foreach($activity as $key => $value)
     {
