@@ -5,10 +5,10 @@ class AmazonWebServices implements AWSRepositoryInterface {
   {
     $result['result'] = false;
 
+    $S3 = App::make('aws')->get('s3');
+
     $file_path = $file->getRealPath();
     $file_obj = Image::make($file_path);
-    $S3 = App::make('aws')->get('s3');
-    $image_path = "images/photos/{$user->id}/1/";
     $new_file_name = str_replace('/', '', Hash::make($file->getClientOriginalName()));
     $thumb_file_name = $new_file_name . '_thumb.' . $file->getClientOriginalExtension();
 
@@ -31,18 +31,18 @@ class AmazonWebServices implements AWSRepositoryInterface {
     // Upload file to AWS S3
     try {
       // Save image to AWS S3
-      $S3->upload(Config::get('constant.AWS.bucket'), $image_path . $new_file_name . '.' . $file->getClientOriginalExtension(), fopen($file_path, 'r'), 'public-read');
+      $S3->upload(Config::get('constant.AWS.bucket'), $options['image_path'] . $new_file_name . '.' . $file->getClientOriginalExtension(), fopen($file_path, 'r'), 'public-read');
 
       if($options['thumb'] == true)
       {
-        $S3->upload(Config::get('constant.AWS.bucket'), $image_path . $thumb_file_name, fopen(public_path() . '/' . $thumb_file_name, 'r'), 'public-read');
+        $S3->upload(Config::get('constant.AWS.bucket'), $options['image_path'] . $thumb_file_name, fopen(public_path() . '/' . $thumb_file_name, 'r'), 'public-read');
       }
 
       // Return truthy
       $result['result'] = true;
 
       $result['file'] = [
-        'image_path' => $image_path,
+        'image_path' => $options['image_path'],
         'name' => $new_file_name . '.' . $file->getClientOriginalExtension(),
         'thumbnail' => $thumb_file_name,
         'size' => $file->getSize()
