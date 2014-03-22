@@ -23,6 +23,14 @@ class UserVideo extends Eloquent {
       ->first();
   }
 
+  public function wall()
+  {
+    return $this->hasMany('CommWall', 'contentid')
+      ->where('type', '=', 'videos')
+      ->orderBy('date', 'DESC')
+      ->get();
+  }
+
   /**
    * Query scopes
    */
