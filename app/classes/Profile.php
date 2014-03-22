@@ -293,18 +293,14 @@ class Profile implements ProfileRepositoryInterface {
         $result['media']['duration'] = $video->duration;
 
         // Resource owner
-        $result['user']['id'] = (int) $user->id;
-        $result['user']['name'] = $user->name;
-        $result['user']['thumbnail'] = $user->thumb;
-        $result['user']['avatar'] = $user->avatar;
-        $result['user']['slug'] = $user->alias;
+        $result['user'] = $this->presenter->User($user);
 
         // Resource stats
         $likes = $activity->likes()->where('element', '=', 'videos');
         $result['stats'] = $this->presenter->likeStats($likes);
 
         // Resource comments
-        $result['comments'] = $this->presenter->Wall($activity->wall());
+        $result['comments'] = $this->presenter->Wall($video->wall());
       }
     }
 
