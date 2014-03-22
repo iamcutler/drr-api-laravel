@@ -144,4 +144,9 @@ class Activity extends Eloquent {
       ->take($limit)
       ->get();
   }
+
+  public function scopeFindByCommentId($query, $id)
+  {
+    return $query->where('comment_id', '=', $id)->first();
+  }
 }
