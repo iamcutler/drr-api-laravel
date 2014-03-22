@@ -40,6 +40,13 @@ class UserPhoto extends Eloquent {
     return $this->hasOne('Activity', 'comment_id', 'id');
   }
 
+  public function wall()
+  {
+    return $this->hasMany('CommWall', 'contentid')
+      ->where('type', '=', 'photos')
+      ->get();
+  }
+
   /**
    * Query scopes
    */

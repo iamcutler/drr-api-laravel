@@ -351,7 +351,7 @@ class Profile implements ProfileRepositoryInterface {
           $result['stats'] = $this->presenter->likeStats($likes);
 
           // Resource comments
-          $result['comments'] = $this->presenter->Wall($activity->wall());
+          $result['comments'] = $this->presenter->Wall($photo->wall());
         }
       }
     }
