@@ -35,14 +35,14 @@ class WallController extends \BaseController {
    */
   public function store()
   {
-    $input = Input::all();
+    $params = Input::all();
     $rules = [
       'cid' => 'required|integer',
       'user' => 'required|integer',
       'app' => 'required',
       'comment' => 'required'
     ];
-    $validator = Validator::make($input, $rules);
+    $validator = Validator::make($params, $rules);
     $result = ['result' => false];
 
     if(!$validator->fails())
@@ -52,16 +52,16 @@ class WallController extends \BaseController {
       if(!is_null($activity))
       {
         // Check and make sure app type comparison
-        if(Input::get('app') == $activity->comment_type)
+        if($params['app'] == $activity->comment_type)
         {
           $act_access = $activity->access;
 
           $save = $this->comment->create([
-            'contentid' => Input::get('cid'),
-            'post_by' => Input::get('user'),
+            'contentid' => $params['cid'],
+            'post_by' => $params['user'],
             'ip' => Request::getClientIp(),
-            'comment' => Input::get('comment'),
-            'date' => date('Y-m-d h:i:s'),
+            'comment' => $params['comment'],
+            'date' => date('Y-m-d H:i:s'),
             'published' => 1,
             'type' => $activity->comment_type
           ]);
