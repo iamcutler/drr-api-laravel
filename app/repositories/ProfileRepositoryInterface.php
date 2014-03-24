@@ -8,4 +8,5 @@ interface ProfileRepositoryInterface {
   public function album($slug, $id);
   public function photo($slug, $id);
   public function video($slug, $id);
+  public function findOrCreateMobileAlbum($user_id);
 }

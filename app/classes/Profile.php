@@ -354,4 +354,45 @@ class Profile implements ProfileRepositoryInterface {
 
     return $result;
   }
+
+  public function findOrCreateMobileAlbum($user_id)
+  {
+    $album = $this->album->findMobileAlbum($user_id);
+    $result = [];
+
+    if($album->count() == 0)
+    {
+      // If mobile not found, create new
+      $new_album = $this->album->create([
+        'photoid' => 0,
+        'creator' => $user_id,
+        'name' => 'Mobile Uploads',
+        'description' => '',
+        'permissions' => 0,
+        'created' => date("Y-m-d H:i:s"),
+        'path' => '',
+        'type' => 'user',
+        'location' => '',
+        'params' => ''
+      ]);
+
+      if($new_album)
+      {
+        // Save album path
+        $new_album->path = "images/photos/{$user_id}/{$new_album->id}";
+
+        if($new_album->save())
+        {
+          // Find, and return new album object
+          $result = $this->album->find($new_album->id);
+        }
+      }
+    }
+    else {
+      // If found, return album object
+      $result = $album;
+    }
+
+    return $result;
+  }
 }
