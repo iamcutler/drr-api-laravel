@@ -11,6 +11,7 @@ class UserPhoto extends Eloquent {
    * Mass Assignment
    */
   protected $fillable = [
+    'albumid',
     'caption',
     'published',
     'creator',
