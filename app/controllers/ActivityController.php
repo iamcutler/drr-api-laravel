@@ -2,7 +2,8 @@
 
 class ActivityController extends \BaseController {
 
-  public function __construct(Activity $activity, User $user, Events $event, UserPhoto $photo, UserPhotoAlbum $album, AWSRepositoryInterface $amazon)
+  public function __construct(Activity $activity, User $user, Events $event, UserPhoto $photo, UserPhotoAlbum $album,
+                              AWSRepositoryInterface $amazon, ProfileRepositoryInterface $profile)
   {
     $this->AWS = $amazon;
     $this->activity = $activity;
@@ -10,6 +11,7 @@ class ActivityController extends \BaseController {
     $this->event = $event;
     $this->photo = $photo;
     $this->photo_album = $album;
+    $this->profile = $profile;
   }
 
   /**
@@ -105,8 +107,12 @@ class ActivityController extends \BaseController {
           if(Input::hasFile('file'))
           {
             $file = Input::file('file');
+
+            // Find or create mobile uploads album
+            $mobile_album = $this->profile->findOrCreateMobileAlbum($user->id);
+
             $file_options = [
-              'image_path' => "images/photos/{$user->id}/1/",
+              'image_path' => "images/photos/{$user->id}/{$mobile_album->id}/",
               'thumb' => true,
               'thumb_size' => [
                 'width' => 64,
@@ -122,12 +128,14 @@ class ActivityController extends \BaseController {
 
               if($upload['result'])
               {
-                // Database transaction to save image
-                DB::transaction(function() use ($params, $user, $upload) {
-                  // Use image name if caption is null
-                  $caption = (Input::has('caption')) ? $params['caption'] : $file->getClientOriginalName();
+                // Use image name if caption is null
+                $caption = (Input::has('caption')) ? $params['caption'] : $file->getClientOriginalName();
 
-                  $this->photo->create([
+                // Database transaction to save image/activity
+                $trans = DB::transaction(function() use ($params, $user, $mobile_album, $caption, $upload) {
+                  // Create photo record
+                  $newPhoto = $this->photo->create([
+                    'albumid' => $mobile_album->id,
                     'caption' => $caption,
                     'published' => 1,
                     'creator' => $user->id,
@@ -138,12 +146,45 @@ class ActivityController extends \BaseController {
                     'filesize' => $upload['file']['size'],
                     'storage' => 'file',
                     'created' => date("Y-m-d H:i:s"),
-                    'status' => '',
+                    'status' => 'ready',
                     'params' => '{}'
                   ]);
+
+                  // Create activity record
+                  $newActivity = $this->activity->create([
+                    'actor' => $user->id,
+                    'target' => 0,
+                    'title' => $caption,
+                    'content' => '',
+                    'app' => 'photos',
+                    'verb' => '',
+                    'cid' => $mobile_album->id,
+                    'created' => date("Y-m-d H:i:s"),
+                    'access' => 0,
+                    'params' => '',
+                    'archived' => 0,
+                    'location' => '',
+                    'comment_id' => $newPhoto->id,
+                    'comment_type' => 'photos',
+                    'like_id' => $newPhoto->id,
+                    'like_type' => 'photo',
+                    'actors' => ''
+                  ]);
+
+                  // Make sure all records are successful
+                  if($newActivity && $newPhoto)
+                  {
+                    return true;
+                  }
                 });
 
-                $result['result'] = true;
+                if($trans)
+                {
+                  $result['result'] = true;
+                }
+                else {
+                  $result['status'] = 102;
+                }
               }
               else {
                 $result['code'] = 101;
