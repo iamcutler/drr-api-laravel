@@ -47,7 +47,14 @@ class WallController extends \BaseController {
 
     if(!$validator->fails())
     {
-      $activity = $this->activity->find(Input::get('cid'));
+      switch($params['app'])
+      {
+        case 'videos':
+          $activity = $this->activity->FindByCommentId($params['cid']);
+          break;
+        default:
+          $activity = $this->activity->FindByCommentId($params['cid']);
+      }
 
       if(!is_null($activity))
       {
