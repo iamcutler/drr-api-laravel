@@ -49,6 +49,20 @@ class CommUser extends Eloquent {
     return $query->where('alias', '=', $slug)->first();
   }
 
+  public static function detect_user_relationship($friends, $user)
+  {
+    $result = false;
+    foreach(str_getcsv($friends) as $val)
+    {
+      if($val == $user)
+      {
+        $result = true;
+      }
+    }
+
+    return $result;
+  }
+
   public function scopeModify_friend_array($query, CommUser $user, $id, $action = 0)
   {
     // Convert user friends CSV string to array
