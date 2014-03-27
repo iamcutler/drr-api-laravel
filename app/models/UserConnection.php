@@ -53,18 +53,33 @@ class UserConnection extends Eloquent {
   public static function updateOrCreateConnection(Array $connection)
   {
     $result = UserConnection::where('connect_to', '=', $connection['connect_to'])->where('connect_from', '=', $connection['connect_from']);
+    $status = false;
 
     // Check if connection is found
     if(is_null($result->first()))
     {
       // Create new connection
-      UserConnection::create($connection);
+      $create = UserConnection::create($connection);
+
+      if($create)
+      {
+        $status = true;
+      }
     }
     else
     {
       // Update existing connection7
-      $result->update([ 'status' => $connection['status'] ]);
+      $update = $result->update([ 'status' => $connection['status'] ]);
+
+      if($update)
+      {
+        $status = true;
+      }
     }
+
+    return $status;
+  }
+
   public function scopeFind_friend_connection_by_id($query, $user_id, $friend_id)
   {
     return $query
