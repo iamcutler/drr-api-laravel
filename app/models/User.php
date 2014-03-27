@@ -48,7 +48,7 @@ class User extends Eloquent {
 	 *
 	 * @var array
 	 */
-	protected $hidden = array('password');
+	protected $hidden = array();
 
 	/**
 	 * Get the unique identifier for the user.
