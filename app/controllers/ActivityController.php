@@ -115,8 +115,8 @@ class ActivityController extends \BaseController {
               'image_path' => "images/photos/{$user->id}/{$mobile_album->id}/",
               'thumb' => true,
               'thumb_size' => [
-                'width' => 64,
-                'height' => 64
+                'width' => 120,
+                'height' => 120
               ]
             ];
 
