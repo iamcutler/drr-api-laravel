@@ -39,7 +39,86 @@ class EventController extends \BaseController {
    */
   public function store()
   {
-    //
+    $params = Input::all();
+    $user = $this->user->find_id_by_hash($params['user_hash']);
+    $rules = [
+      'app' => 'required',
+      'catid' => 'required|integer',
+      'title' => 'required',
+      'location' => 'required',
+      'startdate' => 'required',
+      'enddate' => 'required',
+      'repeat' => 'required'
+    ];
+    $validator = Validator::make($params, $rules);
+
+    if(!$validator->fails())
+    {
+      switch($params['app']) {
+        case 'event-status':
+          // Create event transaction
+          /*try {
+            DB::transaction(function() use ($user, $params) {
+              $event_save = $this->event->create([
+                'parent' => '',
+                'catid' => $params['catid'],
+                'contentid' => 0,
+                'type' => 'profile',
+                'title' => $params['title'],
+                'location' => $params['location'],
+                'summary' => '',
+                'description' => $params['description'],
+                'creator' => $user->id,
+                'startdate' => $params['startdate'],
+                'enddate' => $params['enddate'],
+                'permission' => 0,
+                'created' => date("Y-m-d H:s:i"),
+                'allday' => $params['allday'],
+                'repeat' => $params['repeat'],
+                'repeatend' => $params['repeatend']
+              ]);
+
+              $this->event_member->create([
+                'eventid' => $event_save->id,
+                'memberid' => $user->id,
+                'status' => 1,
+                'permission' => 1,
+                'invited_by' => 0,
+                'approval' => 0,
+                'created' => date("Y-m-d H:s:i")
+              ]);
+
+              $activity = $this->activity->create([
+                'actor' => $user->id,
+                'target' => 0,
+                'title' => '',
+                'content' => '',
+                'app' => 'events',
+                'cid' => $event_save->id,
+                'eventid' => $event_save->id,
+                'created' => date("Y-m-d H:s:i"),
+                'access' => 0,
+                'params' => [
+                  'action' => "events.create",
+                  'event_url' => "index.php?option=com_community&view=events&task=viewevent&eventid={$event_save->id}",
+                  'event_category_url' => "index.php?option=com_community&view=events&task=display&categoryid={$params['catid']}"
+                ],
+                'archived' => 0,
+                'location' => $params['location'],
+                'comment_id' => $event_save->id,
+                'comment_type' => 'groups.event',
+                'like_id' => $event_save->id,
+                'like_type' => 'group.event',
+                'actors' => ''
+              ]);
+            });
+          }
+          catch($e) {
+
+          }*/
+          break;
+      };
+    }
   }
 
   /**
@@ -249,10 +328,10 @@ class EventController extends \BaseController {
         {
           $comm_user = $user->comm_user()->first();
 
-          $results[$key]['stats']['likes']['user']['name'] = $user->name;
+          /*$results[$key]['stats']['likes']['user']['name'] = $user->name;
           $results[$key]['stats']['likes']['user']['avatar'] = $comm_user->avatar;
           $results[$key]['stats']['likes']['user']['thumbnail'] = $comm_user->thumb;
-          $results[$key]['stats']['likes']['user']['slug'] = $comm_user->alias;
+          $results[$key]['stats']['likes']['user']['slug'] = $comm_user->alias;*/
         }
       }
     }
@@ -262,7 +341,7 @@ class EventController extends \BaseController {
 
   public function categories()
   {
-    $categories = $this->event_category->all();
+    $categories = $this->event_category->orderBy('name', 'ASC')->get();
 
     if(is_null($categories))
     {
