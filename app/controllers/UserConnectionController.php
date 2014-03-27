@@ -29,12 +29,35 @@ class UserConnectionController extends \BaseController {
    *
    * @return Response
    */
-  public function store($id)
+  public function store()
   {
-    $user_hash = Input::get('user_hash');
-    $user = $this->user->find_id_by_hash($user_hash);
+    $input = Input::all();
+    $rules = [
+      'user' => 'required|integer'
+    ];
+    $validator = Validator::make($input, $rules);
+    $result = ['result' => false];
 
+    if(!$validator->fails())
+    {
+      $user = $this->user->find_id_by_hash($input['user_hash']);
 
+      $request = $this->connection->updateOrCreateConnection([
+        'connect_from' => $user->id,
+        'connect_to' => $input['user'],
+        'status' => 0,
+        'group' => 0,
+        'msg' => '',
+        'created' => date('Y-m-d h:i:s')
+      ]);
+
+      if($request)
+      {
+        $result['result'] = true;
+      }
+    }
+
+    return Response::json($result);
   }
 
   /**
