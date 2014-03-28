@@ -30,7 +30,7 @@
 	// The name of the application to deploy
 	// This will create a folder of the same name in the root directory
 	// configured above, so be careful about the characters used
-	'application_name' => 'dirty-rotten-rides-api',
+	'application_name' => 'api.dirtyrottenrides.com',
 
 	// The number of releases to keep at all times
 	'keep_releases'    => 4,
