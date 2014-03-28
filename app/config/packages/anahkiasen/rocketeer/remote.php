@@ -41,6 +41,7 @@
 	'shared' => array(
 		'{path.storage}/logs',
 		'{path.storage}/sessions',
+    '{path}/config/database.php'
 	),
 
 	// Permissions
