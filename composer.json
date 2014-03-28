@@ -10,7 +10,9 @@
         "phpunit/phpunit": "3.7.*@dev",
         "Mockery/Mockery": ">=0.7.2",
         "aws/aws-sdk-php-laravel": "1.*",
-        "intervention/image": "dev-master"
+        "intervention/image": "dev-master",
+		"anahkiasen/rocketeer": "dev-master",
+		"anahkiasen/rocketeer-slack": "dev-master"
 	},
 	"autoload": {
 		"classmap": [
