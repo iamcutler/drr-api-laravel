@@ -52,9 +52,12 @@
 		// You can pass paths in brackets, so {path.public} will return
 		// the correct path to the public folder
 		'files' => array(
-			'app/database/production.sqlite',
 			'{path.storage}',
-			'{path.public}',
+      '{path.storage}/meta',
+      '{path.storage}/sessions',
+      '{path.storage}/logs',
+      '{path.storage}/views',
+			'{path.public}'
 		),
 
 		// Here you can configure what actions will be executed to set
@@ -62,9 +65,7 @@
 		// a single command as a string or an array of commands
 		'callback' => function ($task, $file) {
 			return array(
-				sprintf('chmod -R 755 %s', $file),
-				sprintf('chmod -R g+s %s', $file),
-				sprintf('chown -R www-data:www-data %s', $file),
+				sprintf('chmod 777 %s', $file)
 			);
 		},
 
