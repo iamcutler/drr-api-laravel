@@ -17,7 +17,7 @@
 	),
 
 	// The root directory where your applications will be deployed
-	'root_directory'   => '/home/www/',
+	'root_directory'   => '/var/www/',
 
 	// The process that will be executed by Composer
 	'composer' => function ($task) {
