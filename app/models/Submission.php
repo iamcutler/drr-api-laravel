@@ -5,7 +5,7 @@ class Submission extends Eloquent {
    * Table used by model
    */
   protected $table = "dirtygirlsubmissions_";
-  protected $timestamps = false;
+  public $timestamps = false;
 
   /**
    * Mass Assignment
