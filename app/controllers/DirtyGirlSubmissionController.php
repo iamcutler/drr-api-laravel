@@ -76,7 +76,12 @@ class DirtyGirlSubmissionController extends \BaseController {
           // Set result status to true
           $result['result'] = true;
           // Display saved resource
-          $result['submission'] = $this->submission->find($save->id);
+          $submission = $this->submission->find($save->id)->toArray();
+
+          while(list($key, $val) = each($submission))
+          {
+            $result['submission'][$key] = $val;
+          }
         }
       }
       catch(Exception $exception) {
