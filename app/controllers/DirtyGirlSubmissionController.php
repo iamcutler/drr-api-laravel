@@ -38,7 +38,7 @@ class DirtyGirlSubmissionController extends \BaseController {
     $validator = Validator::make($params, $rules);
     $result = [];
     // Set default status result
-    $result['status'] = false;
+    $result['result'] = false;
 
     // Check if user was found and parameter validations passed
     if($validator->passes() && !is_null($user))
@@ -55,7 +55,7 @@ class DirtyGirlSubmissionController extends \BaseController {
           'previous_pinup' => $params['done_pinup'],
           'favorite_car' => $params['favorite_car'],
           'favorite_pinup' => $params['favorite_pinup'],
-          'special_talent' => $params['special_talent'],
+          'special_talents' => $params['special_talents'],
           'why_you' => $params['why_you'],
           'biggest_turn_on' => $params['turn_on'],
           'biggest_turn_off' => $params['turn_off'],
@@ -74,7 +74,7 @@ class DirtyGirlSubmissionController extends \BaseController {
         if($save)
         {
           // Set result status to true
-          $result['status'] = true;
+          $result['result'] = true;
           // Display saved resource
           $result['submission'] = $this->submission->find($save->id);
         }
