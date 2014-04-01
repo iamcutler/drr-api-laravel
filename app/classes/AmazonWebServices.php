@@ -68,4 +68,22 @@ class AmazonWebServices implements AWSRepositoryInterface {
 
     return $result;
   }
+
+  public function deleteS3Object(Array $options = [])
+  {
+    $S3 = App::make('aws')->get('s3');
+    $result = false;
+
+    $remove = $S3->deleteObject([
+      'Bucket' => $options['Bucket'],
+      'Key' => $options['Key']
+    ]);
+
+    if($remove)
+    {
+      $result = true;
+    }
+
+    return $result;
+  }
 }
