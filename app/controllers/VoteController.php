@@ -2,10 +2,11 @@
 
 class VoteController extends \BaseController {
   
-  public function __construct(VotingPoll $poll, VotingVote $vote)
+  public function __construct(VotingPoll $poll, VotingVote $vote, VotingRepositoryInterface $voting)
   {
     $this->poll = $poll;
     $this->vote = $vote;
+    $this->voting = $voting;
   }
 
   /**
@@ -21,13 +22,13 @@ class VoteController extends \BaseController {
     if($current_poll->count() == 1)
     {
       $p = $current_poll->first();
-      $poll['poll']['id'] = $p->id;
+      $poll['poll']['id'] = (int) $p->id;
       $poll['poll']['name'] = $p->name;
       $poll['poll']['question'] = $p->question;
       $poll['poll']['date_start'] = $p->date_start;
       $poll['poll']['date_end'] = $p->date_end;
-      $poll['poll']['number_answers'] = $p->number_answers;
-      $poll['poll']['voting_period'] = $p->voting_period;
+      $poll['poll']['number_answers'] = (int) $p->number_answers;
+      $poll['poll']['voting_period'] = (int) $p->voting_period;
       $poll['poll']['created'] = $p->created;
 
       // Get poll answers
@@ -37,8 +38,8 @@ class VoteController extends \BaseController {
       {
         foreach($answers->get() as $key => $val)
         {
-          $poll['answers'][$key]['id'] = $val->id;
-          $poll['answers'][$key]['id_poll'] = $val->id_poll;
+          $poll['answers'][$key]['id'] = (int) $val->id;
+          $poll['answers'][$key]['id_poll'] = (int) $val->id_poll;
           $poll['answers'][$key]['name'] = $val->name;
           $poll['answers'][$key]['thumbnail'] = $val->thumbnail;
           $poll['answers'][$key]['slug'] = '';
@@ -70,18 +71,13 @@ class VoteController extends \BaseController {
    */
   public function store()
   {
-    $answer = Input::get('id_answer');
+    $params = Input::all();
+    $validator = Validator::make($params, ['id_answer' => 'required|integer']);
 
-    // Save new vote
-    $this->vote->create([
-      'id_answer' => $answer,
-      'ip' => '',
-      'date' => date("Y-m-d H:i:s"),
-      'country' => '',
-      'city' => '',
-      'region' => '',
-      'countrycode' => ''
-    ]);
+    if($validator->passes())
+    {
+      $this->voting->castVote($params['id_answer']);
+    }
   }
 
   /**
