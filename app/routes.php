@@ -99,10 +99,14 @@ Route::group(['before' => 'user-hash-auth'], function() {
   | Dirty Girls
   |--------------------------------------------------------------------------
   */
-  Route::resource('dirty-girls', 'DirtyGirlController', ['only' => ['index', 'show']]);
   Route::group(['prefix' => 'dirty-girls'], function() {
-    // Dirty girl voting
+    Route::resource('/', 'DirtyGirlController', ['only' => ['index', 'show']]);
     Route::resource('voting/current', 'VoteController', ['only' => ['index', 'store']]);
+
+    Route::group(['prefix' => 'submission'], function() {
+      Route::post('/', 'DirtyGirlSubmissionController@store');
+      Route::post('image', 'DirtyGirlSubmissionController@uploadImage');
+    });
   });
 
   /*
