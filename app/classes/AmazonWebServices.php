@@ -1,7 +1,7 @@
 <?php
 
 class AmazonWebServices implements AWSRepositoryInterface {
-  public function S3ImgUpload(User $user, $file, Array $options = [])
+  public function S3ImgUpload($file, Array $options = [])
   {
     $result['result'] = false;
 
@@ -41,14 +41,25 @@ class AmazonWebServices implements AWSRepositoryInterface {
       // Return truthy
       $result['result'] = true;
 
-      $result['file'] = [
-        'image_path' => $options['image_path'],
-        'name' => $new_file_name . '.' . $file->getClientOriginalExtension(),
-        'thumbnail' => $thumb_file_name,
-        'size' => $file->getSize()
-      ];
+      // Return file information
+      if($options['thumb'])
+      {
+        $result['file'] = [
+          'image_path' => $options['image_path'],
+          'name' => $new_file_name . '.' . $file->getClientOriginalExtension(),
+          'thumbnail' => $thumb_file_name,
+          'size' => $file->getSize()
+        ];
+      }
+      else {
+        $result['file'] = [
+          'image_path' => $options['image_path'],
+          'name' => $new_file_name . '.' . $file->getClientOriginalExtension(),
+          'size' => $file->getSize()
+        ];
+      }
     } catch(S3Exception $e) {
-
+      Log::error($e);
     }
 
     // Destroy temp files if exists after upload

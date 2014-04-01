@@ -124,7 +124,7 @@ class ActivityController extends \BaseController {
             if($file->getSize() <= 10000000)
             {
               // Upload/Generate uploaded files to AWS S3
-              $upload = $this->AWS->S3ImgUpload($user, $file, $file_options);
+              $upload = $this->AWS->S3ImgUpload($file, $file_options);
 
               if($upload['result'])
               {
