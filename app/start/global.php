@@ -102,7 +102,6 @@ App::singleton('ProfileRepositoryInterface', 'Profile');
 App::singleton('PresenterRepositoryInterface', 'Presenter');
 App::singleton('DGRepositoryInterface', 'DirtyGirls');
 App::singleton('VotingRepositoryInterface', 'Voting');
-App::singleton('VotingRepositoryInterface', 'Voting');
 
 /*
 |--------------------------------------------------------------------------
