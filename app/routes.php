@@ -32,8 +32,8 @@ Route::post('/check/username/{username}', 'UserController@check_username_uniquen
 | User
 |--------------------------------------------------------------------------
 */
-// Registration
-Route::post('/user/new', 'UserController@create');
+Route::post('/user', 'UserController@store');
+//Route::resource('user', 'UserController', ['only' => ['store']]);
 
 /*
 |--------------------------------------------------------------------------
