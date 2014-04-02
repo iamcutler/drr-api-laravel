@@ -130,7 +130,7 @@ class Activity extends Eloquent {
   // Fetch user profile feed
   public function scopeProfile_feed($query, $id, $offset = 0, $limit = 10)
   {
-    $type = ['profile.avatar.upload', 'videos', 'photos'];
+    $type = ['profile', 'profile.avatar.upload', 'videos', 'photos'];
 
     return $query
       ->whereIn('app', $type)
