@@ -3,7 +3,7 @@
 class ActivityController extends \BaseController {
 
   public function __construct(Activity $activity, User $user, Events $event, UserPhoto $photo, UserPhotoAlbum $album,
-                              AWSRepositoryInterface $amazon, ProfileRepositoryInterface $profile)
+                              AWSRepositoryInterface $amazon, ProfileRepositoryInterface $profile, UserActivityRepositoryInterface $activityInterface)
   {
     $this->AWS = $amazon;
     $this->activity = $activity;
@@ -12,6 +12,7 @@ class ActivityController extends \BaseController {
     $this->photo = $photo;
     $this->photo_album = $album;
     $this->profile = $profile;
+    $this->activityInterface = $activityInterface;
   }
 
   /**
@@ -56,9 +57,9 @@ class ActivityController extends \BaseController {
         ];
         $validator = Validator::make($params, $rules);
 
-        if(!$validator->fails())
+        if($validator->passes())
         {
-          $save = $this->activity->create([
+          $result = $this->activityInterface->saveTextStatus($user, [
             'actor' => $user->id,
             'target' => $user->id,
             'title' => $params['status'],
@@ -68,7 +69,7 @@ class ActivityController extends \BaseController {
             'cid' => $user->id,
             'groupid' => 0,
             'eventid' => 0,
-            'created' => date('Y-m-d h:i:s'),
+            'created' => date('Y-m-d H:i:s'),
             'access' => 0,
             'params' => '',
             'archived' => 0,
@@ -79,17 +80,6 @@ class ActivityController extends \BaseController {
             'like_type' => 'profile.status',
             'actors' => ''
           ]);
-
-          if($save)
-          {
-            $save->like_id = $save->id;
-            $save->comment_id = $save->id;
-            $save->save();
-
-            // Return true and saved record
-            $result['result'] = true;
-            $result['activity'] = $this->get_activity($save);
-          }
         }
         break;
 

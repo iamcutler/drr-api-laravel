@@ -1,9 +1,10 @@
 <?php
 
 class UserActivity implements UserActivityRepositoryInterface {
-  public function __construct(Likes $like)
+  public function __construct(Likes $like, Activity $activity)
   {
     $this->like = $like;
+    $this->activity = $activity;
   }
 
   public function setLike(User $user, $element, $id, $type)
@@ -51,6 +52,37 @@ class UserActivity implements UserActivityRepositoryInterface {
           'dislikes' => $dislikes
         ]
       ];
+    }
+
+    return $result;
+  }
+
+  public function saveTextStatus(User $user, Array $options)
+  {
+    $result = [];
+    $result['result'] = false;
+    $save = $this->activity->create($options);
+
+    if($save)
+    {
+      $save->like_id = $save->id;
+      $save->comment_id = $save->id;
+      if($save->save())
+      {
+        // Save user status in user model
+        $user_comm = $user->comm_user()->first();
+
+        $user_comm->status = $options['title'];
+        $user_comm->points = $user_comm->points + 1;
+        $user_comm->posted_on = date("Y-m-d H:i:s");
+
+        if($user_comm->save())
+        {
+          // Return true and saved record
+          $result['result'] = true;
+          $result['activity'] = $this->activity->find($save->id);
+        }
+      }
     }
 
     return $result;
