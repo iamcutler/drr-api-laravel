@@ -395,4 +395,11 @@ class Profile implements ProfileRepositoryInterface {
 
     return $result;
   }
+
+  public function addProfileView(CommUser $user)
+  {
+    // Add increment of 1 to user profile views
+    $user->view = $user->view + 1;
+    $user->save();
+  }
 }

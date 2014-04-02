@@ -102,6 +102,9 @@ class ProfileController extends \BaseController {
       $friend_count = 0;
       foreach(str_getcsv($user->friends, ',') as $val ) { $friend_count++; }
       $profile['profile']['counts']['friends'] = $friend_count;
+
+      // Update profile views per hit
+      $this->profile->addProfileView($this->comm_user->find($user->id));
     }
     else
     {
