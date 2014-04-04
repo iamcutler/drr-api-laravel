@@ -32,7 +32,7 @@ Route::post('/check/username/{username}', 'UserController@check_username_uniquen
 | User
 |--------------------------------------------------------------------------
 */
-Route::post('/user', 'UserController@store');
+Route::get('/register', 'UserController@store');
 //Route::resource('user', 'UserController', ['only' => ['store']]);
 
 /*
