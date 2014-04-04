@@ -114,7 +114,9 @@ class Activity extends Eloquent {
     return $query
       ->where('access', '=', 0)
       ->where('app', '=', 'photos')
-      ->orWhere('app', '=', 'videos')
+      ->where('like_type', '=', 'photo')
+      ->orWhere('access', '=', 0)
+      ->where('app', '=', 'videos')
       ->orderBy('created', 'DESC')
       ->skip($offset)
       ->take($limit);
