@@ -20,8 +20,6 @@
 
             Username: {{ $username }}<br />
             Password: {{ $password }}<br /><br />
-
-            Once you have completed the rest of registration process, you will receive another email with activation link.<br>
           </div>
           <hr style="border:0; color:#ededeb; background-color:#ededeb; height:1px; width:100%; text-align:left;">
           <div style="text-align:center; font-size:11px; line-height:15px; color:#444444; margin:15px auto 5px;">
