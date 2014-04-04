@@ -9,6 +9,12 @@ class CommUser extends Eloquent {
   public $timestamps = false;
 
   /**
+   * Mass assignment
+   */
+  protected $fillable = ['userid', 'alias'];
+  protected $guarded = [];
+
+  /**
   * ORM
   */
   public function user()
