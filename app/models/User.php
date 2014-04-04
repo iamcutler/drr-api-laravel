@@ -43,6 +43,24 @@ class User extends Eloquent {
       ->get();
   }
 
+  /*
+   * Accessors & Mutators
+   */
+  public function setUsernameAttribute($username)
+  {
+    $this->attributes['username'] = strtolower($username);
+  }
+
+  public function setPasswordAttribute($password)
+  {
+    $this->attributes['password'] = $this->generate_password($password);
+  }
+
+  public function setUserHashAttribute($user)
+  {
+    $this->attributes['user_hash'] = Hash::make($user);
+  }
+
   /**
 	 * The attributes excluded from the model's JSON form.
 	 *
