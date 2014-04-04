@@ -2,9 +2,10 @@
 
 class UserController extends \BaseController {
 
-  public function __construct(UserRepositoryInterface $user)
+  public function __construct(User $user, UserRepositoryInterface $userInt)
   {
     $this->user = $user;
+    $this->user_int = $userInt;
   }
 
   /**
@@ -50,7 +51,7 @@ class UserController extends \BaseController {
       ];
 
       // Call create on user class and return array instance
-      $save = $this->user->create($new_user);
+      $save = $this->user_int->create($new_user);
 
       if(!empty($save))
       {
@@ -73,7 +74,12 @@ class UserController extends \BaseController {
     }
     else {
       $result['code'] = '1002';
-      $result['message'] = $validator->messages()->toArray();
+
+      // Format error messages
+      foreach($validator->errors()->toArray() as $key => $value)
+      {
+        $result['message'][$key] = $value[0];
+      }
     }
 
     return Response::json($result);
