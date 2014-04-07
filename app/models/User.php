@@ -297,4 +297,33 @@ class User extends Eloquent {
       })
       ->where('alias', '=', $slug);
   }
+
+  public function scopeSearchByName($query, $name, $user_id, $offset = 0, $limit = 20)
+  {
+    $q = explode(' ', $name);
+
+    $search = $query
+    ->where('id', '!=', $user_id)
+    ->where('block', '=', 0);
+
+    // Loop through string array to add search conditionals
+    foreach($q as $key => $val)
+    {
+      if($key == 0)
+      {
+        $search = $query->where('name', 'LIKE', '%' . $val . '%');
+      }
+      else {
+        $search = $query->orWhere('name', 'LIKE', '%' . $val . '%');
+      }
+    }
+
+    return $search
+      ->where('id', '!=', $user_id)
+      ->where('block', '=', 0)
+      ->skip($offset)
+      ->take($limit)
+      ->orderBy('name', 'ASC')
+      ->get();
+  }
 }

@@ -1,10 +1,11 @@
 <?php
 
 class UserActivity implements UserActivityRepositoryInterface {
-  public function __construct(Likes $like, Activity $activity)
+  public function __construct(Likes $like, Activity $activity, User $user)
   {
     $this->like = $like;
     $this->activity = $activity;
+    $this->user = $user;
   }
 
   public function setLike(User $user, $element, $id, $type)
@@ -138,5 +139,21 @@ class UserActivity implements UserActivityRepositoryInterface {
     }
 
     return false;
+  }
+
+  public function user_search($q, $user_id, $type = 'name', $offset = 0, $limit = 20)
+  {
+    switch($type)
+    {
+      case 'username':
+        break;
+      case 'name':
+        $result = $this->user->searchByName($q, $user_id, $offset);
+        break;
+      default:
+        $result = $this->user->searchByName($q, $user_id, $offset);
+    }
+
+    return $result;
   }
 }

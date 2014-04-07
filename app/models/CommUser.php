@@ -11,7 +11,7 @@ class CommUser extends Eloquent {
   /**
    * Mass assignment
    */
-  protected $fillable = ['userid', 'alias'];
+  protected $fillable = ['userid', 'friends', 'alias'];
   protected $guarded = [];
 
   /**

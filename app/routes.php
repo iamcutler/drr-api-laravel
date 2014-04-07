@@ -66,6 +66,11 @@ Route::group(['before' => 'user-hash-auth'], function() {
       Route::post('settings', 'AccountController@update_profile_settings');
     });
 
+    // Search
+    Route::group(['prefix' => 'search'], function() {
+      Route::get('people', 'SearchController@people');
+    });
+
     // Activity
     Route::resource('activity', 'ActivityController', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
     Route::resource('wall', 'WallController', ['only' => ['index', 'store', 'destroy']]);
