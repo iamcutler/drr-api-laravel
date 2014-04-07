@@ -19,14 +19,14 @@
             Your account details are as follows:<br /><br />
 
             Username: {{ $username }}<br />
-            Password: {{ $password }}<br /><br />
+            Password: What you used when signing up<br /><br />
           </div>
           <hr style="border:0; color:#ededeb; background-color:#ededeb; height:1px; width:100%; text-align:left;">
           <div style="text-align:center; font-size:11px; line-height:15px; color:#444444; margin:15px auto 5px;">
             </a>.
             <br>
-            This email was sent to {{ $username }} ({{ $email }}).<br>If you do not wish to receive these emails from Dirty Rotten Rides, you can <a href='http://dirtyrottenrides.com/index.php/profile/privacy'>unsubscribe</a> here.
-            <br>Copyright Dirty Rotten Rides</div>
+            This email was sent to {{ $username }} ({{ $email }}).<br />
+            Copyright Dirty Rotten Rides</div>
         </td>
       </tr>
       <tr><td height="3" style="background-color:#e0dfdf;"></td></tr>
