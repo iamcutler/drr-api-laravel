@@ -36,49 +36,41 @@ class Group extends Eloquent {
    */
   public function category()
   {
-    return $this->hasOne('GroupCategory', 'id', 'categoryid')->first();
+    return $this->hasOne('GroupCategory', 'id', 'categoryid');
   }
 
   public function member()
   {
-    return $this->hasMany('GroupMember', 'groupid')->get();
+    return $this->hasMany('GroupMember', 'groupid');
   }
 
   public function bulletin()
   {
     return $this->hasMany('GroupBulletin', 'groupid')
-      ->where('published', '=', 1)
-      ->get();
+      ->where('published', '=', 1);
   }
 
   public function discussion()
   {
     return $this->hasMany('Activity', 'groupid')
-      ->where('app', '=', 'groups.discussion')
-      ->get();
+      ->where('app', '=', 'groups.discussion');
   }
 
   public function discussion_replys($id)
   {
     return $this->hasMany('Activity', 'groupid')
       ->where('cid', '=', $id)
-      ->where('app', '=', 'groups.discussion.reply')
-      ->get();
+      ->where('app', '=', 'groups.discussion.reply');
   }
 
   public function events()
   {
-    return $this->hasMany('Events', 'contentid')
-      ->where('type', '=', 'group')
-      ->get();
+    return $this->hasMany('Events', 'contentid');
   }
 
   public function likes()
   {
-    return $this->hasMany('Likes', 'uid')
-      ->where('element', '=', 'groups')
-      ->where('like', '!=', '')
-      ->get();
+    return $this->hasMany('Likes', 'uid');
   }
 
   public function dislikes()
@@ -87,5 +79,58 @@ class Group extends Eloquent {
       ->where('element', '=', 'groups')
       ->where('dislike', '!=', '')
       ->get();
+  }
+
+  /**
+   * @summary Scoped queries
+   */
+  public function scopeEagerGroupData($query)
+  {
+    return $query
+      // Category
+      ->with('category')
+
+      // Members
+      ->with(['member' => function($query) {
+        $query->with(['user' => function($query) {
+          $query
+            ->orderBy('name', 'ASC')
+            ->with('comm_user');
+          }]);
+        }])
+
+      // Bulletins
+      ->with(['bulletin' => function($query) {
+        $query->take(30)
+          ->with(['user' => function($query) {
+            $query
+              ->orderBy('name', 'ASC')
+              ->with('comm_user');
+          }]);
+        }])
+
+      // Discussions
+      ->with(['discussion' => function($query) {
+        $query->take(30)
+          ->with(['user' => function($query) {
+            $query
+              ->orderBy('name', 'ASC')
+              ->with('comm_user');
+          }]);
+        }])
+
+      // Events
+      ->with(['events' => function($query) {
+          $query
+            ->where('type', '=', 'group')
+            ->where('published', '=', 1);
+        }])
+
+      // Likes
+      ->with(['likes' => function($query) {
+          $query
+            ->where('element', '=', 'groups')
+            ->where('like', '!=', '');
+        }]);
   }
 }

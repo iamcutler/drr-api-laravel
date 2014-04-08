@@ -31,7 +31,7 @@ class User extends Eloquent {
   }
 
   public function profile_likes() {
-    return $this->hasMany('Likes', 'id', 'like')
+    return $this->hasMany('Likes', 'uid')
       ->where('element', '=', 'profile')
       ->get();
   }

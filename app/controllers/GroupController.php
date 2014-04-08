@@ -48,13 +48,13 @@ class GroupController extends \BaseController {
    */
   public function show($id)
   {
-    $group = $this->group->find($id);
+    $group = $this->group->eagerGroupData()->find($id);
     $results = [];
 
     // Format group payload
-    $results['id'] = $group->id;
-    $results['ownerid'] = $group->ownerid;
-    $results['category'] = $group->category()->name;
+    $results['id'] = (int) $group->id;
+    $results['ownerid'] = (int) $group->ownerid;
+    $results['category'] = $group->category->name;
     $results['name'] = $group->name;
     $results['description'] = $group->description;
     $results['email'] = $group->email;
@@ -65,86 +65,86 @@ class GroupController extends \BaseController {
     $results['created'] = $group->created;
 
     // Group counts
-    $results['counts']['discussions'] = $group->discusscount;
-    $results['counts']['wall'] = $group->wallcount;
-    $results['counts']['members'] = $group->membercount;
+    $results['counts']['discussions'] = (int) $group->discussion->count();
+    $results['counts']['members'] = (int) $group->member->count();
     $results['params'] = json_decode($group->params);
 
     // Group stats
     $results['stats'] = [];
-    $results['stats']['likes'] = $group->likes()->count();
-    $results['stats']['dislikes'] = $group->dislikes()->count();
+    $results['stats']['likes'] = (int) $group->likes->count();
 
     // Group members
     $results['members'] = [];
-    foreach($group->member() as $key => $val)
+    foreach($group->member as $key => $val)
     {
-      $user = $val->user();
-      $comm_user = $user->comm_user()->first();
-
-      $results['members'][$key]['name'] = $user->name;
-      $results['members'][$key]['avatar'] = $comm_user->avatar;
-      $results['members'][$key]['thumbnail'] = $comm_user->thumb;
-      $results['members'][$key]['slug'] = $comm_user->alias;
+      $results['members'][$key]['name'] = $val->user->name;
+      $results['members'][$key]['avatar'] = $val->user->comm_user->avatar;
+      $results['members'][$key]['thumbnail'] = $val->user->comm_user->thumb;
+      $results['members'][$key]['slug'] = $val->user->comm_user->alias;
       $results['members'][$key]['approved'] = $val->approved;
       $results['members'][$key]['permissions'] = $val->permissions;
     }
 
     // Group announcements
     $results['announcements'] = [];
-    foreach($group->bulletin()->take(30) as $k => $v)
+    foreach($group->bulletin as $key => $val)
     {
-      $user = $v->user();
-      $comm_user = $user->comm_user()->first();
+      $results['announcements'][$key]['id'] = $val->id;
+      $results['announcements'][$key]['title'] = $val->title;
+      $results['announcements'][$key]['message'] = $val->message;
+      $results['announcements'][$key]['params'] = json_decode($val->params);
+      $results['announcements'][$key]['date'] = $val->date;
 
-      $results['announcements'][$k]['id'] = $v->id;
-      $results['announcements'][$k]['title'] = $v->title;
-      $results['announcements'][$k]['message'] = $v->message;
-      $results['announcements'][$k]['params'] = json_decode($v->params);
-      $results['announcements'][$k]['date'] = $v->date;
-
-      $results['announcements'][$k]['user']['name'] = $user->name;
-      $results['announcements'][$k]['user']['avatar'] = $comm_user->avatar;
-      $results['announcements'][$k]['user']['thumbnail'] = $comm_user->thumb;
-      $results['announcements'][$k]['user']['slug'] = $comm_user->alias;
+      $results['announcements'][$key]['user']['name'] = $val->user->name;
+      $results['announcements'][$key]['user']['avatar'] = $val->user->comm_user->avatar;
+      $results['announcements'][$key]['user']['thumbnail'] = $val->user->comm_user->thumb;
+      $results['announcements'][$key]['user']['slug'] = $val->user->comm_user->alias;
     }
 
     // Group discussions
     $results['discussions'] = [];
-    foreach($group->discussion() as $discuss_key => $discuss)
+    foreach($group->discussion as $key => $val)
     {
-      $user = $this->user->find($discuss->actor);
-      $comm_user = $user->comm_user()->first();
-
-      $results['discussions'][$discuss_key]['id'] = $discuss->id;
-      $results['discussions'][$discuss_key]['content'] = $discuss->content;
-      $results['discussions'][$discuss_key]['app'] = $discuss->app;
-      $results['discussions'][$discuss_key]['cid'] = $discuss->cid;
-      $results['discussions'][$discuss_key]['groupid'] = $discuss->groupid;
-      $results['discussions'][$discuss_key]['group_access'] = $discuss->group_access;
-      $results['discussions'][$discuss_key]['access'] = $discuss->access;
-      $results['discussions'][$discuss_key]['params'] = json_decode($discuss->params);
-      $results['discussions'][$discuss_key]['comment_id'] = $discuss->comment_id;
-      $results['discussions'][$discuss_key]['comment_type'] = $discuss->comment_type;
-      $results['discussions'][$discuss_key]['comment_count'] = $group->discussion_replys($discuss->cid)->count();
-      $results['discussions'][$discuss_key]['like_id'] = $discuss->like_id;
-      $results['discussions'][$discuss_key]['like_type'] = $discuss->like_type;
-      $results['discussions'][$discuss_key]['created'] = $discuss->created;
+      $results['discussions'][$key]['id'] = $val->id;
+      $results['discussions'][$key]['content'] = $val->content;
+      $results['discussions'][$key]['app'] = $val->app;
+      $results['discussions'][$key]['cid'] = $val->cid;
+      $results['discussions'][$key]['groupid'] = $val->groupid;
+      $results['discussions'][$key]['group_access'] = $val->group_access;
+      $results['discussions'][$key]['access'] = $val->access;
+      $results['discussions'][$key]['params'] = json_decode($val->params);
+      $results['discussions'][$key]['comment_id'] = $val->comment_id;
+      $results['discussions'][$key]['comment_type'] = $val->comment_type;
+      $results['discussions'][$key]['comment_count'] = $val->discussion_replys($discuss->cid)->count();
+      $results['discussions'][$key]['like_id'] = $val->like_id;
+      $results['discussions'][$key]['like_type'] = $val->like_type;
+      $results['discussions'][$key]['created'] = $val->created;
 
       // Actor
-      $results['discussions'][$discuss_key]['user']['name'] = $user->name;
-      $results['discussions'][$discuss_key]['user']['avatar'] = $comm_user->avatar;
-      $results['discussions'][$discuss_key]['user']['thumbnail'] = $comm_user->thumb;
-      $results['discussions'][$discuss_key]['user']['slug'] = $comm_user->alias;
+      $results['discussions'][$key]['user']['name'] = $discuss->user->name;
+      $results['discussions'][$key]['user']['avatar'] = $discuss->user->comm_user->avatar;
+      $results['discussions'][$key]['user']['thumbnail'] = $discuss->user->comm_user->thumb;
+      $results['discussions'][$key]['user']['slug'] = $discuss->user->comm_user->alias;
     }
 
     // Group events
-    $results['events'] = $this->get_events($group->events());
+    foreach($group->events as $key => $val)
+    {
+      $results['events'][$key]['title'] = $val->title;
+      $results['events'][$key]['location'] = $val->location;
+      $results['events'][$key]['summary'] = $val->summary;
+      $results['events'][$key]['description'] = $val->description;
+      $results['events'][$key]['startdate'] = $val->startdate;
+      $results['events'][$key]['enddate'] = $val->enddate;
+      $results['events'][$key]['permissions'] = $val->permission;
+      $results['events'][$key]['avatar'] = $val->avatar;
+      $results['events'][$key]['thumb'] = $val->thumb;
+    }
 
     // Group Activity
     $results['activity'] = [];
 
-    return Response::json($results);
+    //return Response::json($results);
   }
 
   /**

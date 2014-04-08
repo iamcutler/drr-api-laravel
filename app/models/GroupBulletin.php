@@ -18,6 +18,6 @@ class GroupBulletin extends Eloquent {
    */
   public function user()
   {
-    return $this->hasOne('User', 'id', 'created_by')->first();
+    return $this->hasOne('User', 'id', 'created_by');
   }
 }

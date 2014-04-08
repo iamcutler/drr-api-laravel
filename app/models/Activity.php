@@ -139,7 +139,7 @@ class Activity extends Eloquent {
       ->where('actor', '=', $id)
       ->orWhere('app', '=', 'profile')
       ->where('actor', '=', $id)
-      ->where('target', '=')
+      ->where('target', '=', $id)
       ->groupBy('id')
       ->orderBy('created', 'DESC')
       ->skip($offset)

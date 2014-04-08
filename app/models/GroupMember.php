@@ -23,7 +23,7 @@ class GroupMember extends Eloquent {
 
   public function user()
   {
-    return $this->hasOne('User', 'id', 'memberid')->first();
+    return $this->hasOne('User', 'id', 'memberid');
   }
 
   /**
