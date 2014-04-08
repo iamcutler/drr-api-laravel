@@ -35,7 +35,7 @@ App::after(function($request, $response)
 
 Route::filter('user-hash-auth', function()
 {
-	if (!AuthController::auth_user_hash_filter()) return Response::json(['error' => 'You don\'t have access to this API'], 401);
+	if (!AuthController::auth_user_hash_filter()) return Response::json(["error" => "You don't have access to this API"], 401);
 });
 
 
