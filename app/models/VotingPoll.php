@@ -20,18 +20,14 @@ class VotingPoll extends Eloquent {
   public function scopeGet_current($query)
   {
     return $query
+      ->with(['answer' => function($query) {
+          $query
+            ->with('votes')
+            ->where('published', '=', 1)
+            ->orderBy('name', 'ASC');
+        }])
       ->where('date_start', '<=', date("Y-m-d H:i:s"))
       ->where('date_end', '>=', date("Y-m-d H:i:s"))
-      ->where('published', '=', 1)
-      ->take(1);
-  }
-
-  public function scopeGet_answers($query, $id)
-  {
-    return $query
-      ->find($id)
-      ->answer()
-      ->where('published', '=', 1)
-      ->orderBy('name', 'ASC');
+      ->where('published', '=', 1);
   }
 }

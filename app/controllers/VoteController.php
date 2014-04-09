@@ -16,38 +16,33 @@ class VoteController extends \BaseController {
    */
   public function index()
   {
-    $current_poll = $this->poll->Get_current();
+    $current_poll = $this->poll->Get_current()->first();
 
     $poll = [];
-    if($current_poll->count() == 1)
+    if(!is_null($current_poll))
     {
-      $p = $current_poll->first();
-      $poll['poll']['id'] = (int) $p->id;
-      $poll['poll']['name'] = $p->name;
-      $poll['poll']['question'] = $p->question;
-      $poll['poll']['date_start'] = $p->date_start;
-      $poll['poll']['date_end'] = $p->date_end;
-      $poll['poll']['number_answers'] = (int) $p->number_answers;
-      $poll['poll']['voting_period'] = (int) $p->voting_period;
-      $poll['poll']['created'] = $p->created;
+      $poll['poll']['id'] = (int) $current_poll->id;
+      $poll['poll']['name'] = $current_poll->name;
+      $poll['poll']['question'] = $current_poll->question;
+      $poll['poll']['date_start'] = $current_poll->date_start;
+      $poll['poll']['date_end'] = $current_poll->date_end;
+      $poll['poll']['number_answers'] = (int) $current_poll->answer->count();
+      $poll['poll']['voting_period'] = (int) $current_poll->voting_period;
+      $poll['poll']['created'] = $current_poll->created;
 
       // Get poll answers
       $poll['answers'] = [];
-      $answers = $this->poll->Get_answers($p->id);
-      if($answers->count() > 0)
+      foreach($current_poll->answer as $key => $val)
       {
-        foreach($answers->get() as $key => $val)
-        {
-          $poll['answers'][$key]['id'] = (int) $val->id;
-          $poll['answers'][$key]['id_poll'] = (int) $val->id_poll;
-          $poll['answers'][$key]['name'] = $val->name;
-          $poll['answers'][$key]['thumbnail'] = $val->thumbnail;
-          $poll['answers'][$key]['slug'] = '';
-          $poll['answers'][$key]['caption'] = $val->caption;
-          $poll['answers'][$key]['created'] = $val->created;
-          //Current vote number for answers
-          $poll['answers'][$key]['votes'] = $this->vote->Answer_vote_count($val->id);
-        }
+        $poll['answers'][$key]['id'] = (int) $val->id;
+        $poll['answers'][$key]['id_poll'] = (int) $val->id_poll;
+        $poll['answers'][$key]['name'] = $val->name;
+        $poll['answers'][$key]['thumbnail'] = $val->thumbnail;
+        $poll['answers'][$key]['slug'] = $val->username;
+        $poll['answers'][$key]['caption'] = $val->caption;
+        $poll['answers'][$key]['created'] = $val->created;
+        //Current vote number for answers
+        $poll['answers'][$key]['votes'] = $val->votes->count();
       }
     }
 

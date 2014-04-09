@@ -14,4 +14,9 @@ class VotingAnswer extends Eloquent {
   {
     return $this->belongsTo('VotingPoll', 'id_poll');
   }
+
+  public function votes()
+  {
+    return $this->hasMany('VotingVote', 'id_answer');
+  }
 }
