@@ -127,9 +127,6 @@ class FeedController extends \BaseController {
 
     foreach($feed as $key => $value)
     {
-      $user = $value->actor();
-      $user_comm = $user->comm_user()->first();
-
       // Resource
       $result[$key]['id'] = (int) $value->id;
       $result[$key]['type'] = $value->app;
@@ -140,40 +137,36 @@ class FeedController extends \BaseController {
       $result[$key]['created'] = $value->created;
 
       // Resource owner
-      $result[$key]['user']['id'] = (int) $user->id;
-      $result[$key]['user']['name'] = $user->name;
-      $result[$key]['user']['thumbnail'] = $user_comm->thumb;
-      $result[$key]['user']['avatar'] = $user_comm->avatar;
-      $result[$key]['user']['slug'] = $user_comm->alias;
+      $result[$key]['user']['id'] = (int) $value->userActor->id;
+      $result[$key]['user']['name'] = $value->userActor->name;
+      $result[$key]['user']['thumbnail'] = $value->userActor->comm_user->thumb;
+      $result[$key]['user']['avatar'] = $value->userActor->comm_user->avatar;
+      $result[$key]['user']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource stats
+      $result[$key]['stats'] = [];
       $result[$key]['stats']['likes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('like', '!=', '')->count();
-      $result[$key]['stats']['dislikes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('dislike', '!=', '')->count();
 
       // Resource comments
       $result[$key]['comments'] = [];
-      foreach($value->wall() as $k => $v)
+      foreach($value->wall as $k => $val)
       {
-        $user = $value->user();
-        $comm_user = $user->comm_user()->first();
+        $results[$key]['comments'][$k]['user']['id'] = $val->user->id;
+        $results[$key]['comments'][$k]['user']['name'] = $val->user->name;
+        $results[$key]['comments'][$k]['user']['avatar'] = $val->user->comm_user->avatar;
+        $results[$key]['comments'][$k]['user']['thumbnail'] = $val->user->comm_user->thumb;
+        $results[$key]['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;
 
-        $results[$key]['comments'][$k]['user']['id'] = $user->id;
-        $results[$key]['comments'][$k]['user']['name'] = $user->name;
-        $results[$key]['comments'][$k]['user']['avatar'] = $comm_user->avatar;
-        $results[$key]['comments'][$k]['user']['thumbnail'] = $comm_user->thumb;
-        $results[$key]['comments'][$k]['user']['slug'] = $comm_user->alias;
-
-        $results[$key]['comments'][$k]['comment'] = $value['comment'];
-        $results[$key]['comments'][$k]['date'] = $value['date'];
+        $results[$key]['comments'][$k]['comment'] = $val->comment;
+        $results[$key]['comments'][$k]['date'] = $val->date;
       }
 
       // Resource media
       $result[$key]['media'] = [];
-
       // Output media array based on activity type
       if($value->app == 'videos')
       {
-        $media = $value->video();
+        $media = $value->video;
 
         if(!is_null($media))
         {
@@ -185,12 +178,9 @@ class FeedController extends \BaseController {
           $result[$key]['media']['path'] = $media->path;
           $result[$key]['media']['created'] = $media->created;
         }
-        else {
-          $result[$key] = [];
-        }
       }
       elseif($value->app == 'photos') {
-        $media = $value->photo();
+        $media = $value->photo;
 
         if(!is_null($media))
         {
@@ -199,9 +189,6 @@ class FeedController extends \BaseController {
           $result[$key]['media']['thumbnail'] = $media->thumbnail;
           $result[$key]['media']['original'] = $media->original;
           $result[$key]['media']['created'] = $media->created;
-        }
-        else {
-          $result[$key] = [];
         }
       }
     }
