@@ -375,6 +375,7 @@ class User extends Eloquent {
     }
 
     return $search
+      ->with('comm_user')
       ->where('id', '!=', $user_id)
       ->where('block', '=', 0)
       ->skip($offset)

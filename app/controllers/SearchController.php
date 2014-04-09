@@ -32,28 +32,25 @@ class SearchController extends \BaseController {
 
       if(!is_null($search))
       {
+        $user_friends = $user->comm_user()->first()->friends;
+
         foreach($search as $key => $value)
         {
-          $comm_user = $value->comm_user()->first();
+          $result[$key]['id'] = (int) $value->id;
+          $result[$key]['name'] = $value->name;
+          $result[$key]['avatar'] = $value->comm_user->avatar;
+          $result[$key]['thumbnail'] = $value->comm_user->thumb;
+          $result[$key]['slug'] = $value->comm_user->alias;
 
-          if(!is_null($comm_user))
+          // Return user relationship to requester
+          $relation = 0;
+          foreach(explode(',', $user_friends) as $friend)
           {
-            $result[$key]['id'] = (int) $value['id'];
-            $result[$key]['name'] = $value['name'];
-            $result[$key]['avatar'] = $comm_user['avatar'];
-            $result[$key]['thumbnail'] = $comm_user['thumb'];
-            $result[$key]['slug'] = $comm_user['alias'];
-
-            // Return user relationship to requester
-            $relation = 0;
-            foreach(explode(',', $user->comm_user()->first()->friends) as $friend)
-            {
-              if($friend == $value['id']) { $relation++; }
-            }
-
-            // If increment is not 0, friend status is confirmed
-            $result[$key]['friends'] = ($relation > 0) ? true : false;
+            if($friend == $value->id) { $relation++; }
           }
+
+          // If increment is not 0, friend status is confirmed
+          $result[$key]['friends'] = ($relation > 0) ? true : false;
         }
       }
     }
