@@ -2,9 +2,10 @@
 
 class SearchController extends \BaseController {
 
-  public function __construct(UserActivityRepositoryInterface $activity, User $user)
+  public function __construct(UserActivityRepositoryInterface $activity, Events $event, User $user)
   {
     $this->activity = $activity;
+    $this->event = $event;
     $this->user = $user;
   }
 
@@ -60,6 +61,35 @@ class SearchController extends \BaseController {
 
   public function events()
   {
+    $params = Input::all();
+    $user = $this->user->find_id_by_hash($params['user_hash']);
+    $rules = [
+      'q' => 'required',
+      'type' => 'required',
+      'offset' => 'required|integer'
+    ];
+    $validation = Validator::make($params, $rules);
+    $result = [];
 
+    if($validation->passes())
+    {
+      $search = $this->event->searchEvents($params['q'], $params['type'], $params['offset'])->get();
+
+      if(!is_null($search))
+      {
+        foreach($search as $key => $val)
+        {
+          $result[$key]['id'] = (int) $val->id;
+          $result[$key]['title'] = $val->title;
+          $result[$key]['location'] = $val->location;
+          $result[$key]['startdate'] = $val->startdate;
+          $result[$key]['enddate'] = $val->enddate;
+          $result[$key]['avatar'] = $val->avatar;
+          $result[$key]['thumbnail'] = $val->thumb;
+        }
+      }
+    }
+
+    return Response::json($result);
   }
 }

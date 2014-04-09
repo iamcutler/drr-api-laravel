@@ -48,6 +48,11 @@ class Events extends Eloquent {
   /**
    * ORM
    */
+  public function creator()
+  {
+    return $this->belongsTo('User', 'creator');
+  }
+
   public function member()
   {
     return $this->hasMany('EventMember', 'eventid')->get();
@@ -88,5 +93,48 @@ class Events extends Eloquent {
   {
     return $query
       ->where('enddate', '>=', date('Y-m-d h:i:s'));
+  }
+
+  public function scopeSearchEvents($query, $name, $type, $offset = 0, $limit = 20)
+  {
+    $q = explode(' ', $name);
+
+    $search = $query
+      ->where('published', '=', 1)
+      ->where('permission', '<=', 40)
+      ->where('startdate', '>=', date("Y-m-d H:i:s"));
+
+    // Loop through string array to add search conditionals
+    foreach($q as $key => $val)
+    {
+      // Set statement based on type
+      switch($type)
+      {
+        case 'name':
+          $statement = ['title', 'LIKE', '%' . $val . '%'];
+          break;
+        case 'location':
+          $statement = ['location', 'LIKE', '%' . $val . '%'];
+          break;
+        case 'startdate':
+          $statement = ['startdate', 'LIKE', $val . '%'];
+          break;
+        default:
+          $statement = ['title', 'LIKE', '%' . $val . '%'];
+      }
+
+      if($key == 0)
+      {
+        $search = $query->where($statement[0], $statement[1], $statement[2]);
+      }
+      else {
+        $search = $query->orWhere($statement[0], $statement[1], $statement[2]);
+      }
+    }
+
+    return $search
+      ->skip($offset)
+      ->take($limit)
+      ->orderBy('startdate', 'ASC');
   }
 }

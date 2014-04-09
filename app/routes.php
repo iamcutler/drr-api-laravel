@@ -69,6 +69,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
     // Search
     Route::group(['prefix' => 'search'], function() {
       Route::get('people', 'SearchController@people');
+      Route::get('events', 'SearchController@events');
     });
 
     // Activity
