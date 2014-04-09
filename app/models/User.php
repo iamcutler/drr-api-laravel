@@ -31,9 +31,7 @@ class User extends Eloquent {
   }
 
   public function profile_likes() {
-    return $this->hasMany('Likes', 'uid')
-      ->where('element', '=', 'profile')
-      ->get();
+    return $this->hasMany('Likes', 'uid');
   }
 
   public function profile_dislikes()
@@ -41,6 +39,72 @@ class User extends Eloquent {
     return $this->hasMany('Likes', 'id', 'dislike')
       ->where('element', '=', 'profile')
       ->get();
+  }
+
+  public function photo()
+  {
+    return $this->hasMany('UserPhoto', 'creator');
+  }
+
+  public function photo_album()
+  {
+    return $this->hasMany('UserPhotoAlbum', 'id', 'creator');
+  }
+
+  public function video()
+  {
+    return $this->hasMany('UserVideo', 'creator');
+  }
+
+  public function events()
+  {
+    return $this->hasMany('Events', 'creator');
+  }
+
+  public function eventMember()
+  {
+    return $this->hasMany('EventMember', 'memberid');
+  }
+
+  public function groupMember()
+  {
+    return $this->hasMany('GroupMember', 'memberid');
+  }
+
+  public function scopeProfile_feed()
+  {
+    return Activity::with('userActor.comm_user')
+      // Target
+      ->with('userTarget.comm_user')
+
+      // Likes
+      ->with(['likes' => function($query) {
+          $query->where('like', '!=', '');
+        }])
+
+      // Photo
+      ->with(['photo' => function($query) {
+          $query
+            ->where('permissions', '<=', 10)
+            ->where('published', '=', 1);
+        }])
+
+      // Video
+      ->with(['video' => function($query) {
+          $query
+            ->where('permissions', '<=', 0)
+            ->where('published', '=', 1);
+        }])
+
+      // Comments
+      ->with(['wall' => function($query) {
+          $query
+            ->with('user.comm_user')
+            ->where('published', '=', 1)
+            ->orderBy('date', 'DESC');
+        }])
+      ->where('actor', '=', $this->id)
+      ->orWhere('target', '=', $this->id);
   }
 
   /*
@@ -97,14 +161,6 @@ class User extends Eloquent {
 	{
 		return $this->email;
 	}
-
-  /**
-   * ORM
-   */
-  public function photo_album()
-  {
-    return $this->hasMany('UserPhotoAlbum', 'id', 'creator');
-  }
 
   /**
    * Model methods
@@ -325,5 +381,37 @@ class User extends Eloquent {
       ->take($limit)
       ->orderBy('name', 'ASC')
       ->get();
+  }
+
+  // Eager load profile data
+  public function scopeEagerProfileData($query)
+  {
+    return $query
+      ->with('comm_user')
+
+      // Photos
+      ->with('photo')
+
+      // Videos
+      ->with('video')
+
+      // Events
+      ->with(['eventMember' => function($query) {
+          $query
+            ->where('status', '=', 1)
+            ->groupBy('eventid');
+        }])
+
+      // Groups
+      ->with(['groupMember' => function($query) {
+          $query
+            ->where('approved', '=', 1)
+            ->groupBy('groupid');
+        }])
+
+      // Likes
+      ->with(['profile_likes' => function($query) {
+          $query->where('element', '=', 'profile');
+        }]);
   }
 }

@@ -20,27 +20,24 @@ class Activity extends Eloquent {
   /**
    * ORM
    */
-  public function actor()
+  public function userActor()
   {
-    return $this->belongsTo('User', 'actor')->first();
+    return $this->belongsTo('User', 'actor');
   }
 
   public function actor_comm()
   {
-    return $this->hasOne('CommUser', 'userid', 'actor')->first();
+    return $this->hasOne('CommUser', 'userid', 'actor');
   }
 
-  public function target()
+  public function userTarget()
   {
-    return $this->hasOne('User', 'id', 'target')->first();
+    return $this->hasOne('User', 'id', 'target');
   }
 
   public function wall()
   {
-    return $this->hasMany('CommWall', 'contentid', 'id')
-      ->where('published', '=', 1)
-      ->orderBy('date', 'DESC')
-      ->get();
+    return $this->hasMany('CommWall', 'contentid', 'id');
   }
 
   public function likes()
@@ -66,18 +63,12 @@ class Activity extends Eloquent {
 
   public function photo()
   {
-    return $this->hasOne('UserPhoto', 'id', 'comment_id')
-      ->where('permissions', '<=', 10)
-      ->where('published', '=', 1)
-      ->first();
+    return $this->hasOne('UserPhoto', 'id', 'comment_id');
   }
 
   public function video()
   {
-    return $this->hasOne('UserVideo', 'id', 'comment_id')
-      ->where('permissions', '=', 0)
-      ->where('published', '=', 1)
-      ->first();
+    return $this->hasOne('UserVideo', 'id', 'comment_id');
   }
 
   /**
@@ -140,7 +131,7 @@ class Activity extends Eloquent {
       ->orWhere('app', '=', 'profile')
       ->where('actor', '=', $id)
       ->where('target', '=', $id)
-      ->groupBy('id')
+      ->groupBy('community_activities.id')
       ->orderBy('created', 'DESC')
       ->skip($offset)
       ->take($limit)

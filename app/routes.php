@@ -86,7 +86,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
 
     // Profile
     Route::group(['prefix' => 'profile'], function() {
-      Route::get('{slug}', 'ProfileController@get_profile_by_slug');
+      Route::get('{slug}', 'ProfileController@user_profile');
       Route::get('about/{slug}', 'ProfileController@about');
       Route::get('friends/{slug}', 'ProfileController@friends');
       Route::get('albums/{slug}', 'ProfileController@photo_albums');

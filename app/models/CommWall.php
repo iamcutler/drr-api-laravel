@@ -18,18 +18,18 @@ class CommWall extends Eloquent {
    */
   public function user()
   {
-    return $this->belongsTo('User', 'post_by', 'id')->first();
+    return $this->belongsTo('User', 'post_by', 'id');
   }
 
   public function comm_user()
   {
-    return $this->hasOne('CommUser', 'userid', 'post_by')->first();
+    return $this->hasOne('CommUser', 'userid', 'post_by');
   }
 
   public function likes()
   {
     return $this->hasMany('Likes', 'uid', 'contentid')
-      ->where('element', '=', 'events.wall')->get();
+      ->where('element', '=', 'events.wall');
   }
 
   public function activity_likes()

@@ -16,40 +16,30 @@ class ProfileController extends \BaseController {
     $this->profile = $profile;
   }
 
-  public function get_profile_by_slug($slug) {
+  public function user_profile($slug)
+  {
+    $params = Input::all();
+    $requester = $this->user->Find_id_by_hash($params['user_hash']);
+    $profile = $this->user->EagerProfileData()->find(819);
+    $result = [];
 
-    $requester = $this->user->Find_id_by_hash(Input::get('user_hash'));
-    $user = $this->user->Find_user_profile_by_slug($slug);
-
-    // Profile array
-    $profile = [];
-
-    if(!is_null($user) && !is_null($requester))
+    if(!is_null($profile))
     {
-      // Get user instance
-      $user_profile = $this->user->find($user->id);
-
-      $profile['user']['id'] = $user->id;
-      $profile['user']['name'] = $user->name;
-      $profile['user']['username'] = $user->username;
-      $profile['user']['slug'] = $user->slug;
-      $profile['user']['avatar'] = $user->avatar;
-      $profile['user']['thumbnail'] = $user->thumbnail;
+      $result['user']['id'] = (int) $profile->id;
+      $result['user']['name'] = $profile->name;
+      $result['user']['username'] = $profile->username;
+      $result['user']['slug'] = $profile->comm_user->alias;
+      $result['user']['avatar'] = $profile->comm_user->avatar;
+      $result['user']['thumbnail'] = $profile->comm_user->thumb;
 
       // Relation array to tell relationship to requester
-      $profile['relation'] = [];
-      $profile['relation']['self'] = false;
-      $profile['relation']['friends'] = false;
-      $profile['relation']['request_sent'] = false;
-
-      // Detect if requester is also the user
-      if($requester->id == $user->id)
-      {
-        $profile['relation']['self'] = true;
-      }
+      $result['relation'] = [];
+      $result['relation']['self'] = ($requester->id == $profile->id) ? true : false;
+      $result['relation']['friends'] = false;
+      $result['relation']['request_sent'] = false;
 
       // Check if requester and user are friends
-      foreach(str_getcsv($user->friends, ',') as $key => $val)
+      foreach(str_getcsv($profile->comm_user->friends, ',') as $key => $val)
       {
         if($val == $requester->id)
         {
@@ -58,61 +48,44 @@ class ProfileController extends \BaseController {
       }
 
       // Change friend request to true if detected
-      if($this->connection->Find_existing_connection($user->id, $requester->id)->count() > 0)
+      if($this->connection->Find_existing_connection($profile->id, $requester->id)->count() > 0)
       {
         $profile['relation']['request_sent'] = true;
       }
 
       // Profile array
-      $profile['profile']['status']['status'] = $user->status;
-      $profile['profile']['status']['created'] = $user->posted_on;
+      $result['profile']['status']['status'] = $profile->comm_user->status;
+      $result['profile']['status']['created'] = $profile->comm_user->posted_on;
 
-      $profile['profile']['views'] = $user->view;
-      $profile['profile']['friends'] = $user->friends;
-      $profile['profile']['friend_count'] = $user->friendcount;
-      $profile['profile']['last_visit'] = $user->last_visit;
-      $profile['profile']['registered'] = $user->registered;
+      $result['profile']['views'] = $profile->comm_user->view;
+      $result['profile']['friends'] = $profile->comm_user->friends;
+      $result['profile']['friend_count'] = (int) $profile->comm_user->friendcount;
+      $result['profile']['last_visit'] = $profile->lastvisitDate;
+      $result['profile']['registered'] = $profile->registerDate;
 
-      $profile['profile']['settings'] = json_decode($user->profile_params);
+      $result['profile']['settings'] = json_decode($profile->comm_user->params);
 
       // Profile status
-      $profile['profile']['stats']['likes'] = (int) $user_profile->profile_likes()->count();
-      $profile['profile']['stats']['dislikes'] = (int) $user_profile->profile_dislikes()->count();
+      $result['profile']['stats']['likes'] = (int) $profile->profile_likes->count();
 
       // Count array
-      $profile['profile']['counts']['photos'] = $this->photo->Find_all_by_user_id($user->id)->count();
-      $profile['profile']['counts']['videos'] = $this->video->Find_all_by_user_id($user->id)->count();
-
-      // Profile Feed
-      $profile['profile']['feed'] = $this->profile->getFeed($user->id);
-
-      // User upcoming events
-      $event_count = 0;
-      foreach($this->eventMember->Find_by_user_id($user->id) as $k => $v)
-      {
-        foreach($v->event() as $val)
-        {
-          $event_count++;
-        }
-      }
-
-      $profile['profile']['counts']['events'] = $event_count;
-      $profile['profile']['counts']['groups'] = $this->groupMember->Find_by_user_id($user->id)->count();
+      $result['profile']['counts']['photos'] = (int) $profile->photo->count();
+      $result['profile']['counts']['videos'] = (int) $profile->video->count();
+      $result['profile']['counts']['events'] = (int) $profile->eventMember->count();
+      $result['profile']['counts']['groups'] = (int) $profile->groupMember->count();
 
       $friend_count = 0;
-      foreach(str_getcsv($user->friends, ',') as $val ) { $friend_count++; }
-      $profile['profile']['counts']['friends'] = $friend_count;
+      foreach(str_getcsv($profile->comm_user->friends, ',') as $val ) { $friend_count++; }
+      $result['profile']['counts']['friends'] = $friend_count;
+
+      // Profile Feed
+      $result['profile']['feed'] = $this->profile->getFeed($profile);
 
       // Update profile views per hit
-      $this->profile->addProfileView($this->comm_user->find($user->id));
-    }
-    else
-    {
-      $profile['status'] = false;
-      $profile['message'] = 'User was not found';
+      $this->profile->addProfileView($profile->comm_user);
     }
 
-    return Response::json($profile);
+    return Response::json($result);
   }
 
   public function about($slug)

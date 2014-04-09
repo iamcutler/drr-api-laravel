@@ -14,16 +14,13 @@ class Profile implements ProfileRepositoryInterface {
     $this->presenter = $presenter;
   }
 
-  public function getFeed($id, $offset = 0, $limit = 10)
+  public function getFeed(User $user, $offset = 0, $limit = 10)
   {
-    $activity = $this->activity->profile_feed($id, $offset, $limit);
+    $activity = $user->profile_feed(819)->take($limit)->skip($offset)->get();
     $result = [];
 
     foreach($activity as $key => $value)
     {
-      $user = $value->actor();
-      $user_comm = $user->comm_user()->first();
-
       // Resource
       $result[$key]['id'] = (int) $value->id;
       $result[$key]['title'] = $value->title;
@@ -34,89 +31,75 @@ class Profile implements ProfileRepositoryInterface {
       $result[$key]['like_type'] = $value->like_type;
       $result[$key]['created'] = $value->created;
 
-      // Resource owner
-      $result[$key]['user']['id'] = (int) $user->id;
-      $result[$key]['user']['name'] = $user->name;
-      $result[$key]['user']['thumbnail'] = $user_comm->thumb;
-      $result[$key]['user']['avatar'] = $user_comm->avatar;
-      $result[$key]['user']['slug'] = $user_comm->alias;
+      /// Resource owner
+      $result[$key]['user']['id'] = (int) $value->userActor->id;
+      $result[$key]['user']['name'] = $value->userActor->name;
+      $result[$key]['user']['thumbnail'] = $value->userActor->comm_user->thumb;
+      $result[$key]['user']['avatar'] = $value->userActor->comm_user->avatar;
+      $result[$key]['user']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource Target
       if($value->target == $value->actor || $value->target == 0)
       {
-        $result[$key]['target']['id'] = (int) $user->id;
-        $result[$key]['target']['name'] = $user->name;
-        $result[$key]['target']['thumbnail'] = $user_comm->thumb;
-        $result[$key]['target']['avatar'] = $user_comm->avatar;
-        $result[$key]['target']['slug'] = $user_comm->alias;
+        $result[$key]['target']['id'] = (int) $value->userActor->id;
+        $result[$key]['target']['name'] = $value->userActor->name;
+        $result[$key]['target']['thumbnail'] = $value->userActor->comm_user->thumb;
+        $result[$key]['target']['avatar'] = $value->userActor->comm_user->avatar;
+        $result[$key]['target']['slug'] = $value->userActor->comm_user->alias;
       }
       else {
-        $target = $value->target();
-        $target_comm = $target->comm_user()->first();
-
-        $result[$key]['target']['id'] = (int) $target->id;
-        $result[$key]['target']['name'] = $target->name;
-        $result[$key]['target']['thumbnail'] = $target_comm->thumb;
-        $result[$key]['target']['avatar'] = $target_comm->avatar;
-        $result[$key]['target']['slug'] = $target_comm->alias;
+        $result[$key]['target']['id'] = (int) $value->userTarget->id;
+        $result[$key]['target']['name'] = $value->userTarget->name;
+        $result[$key]['target']['thumbnail'] = $value->userTarget->comm_user->thumb;
+        $result[$key]['target']['avatar'] = $value->userTarget->comm_user->avatar;
+        $result[$key]['target']['slug'] = $value->userTarget->comm_user->alias;
       }
 
-      // Resource stats
+      //Resource stats
       $result[$key]['stats']['likes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('like', '!=', '')->count();
-      $result[$key]['stats']['dislikes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('dislike', '!=', '')->count();
 
       // Resource comments
       $result[$key]['comments'] = [];
-      foreach($value->wall() as $k => $v)
+      foreach($value->wall as $k => $val)
       {
-        $user = $v->user();
-        $comm_user = $user->comm_user()->first();
+        $result[$key]['comments'][$k]['user']['id'] = (int) $val->user->id;
+        $result[$key]['comments'][$k]['user']['name'] = $val->user->name;
+        $result[$key]['comments'][$k]['user']['avatar'] = $val->user->comm_user->avatar;
+        $result[$key]['comments'][$k]['user']['thumbnail'] = $val->user->comm_user->thumb;
+        $result[$key]['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;
 
-        $results[$key]['comments'][$k]['user']['id'] = $user->id;
-        $results[$key]['comments'][$k]['user']['name'] = $user->name;
-        $results[$key]['comments'][$k]['user']['avatar'] = $comm_user->avatar;
-        $results[$key]['comments'][$k]['user']['thumbnail'] = $comm_user->thumb;
-        $results[$key]['comments'][$k]['user']['slug'] = $comm_user->alias;
-
-        $results[$key]['comments'][$k]['comment'] = $value['comment'];
-        $results[$key]['comments'][$k]['date'] = $value['date'];
+        $result[$key]['comments'][$k]['comment'] = $val->comment;
+        $result[$key]['comments'][$k]['date'] = $val->date;
       }
 
       // Resource media
       $result[$key]['media'] = [];
-
       // Output media array based on activity type
       if($value->app == 'videos')
       {
-        $media = $value->video();
+        $media = $value->video;
 
         if(!is_null($media))
         {
-          $result[$key]['media']['title'] = $media->title;
-          $result[$key]['media']['type'] = $media->type;
-          $result[$key]['media']['video_id'] = $media->video_id;
-          $result[$key]['media']['description'] = $media->description;
-          $result[$key]['media']['thumb'] = $media->thumb;
-          $result[$key]['media']['path'] = $media->path;
-          $result[$key]['media']['created'] = $media->created;
-        }
-        else {
-          $result[$key] = [];
+          $result[$key]['media']['video']['title'] = $media->title;
+          $result[$key]['media']['video']['type'] = $media->type;
+          $result[$key]['media']['video']['video_id'] = $media->video_id;
+          $result[$key]['media']['video']['description'] = $media->description;
+          $result[$key]['media']['video']['thumb'] = $media->thumb;
+          $result[$key]['media']['video']['path'] = $media->path;
+          $result[$key]['media']['video']['created'] = $media->created;
         }
       }
       elseif($value->app == 'photos') {
-        $media = $value->photo();
+        $media = $value->photo;
 
         if(!is_null($media))
         {
-          $result[$key]['media']['caption'] = $media->caption;
-          $result[$key]['media']['image'] = $media->image;
-          $result[$key]['media']['thumbnail'] = $media->thumbnail;
-          $result[$key]['media']['original'] = $media->original;
-          $result[$key]['media']['created'] = $media->created;
-        }
-        else {
-          $result[$key] = [];
+          $result[$key]['media']['image']['caption'] = $media->caption;
+          $result[$key]['media']['image']['image'] = $media->image;
+          $result[$key]['media']['image']['thumbnail'] = $media->thumbnail;
+          $result[$key]['media']['image']['original'] = $media->original;
+          $result[$key]['media']['image']['created'] = $media->created;
         }
       }
     }
