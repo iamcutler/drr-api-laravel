@@ -144,7 +144,7 @@ class GroupController extends \BaseController {
     // Group Activity
     $results['activity'] = [];
 
-    //return Response::json($results);
+    return Response::json($results);
   }
 
   /**
