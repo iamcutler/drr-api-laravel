@@ -77,6 +77,14 @@ class Activity extends Eloquent {
   public function scopeNews_feed($query, Array $friends = [], $offset = 0, $limit = 10)
   {
     return $query
+      // Actors and targets
+      ->with('userActor.comm_user', 'userTarget.comm_user')
+      // Comments
+      ->with(['wall' => function($query) {
+          $query->with('user.comm_user');
+        }])
+      // Media
+      ->with('photo', 'video')
       ->whereIn('app', ['profile', 'profile.avatar.upload', 'videos', 'photos'])
       ->where('access', '<=', 30)
       ->whereIn('actor', $friends)
