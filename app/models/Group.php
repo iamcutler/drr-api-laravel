@@ -52,8 +52,7 @@ class Group extends Eloquent {
 
   public function discussion()
   {
-    return $this->hasMany('Activity', 'groupid')
-      ->where('app', '=', 'groups.discussion');
+    return $this->hasMany('Activity', 'groupid');
   }
 
   public function discussion_replys($id)
@@ -111,8 +110,10 @@ class Group extends Eloquent {
 
       // Discussions
       ->with(['discussion' => function($query) {
-        $query->take(30)
-          ->with(['user' => function($query) {
+        $query
+          ->where('app', '=', 'groups.discussion')
+          ->take(30)
+          ->with(['userActor' => function($query) {
             $query
               ->orderBy('name', 'ASC')
               ->with('comm_user');

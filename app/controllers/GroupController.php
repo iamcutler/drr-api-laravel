@@ -117,16 +117,16 @@ class GroupController extends \BaseController {
         $results['discussions'][$key]['params'] = json_decode($val->params);
         $results['discussions'][$key]['comment_id'] = $val->comment_id;
         $results['discussions'][$key]['comment_type'] = $val->comment_type;
-        $results['discussions'][$key]['comment_count'] = $val->discussion_replys($discuss->cid)->count();
+        //$results['discussions'][$key]['comment_count'] = $val->discussion_replys($val->cid)->count();
         $results['discussions'][$key]['like_id'] = $val->like_id;
         $results['discussions'][$key]['like_type'] = $val->like_type;
         $results['discussions'][$key]['created'] = $val->created;
 
         // Actor
-        $results['discussions'][$key]['user']['name'] = $discuss->user->name;
-        $results['discussions'][$key]['user']['avatar'] = $discuss->user->comm_user->avatar;
-        $results['discussions'][$key]['user']['thumbnail'] = $discuss->user->comm_user->thumb;
-        $results['discussions'][$key]['user']['slug'] = $discuss->user->comm_user->alias;
+        $results['discussions'][$key]['user']['name'] = $val->userActor->name;
+        $results['discussions'][$key]['user']['avatar'] = $val->userActor->comm_user->avatar;
+        $results['discussions'][$key]['user']['thumbnail'] = $val->userActor->comm_user->thumb;
+        $results['discussions'][$key]['user']['slug'] = $val->userActor->comm_user->alias;
       }
 
       // Group events
