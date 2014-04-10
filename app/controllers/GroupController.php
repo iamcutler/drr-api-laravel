@@ -205,8 +205,7 @@ class GroupController extends \BaseController {
         $result[$key]['permissions'] = $val->permissions;
       }
     }
-    else
-    {
+    else {
       $result = ['status' => false, 'message' => 'User not found'];
     }
 
