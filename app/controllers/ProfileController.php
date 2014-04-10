@@ -20,7 +20,7 @@ class ProfileController extends \BaseController {
   {
     $params = Input::all();
     $requester = $this->user->Find_id_by_hash($params['user_hash']);
-    $profile = $this->user->EagerProfileData()->find(819);
+    $profile = $this->user->EagerProfileData()->find($this->comm_user->where('alias', '=', $slug)->first()->userid);
     $result = [];
 
     if(!is_null($profile))
@@ -43,14 +43,14 @@ class ProfileController extends \BaseController {
       {
         if($val == $requester->id)
         {
-          $profile['relation']['friends'] = true;
+          $result['relation']['friends'] = true;
         }
       }
 
       // Change friend request to true if detected
       if($this->connection->Find_existing_connection($profile->id, $requester->id)->count() > 0)
       {
-        $profile['relation']['request_sent'] = true;
+        $result['relation']['request_sent'] = true;
       }
 
       // Profile array
