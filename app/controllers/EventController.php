@@ -129,66 +129,63 @@ class EventController extends \BaseController {
    */
   public function show($id)
   {
-    $event = $this->event->find($id);
+    $event = $this->event->eagerEventData()->find($id);
     $results = [];
 
     // Format output
-    $results['event']['id'] = $event['id'];
-    $results['event']['category'] = $event->category()->name;
-    $results['event']['type'] = $event['type'];
-    $results['event']['title'] = $event['title'];
-    $results['event']['location'] = $event['location'];
-    $results['event']['summary'] = $event['summary'];
-    $results['event']['description'] = $event['description'];
-    $results['event']['creator'] = $event['creator'];
-    $results['event']['start_date'] = $event['startdate'];
-    $results['event']['end_date'] = $event['enddate'];
-    $results['event']['permission'] = $event['permission'];
-    $results['event']['avatar'] = $event['avatar'];
-    $results['event']['thumbnail'] = $event['thumb'];
+    $results['event']['id'] = $event ->id;
+    $results['event']['category'] = $event->category->name;
+    $results['event']['type'] = $event->type;
+    $results['event']['title'] = $event->title;
+    $results['event']['location'] = $event->location;
+    $results['event']['summary'] = $event->summary;
+    $results['event']['description'] = $event->description;
+    $results['event']['creator'] = $event->creator;
+    $results['event']['start_date'] = $event->startdate;
+    $results['event']['end_date'] = $event->enddate;
+    $results['event']['permission'] = $event->permission;
+    $results['event']['avatar'] = $event->avatar;
+    $results['event']['thumbnail'] = $event->thumb;
 
-    $results['event']['invite_counts']['invite'] = $event['invitedcount'];
-    $results['event']['invite_counts']['confirmed'] = $event['confirmedcount'];
-    $results['event']['invite_counts']['declined'] = $event['declinedcount'];
-    $results['event']['invite_counts']['maybe'] = $event['maybecount'];
+    $results['event']['invite_counts']['invite'] = $event->invitedcount;
+    $results['event']['invite_counts']['confirmed'] = $event->confirmedcount;
+    $results['event']['invite_counts']['declined'] = $event->declinedcount;
+    $results['event']['invite_counts']['maybe'] = $event->maybecount;
 
-    $results['event']['ticket'] = $event['ticket'];
-    $results['event']['allowinvite'] = $event['allowinvite'];
-    $results['event']['hits'] = $event['hits'];
-    $results['event']['published'] = $event['published'];
-    $results['event']['latitude'] = $event['latitude'];
-    $results['event']['longitude'] = $event['longitude'];
-    $results['event']['offset'] = $event['offset'];
-    $results['event']['allday'] = $event['allday'];
-    $results['event']['repeat'] = $event['repeat'];
-    $results['event']['repeatend'] = $event['repeatend'];
-    $results['event']['created'] = $event['created'];
+    $results['event']['ticket'] = $event->ticket;
+    $results['event']['allowinvite'] = $event->allowinvite;
+    $results['event']['hits'] = $event->hits;
+    $results['event']['published'] = $event->published;
+    $results['event']['latitude'] = $event->latitude;
+    $results['event']['longitude'] = $event->longitude;
+    $results['event']['offset'] = $event->offset;
+    $results['event']['allday'] = $event->allday;
+    $results['event']['repeat'] = $event->repeat;
+    $results['event']['repeatend'] = $event->repeatend;
+    $results['event']['created'] = $event->created;
 
     // Event likes / dislikes
     $results['event']['stats']['likes'] = $event->likes()->count();
-    $results['event']['stats']['dislikes'] = $event->dislikes()->count();
+    //$results['event']['stats']['dislikes'] = $event->dislikes()->count();
 
     // Event members
     $results['event']['members'] = [];
-    foreach($event->member() as $key => $val)
+    foreach($event->member as $key => $val)
     {
-      $user = $val->user();
-      $comm_user = $user->comm_user()->first();
-
-      $results['event']['members'][$key]['id'] = $user->id;
-      $results['event']['members'][$key]['name'] = $user->name;
-      $results['event']['members'][$key]['avatar'] = $comm_user->avatar;
-      $results['event']['members'][$key]['thumbnail'] = $comm_user->thumb;
-      $results['event']['members'][$key]['slug'] = $comm_user->alias;
-      $results['event']['members'][$key]['status'] = $val['status'];
-      $results['event']['members'][$key]['permission'] = $val['permission'];
-      $results['event']['members'][$key]['invited_by'] = $val['invited_by'];
-      $results['event']['members'][$key]['approval'] = $val['approval'];
-      $results['event']['members'][$key]['created'] = $val['created'];
+      $results['event']['members'][$key]['id'] = $val->user->id;
+      $results['event']['members'][$key]['name'] = $val->user->name;
+      $results['event']['members'][$key]['avatar'] = $val->user->comm_user->avatar;
+      $results['event']['members'][$key]['thumbnail'] = $val->user->comm_user->thumb;
+      $results['event']['members'][$key]['slug'] = $val->user->comm_user->alias;
+      $results['event']['members'][$key]['status'] = $val->status;
+      $results['event']['members'][$key]['permission'] = $val->permission;
+      $results['event']['members'][$key]['invited_by'] = $val->invited_by;
+      $results['event']['members'][$key]['approval'] = $val->approval;
+      $results['event']['members'][$key]['created'] = $val->created;
     }
 
     // Event activity - Initial call will paginate 10 records.
-    $results['activity'] = $this->get_feed_activity($event, 0);
+    $results['activity'] = $this->get_feed_activity($event);
 
     return Response::json($results);
   }
@@ -276,7 +273,7 @@ class EventController extends \BaseController {
   }
 
   // Paginate event activity
-  protected function get_feed_activity(Events $event, $offset)
+  protected function get_feed_activity(Events $event, $offset = 0)
   {
     // Event activity - Initial call will paginate 10 records.
     $results = [];

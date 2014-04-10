@@ -19,12 +19,12 @@ class EventMember extends Eloquent {
 
   public function user()
   {
-    return $this->hasOne('User', 'id', 'memberid')->first();
+    return $this->hasOne('User', 'id', 'memberid');
   }
 
   public function comm_user()
   {
-    return $this->hasOne('CommUser', 'userid', 'memberid')->first();
+    return $this->hasOne('CommUser', 'userid', 'memberid');
   }
 
   /**

@@ -55,12 +55,12 @@ class Events extends Eloquent {
 
   public function member()
   {
-    return $this->hasMany('EventMember', 'eventid')->get();
+    return $this->hasMany('EventMember', 'eventid');
   }
 
   public function category()
   {
-    return $this->hasOne('EventCategory', 'id', 'catid')->first();
+    return $this->hasOne('EventCategory', 'id', 'catid');
   }
 
   public function activity($skip = 0, $limit = 10)
@@ -136,5 +136,21 @@ class Events extends Eloquent {
       ->skip($offset)
       ->take($limit)
       ->orderBy('startdate', 'ASC');
+  }
+
+  public function scopeEagerEventData($query)
+  {
+    return $query
+      // Category
+      ->with('category')
+
+      // Members
+      ->with(['member' => function($query) {
+          $query->with(['user' => function($query) {
+              $query
+                ->orderBy('name', 'ASC')
+                ->with('comm_user');
+            }]);
+        }]);
   }
 }
