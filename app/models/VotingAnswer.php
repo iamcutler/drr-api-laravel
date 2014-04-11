@@ -19,4 +19,9 @@ class VotingAnswer extends Eloquent {
   {
     return $this->hasMany('VotingVote', 'id_answer');
   }
+
+  public function user()
+  {
+    return $this->hasOne('CommUser', 'alias', 'username');
+  }
 }

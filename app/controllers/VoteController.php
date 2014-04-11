@@ -38,9 +38,19 @@ class VoteController extends \BaseController {
         $poll['answers'][$key]['id_poll'] = (int) $val->id_poll;
         $poll['answers'][$key]['name'] = $val->name;
         $poll['answers'][$key]['thumbnail'] = $val->thumbnail;
-        $poll['answers'][$key]['slug'] = $val->username;
         $poll['answers'][$key]['caption'] = $val->caption;
         $poll['answers'][$key]['created'] = $val->created;
+
+        // User
+        $poll['answers'][$key]['user'] = [];
+        if(!is_null($val->user))
+        {
+          $poll['answers'][$key]['user']['name'] = $val->user->user->name;
+          $poll['answers'][$key]['user']['thumbnail'] = $val->user->thumb;
+          $poll['answers'][$key]['user']['avatar'] = $val->user->avatar;
+          $poll['answers'][$key]['user']['slug'] = $val->user->alias;
+        }
+
         //Current vote number for answers
         $poll['answers'][$key]['votes'] = $val->votes->count();
       }

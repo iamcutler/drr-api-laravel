@@ -19,7 +19,7 @@ class CommUser extends Eloquent {
   */
   public function user()
   {
-    return $this->belongsTo('User');
+    return $this->belongsTo('User', 'userid');
   }
 
   public function user_photo_album()

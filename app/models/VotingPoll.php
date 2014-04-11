@@ -22,7 +22,7 @@ class VotingPoll extends Eloquent {
     return $query
       ->with(['answer' => function($query) {
           $query
-            ->with('votes')
+            ->with('votes', 'user.user')
             ->where('published', '=', 1)
             ->orderBy('name', 'ASC');
         }])
