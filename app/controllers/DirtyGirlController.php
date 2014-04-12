@@ -22,7 +22,7 @@ class DirtyGirlController extends \BaseController {
       $girls[$key]['biography'] = $val->dirty_girl_bio;
       $girls[$key]['type'] = $val->dirty_type;
       $girls[$key]['order'] = $val->ordering;
-      $girls[$key]['media']['thumbnail'] = Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" .$val->thumbnail_image;
+      $girls[$key]['media']['thumbnail'] = "administrator/components/com_dirtygirlpages/uploads/" .$val->thumbnail_image;
     }
 
     return Response::json($girls);
@@ -46,7 +46,7 @@ class DirtyGirlController extends \BaseController {
     $result['biography'] = $query->dirty_girl_bio;
     $result['type'] = $query->dirty_type;
     $result['order'] = $query->ordering;
-    $result['media']['thumbnail'] = Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" .$query->thumbnail_image;
+    $result['media']['thumbnail'] = "administrator/components/com_dirtygirlpages/uploads/" .$query->thumbnail_image;
     $result['media']['image_1'] = ($query->image_1 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_1 : "";
     $result['media']['image_2'] = ($query->image_2 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_2 : "";
     $result['media']['image_3'] = ($query->image_3 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_3 : "";
