@@ -91,7 +91,9 @@ class Group extends Eloquent {
 
       // Members
       ->with(['member' => function($query) {
-        $query->with(['user' => function($query) {
+        $query
+          ->take(30)
+          ->with(['user' => function($query) {
           $query
             ->orderBy('name', 'ASC')
             ->with('comm_user');
