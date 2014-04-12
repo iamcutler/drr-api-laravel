@@ -245,12 +245,12 @@ class ActivityController extends \BaseController {
    */
   public function show($id)
   {
-    $activity = $this->activity->find($id);
+    $activity = $this->activity->with('wall.user.comm_user')->find($id);
     $results = [];
 
     if(!is_null($activity))
     {
-      $user = $activity->actor();
+      $user = $activity->userActor()->first();
       $comm_user = $user->comm_user()->first();
 
       $results['activity']['id'] = $activity->id;
@@ -305,24 +305,53 @@ class ActivityController extends \BaseController {
       $results['activity']['stats']['likes'] = (int) $activity->likes()->where('element', '=', $activity->like_type)->where('like', '!=', '')->count();
       $results['activity']['stats']['dislikes'] = (int) $activity->likes()->where('element', '=', $activity->like_type)->where('dislike', '!=', '')->count();
 
+      // Activity media
+      $results['activity']['media'] = [];
+      if($activity->app == 'videos')
+      {
+        $media = $activity->video()->first();
+
+        if(!is_null($media))
+        {
+          $results['activity']['media']['id'] = $media->id;
+          $results['activity']['media']['title'] = $media->title;
+          $results['activity']['media']['type'] = $media->type;
+          $results['activity']['media']['video_id'] = $media->video_id;
+          $results['activity']['media']['description'] = $media->description;
+          $results['activity']['media']['thumb'] = $media->thumb;
+          $results['activity']['media']['path'] = $media->path;
+          $results['activity']['media']['created'] = $media->created;
+        }
+      }
+      elseif($activity->app == 'photos') {
+        $media = $activity->photo()->first();
+
+        if(!is_null($media))
+        {
+          $results['activity']['media']['id'] = $media->id;
+          $results['activity']['media']['caption'] = $media->caption;
+          $results['activity']['media']['image'] = $media->image;
+          $results['activity']['media']['thumbnail'] = $media->thumbnail;
+          $results['activity']['media']['original'] = $media->original;
+          $results['activity']['media']['created'] = $media->created;
+        }
+      }
+
       // Activity comments
       $results['activity']['comments'] = [];
-      foreach($activity->wall() as $key => $value)
+      foreach($activity->wall as $key => $value)
       {
-        $user = $value->user();
-        $comm_user = $user->comm_user()->first();
-
         $results['activity']['comments'][$key]['id'] = $value->id;
         $results['activity']['comments'][$key]['comment'] = $value->comment;
         $results['activity']['comments'][$key]['date'] = $value->date;
         $results['activity']['comments'][$key]['type'] = $value->type;
 
-        $results['activity']['comments'][$key]['user']['id'] = $user->id;
-        $results['activity']['comments'][$key]['user']['name'] = $user->name;
-        $results['activity']['comments'][$key]['user']['thumbnail'] = $comm_user->thumb;
-        $results['activity']['comments'][$key]['user']['avatar'] = $comm_user->avatar;
-        $results['activity']['comments'][$key]['user']['slug'] = $comm_user->alias;
-        $results['activity']['comments'][$key]['user']['slug'] = $comm_user->alias;
+        $results['activity']['comments'][$key]['user']['id'] = $value->user->id;
+        $results['activity']['comments'][$key]['user']['name'] = $value->user->name;
+        $results['activity']['comments'][$key]['user']['thumbnail'] = $value->user->comm_user->thumb;
+        $results['activity']['comments'][$key]['user']['avatar'] = $value->user->comm_user->avatar;
+        $results['activity']['comments'][$key]['user']['slug'] = $value->user->comm_user->alias;
+        $results['activity']['comments'][$key]['user']['slug'] = $value->user->comm_user->alias;
 
         // Comment stats
         $results['activity']['comments'][$key]['stats']['likes'] = (int) $value->activity_likes()->where('element', '=', $activity->comment_type)->where('like', '!=', '')->count();
