@@ -52,7 +52,7 @@ class EventController extends \BaseController {
     ];
     $validator = Validator::make($params, $rules);
 
-    if(!$validator->fails())
+    if($validator->passes())
     {
       switch($params['app']) {
         case 'event-status':
