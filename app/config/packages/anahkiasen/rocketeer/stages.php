@@ -11,6 +11,6 @@
 	'stages' => array(),
 
 	// The default stage to execute tasks on when --stage is not provided
-	'default' => '',
+	'default' => 'production',
 
 );

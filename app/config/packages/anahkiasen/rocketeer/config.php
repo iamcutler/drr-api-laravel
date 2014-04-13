@@ -14,19 +14,20 @@
 	////////////////////////////////////////////////////////////////////
 
 	// The default remote connection(s) to execute tasks on
-	'default' => array('production'),
+	'default' => array('production', 'staging'),
 
 	// The various connections you defined
 	// You can leave all of this empty or remove it entirely if you don't want
 	// to track files with credentials : Rocketeer will prompt you for your credentials
 	// and store them locally
 	'connections' => array(
-		'production' => array(
+    'staging' => array(
+      'host'      => 'api.qa-dirtyrides.com',
+      'username'  => 'deploy'
+    ),
+    'production' => array(
 			'host'      => 'api.dirtyrottenrides.com',
-			'username'  => 'deploy',
-			'password'  => '',
-			'key'       => '',
-			'keyphrase' => '',
+			'username'  => 'deploy'
 		),
 	),
 
@@ -49,6 +50,12 @@
 
 		// Stages configurations
 		'stages' => array(
+      'staging' => [
+        'scm' => ['branch' => 'staging'],
+      ],
+      'production' => [
+        'scm' => ['branch' => 'release'],
+      ],
 		),
 
 		// Connections configuration
