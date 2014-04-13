@@ -103,7 +103,19 @@ class FeedController extends \BaseController {
             $result[$key]['media']['created'] = $media->created;
           }
           break;
+        case 'videos':
+          $media = $value->video;
 
+          if(!is_null($media))
+          {
+            $result[$key]['media']['title'] = $media->title;
+            $result[$key]['media']['type'] = $media->type;
+            $result[$key]['media']['video_id'] = $media->video_id;
+            $result[$key]['media']['description'] = $media->description;
+            $result[$key]['media']['thumb'] = $media->thumb;
+            $result[$key]['media']['path'] = $media->path;
+            $result[$key]['media']['created'] = $media->created;
+          }
         case 'profile.avatar.upload':
           $result[$key]['media']['image'] = $value->userActor->comm_user->thumb;
           break;
