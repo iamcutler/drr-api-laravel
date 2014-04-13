@@ -17,7 +17,7 @@ class Message extends Eloquent {
    */
   public function recepient()
   {
-    return $this->hasOne('MessageRecepient', 'msg_id')->first();
+    return $this->hasOne('MessageRecepient', 'msg_id');
   }
 
   /**
@@ -26,6 +26,9 @@ class Message extends Eloquent {
   public function scopeFind_by_parent($query, $id)
   {
     return $query
+      ->with(['recepient' => function($query) {
+          $query->with('userFrom.comm_user', 'userTo.comm_user');
+        }])
       ->where('parent', '=', $id)
       ->orderBy('posted_on', 'DESC')
       ->get();

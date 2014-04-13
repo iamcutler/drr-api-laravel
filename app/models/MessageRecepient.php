@@ -1,4 +1,5 @@
 <?php
+
 class MessageRecepient extends Eloquent {
   /**
    * Table used by model
@@ -20,13 +21,13 @@ class MessageRecepient extends Eloquent {
     return $this->belongsTo('Message');
   }
 
-  public function from()
+  public function userFrom()
   {
-    return $this->hasOne('User', 'id', 'msg_from')->first();
+    return $this->hasOne('User', 'id', 'msg_from');
   }
 
-  public function to()
+  public function userTo()
   {
-    return $this->hasOne('User', 'id', 'to')->first();
+    return $this->hasOne('User', 'id', 'to');
   }
 }

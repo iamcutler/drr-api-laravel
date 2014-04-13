@@ -109,7 +109,7 @@ class MessageController extends \BaseController {
     // Assign parent to param, or override if new thread
     $parent = $params['parent'];
 
-    if(!$validator->fails())
+    if($validator->passes())
     {
       if(!is_null($user))
       {
@@ -198,36 +198,29 @@ class MessageController extends \BaseController {
 
         foreach($messages as $key => $value)
         {
-          $msg_recepient = $value->recepient();
-          $from = $msg_recepient->from();
-          $from_comm = $from->comm_user()->first();
-          $to = $msg_recepient->to();
-          $to_comm = $to->comm_user()->first();
-
           // Message formatting
           $result['messages'][$key]['id'] = $value->id;
           $result['messages'][$key]['subject'] = $value->subject;
           $result['messages'][$key]['message'] = $value->body;
-          $result['messages'][$key]['from'] = $msg_recepient->msg_from;
-          $result['messages'][$key]['to'] = $msg_recepient->to;
-          $result['messages'][$key]['bcc'] = $msg_recepient->bcc;
-          $result['messages'][$key]['is_read'] = $msg_recepient->is_read;
+          $result['messages'][$key]['from'] = $value->recepient->msg_from;
+          $result['messages'][$key]['to'] = $value->recepient->to;
+          $result['messages'][$key]['bcc'] = $value->recepient->bcc;
+          $result['messages'][$key]['is_read'] = $value->recepient->is_read;
           $result['messages'][$key]['posted_on'] = $value->posted_on;
 
           // From
-          $result['messages'][$key]['user_from']['id'] = $from->id;
-          $result['messages'][$key]['user_from']['name'] = $from->name;
-          $result['messages'][$key]['user_from']['thumbnail'] = $from_comm->thumb;
-          $result['messages'][$key]['user_from']['avatar'] = $from_comm->avatar;
-          $result['messages'][$key]['user_from']['slug'] = $from_comm->alias;
+          $result['messages'][$key]['user_from']['id'] = $value->recepient->userFrom->id;
+          $result['messages'][$key]['user_from']['name'] = $value->recepient->userFrom->name;
+          $result['messages'][$key]['user_from']['thumbnail'] = $value->recepient->userFrom->comm_user->thumb;
+          $result['messages'][$key]['user_from']['avatar'] = $value->recepient->userFrom->comm_user->avatar;
+          $result['messages'][$key]['user_from']['slug'] = $value->recepient->userFrom->comm_user->alias;
 
           // To
-          // From
-          $result['messages'][$key]['user_to']['id'] = $to->id;
-          $result['messages'][$key]['user_to']['name'] = $to->name;
-          $result['messages'][$key]['user_to']['thumbnail'] = $to_comm->thumb;
-          $result['messages'][$key]['user_to']['avatar'] = $to_comm->avatar;
-          $result['messages'][$key]['user_to']['slug'] = $to_comm->alias;
+          $result['messages'][$key]['user_to']['id'] = $value->recepient->userTo->id;
+          $result['messages'][$key]['user_to']['name'] = $value->recepient->userTo->name;
+          $result['messages'][$key]['user_to']['thumbnail'] = $value->recepient->userTo->comm_user->thumb;
+          $result['messages'][$key]['user_to']['avatar'] = $value->recepient->userTo->comm_user->avatar;
+          $result['messages'][$key]['user_to']['slug'] = $value->recepient->userTo->comm_user->alias;
         }
       }
     }
