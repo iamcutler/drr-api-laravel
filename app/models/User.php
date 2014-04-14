@@ -103,6 +103,8 @@ class User extends Eloquent {
             ->where('published', '=', 1)
             ->orderBy('date', 'DESC');
         }])
+      ->whereIn('app', ['profile', 'videos', 'photos', 'friend.connect', 'profile.avatar.upload'])
+      ->whereIn('comment_type', ['profile.status', 'videos', 'photos', 'profile.avatar.upload'])
       ->where('actor', '=', $this->id)
       ->orWhere('target', '=', $this->id);
   }

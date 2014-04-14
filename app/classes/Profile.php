@@ -81,13 +81,13 @@ class Profile implements ProfileRepositoryInterface {
 
         if(!is_null($media))
         {
-          $result[$key]['media']['video']['title'] = $media->title;
-          $result[$key]['media']['video']['type'] = $media->type;
-          $result[$key]['media']['video']['video_id'] = $media->video_id;
-          $result[$key]['media']['video']['description'] = $media->description;
-          $result[$key]['media']['video']['thumb'] = $media->thumb;
-          $result[$key]['media']['video']['path'] = $media->path;
-          $result[$key]['media']['video']['created'] = $media->created;
+          $result[$key]['media']['title'] = $media->title;
+          $result[$key]['media']['type'] = $media->type;
+          $result[$key]['media']['video_id'] = $media->video_id;
+          $result[$key]['media']['description'] = $media->description;
+          $result[$key]['media']['thumb'] = $media->thumb;
+          $result[$key]['media']['path'] = $media->path;
+          $result[$key]['media']['created'] = $media->created;
         }
       }
       elseif($value->app == 'photos') {
@@ -95,11 +95,11 @@ class Profile implements ProfileRepositoryInterface {
 
         if(!is_null($media))
         {
-          $result[$key]['media']['image']['caption'] = $media->caption;
-          $result[$key]['media']['image']['image'] = $media->image;
-          $result[$key]['media']['image']['thumbnail'] = $media->thumbnail;
-          $result[$key]['media']['image']['original'] = $media->original;
-          $result[$key]['media']['image']['created'] = $media->created;
+          $result[$key]['media']['caption'] = $media->caption;
+          $result[$key]['media']['image'] = $media->image;
+          $result[$key]['media']['thumbnail'] = $media->thumbnail;
+          $result[$key]['media']['original'] = $media->original;
+          $result[$key]['media']['created'] = $media->created;
         }
       }
     }
