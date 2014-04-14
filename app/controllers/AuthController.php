@@ -29,6 +29,12 @@ class AuthController extends \BaseController {
 
       if(User::validate_user_password($password, $user['password']))
       {
+        // Check if user has a hash assigned or generate
+        if($user->user_hash == "")
+        {
+          $user->user_hash = User::generate_hash($user->name, $user->username);
+          $user->save();
+        }
         // Get relational comm_user data
         $comm_user = User::find($user->id)->comm_user()->first();
 
