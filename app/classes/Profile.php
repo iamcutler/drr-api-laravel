@@ -242,7 +242,7 @@ class Profile implements ProfileRepositoryInterface {
   // Get single video resource and stats
   public function video($slug, $id)
   {
-    $video = $this->video->find($id);
+    $video = $this->video->with('wall.user.comm_user')->find($id);
     $user = $this->user->findBySlug($slug)->first();
     $result = [];
 
@@ -256,24 +256,22 @@ class Profile implements ProfileRepositoryInterface {
         $result['id'] = (int) $video->id;
         $result['title'] = $video->title;
         $result['type'] = $video->type;
-        $result['video_id'] = $video->video_id;
         $result['description'] = $video->description;
         $result['permissions'] = $video->permissions;
         $result['featured'] = (int) $video->featured;
         $result['location'] = $video->location;
 
-        $result['comment_id'] = $activity->comment_id;
+        $result['comment_id'] = (int) $activity->comment_id;
         $result['comment_type'] = $activity->comment_type;
-        $result['like_id'] = $activity->like_id;
+        $result['like_id'] = (int) $activity->like_id;
         $result['like_type'] = $activity->like_type;
-
         $result['created'] = $video->created;
 
-
-        $result['media']['thumbnail'] = $video->thumbnail;
+        $result['media']['video_id'] = (int) $video->video_id;
+        $result['media']['thumbnail'] = $video->thumb;
         $result['media']['path'] = $video->path;
-        $result['media']['filesize'] = $video->filesize;
-        $result['media']['duration'] = $video->duration;
+        $result['media']['filesize'] = (int) $video->filesize;
+        $result['media']['duration'] = (int) $video->duration;
 
         // Resource owner
         $result['user'] = $this->presenter->User($user);
@@ -283,7 +281,7 @@ class Profile implements ProfileRepositoryInterface {
         $result['stats'] = $this->presenter->likeStats($likes);
 
         // Resource comments
-        $result['comments'] = $this->presenter->Wall($video->wall());
+        $result['comments'] = $this->presenter->Wall($video->wall);
       }
     }
 
@@ -292,7 +290,7 @@ class Profile implements ProfileRepositoryInterface {
 
   public function photo($slug, $id)
   {
-    $photo = $this->photo->find($id);
+    $photo = $this->photo->with('wall.user.comm_user')->find($id);
     $user = $this->user->findBySlug($slug)->first();
     $result = [];
 
@@ -330,7 +328,7 @@ class Profile implements ProfileRepositoryInterface {
           $result['stats'] = $this->presenter->likeStats($likes);
 
           // Resource comments
-          $result['comments'] = $this->presenter->Wall($photo->wall());
+          $result['comments'] = $this->presenter->Wall($photo->wall);
         }
       }
     }

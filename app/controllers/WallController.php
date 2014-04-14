@@ -45,7 +45,7 @@ class WallController extends \BaseController {
     $validator = Validator::make($params, $rules);
     $result = ['result' => false];
 
-    if(!$validator->fails())
+    if($validator->passes())
     {
       switch($params['app'])
       {
@@ -75,7 +75,7 @@ class WallController extends \BaseController {
 
           if($save)
           {
-            $user = $save->user();
+            $user = $save->user()->first();
             $comm_user = $user->comm_user()->first();
 
             $result['result'] = true;
@@ -143,7 +143,7 @@ class WallController extends \BaseController {
 
     if(!is_null($comment))
     {
-      $actor = $comment->user();
+      $actor = $comment->user()->first();
       $activity = $comment->activity()->where('comment_type', '=', $comment->type)->first();
       $user = $this->user->Find_id_by_hash(Input::get('user_hash'));
 

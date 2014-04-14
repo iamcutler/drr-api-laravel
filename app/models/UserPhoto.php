@@ -45,8 +45,7 @@ class UserPhoto extends Eloquent {
   {
     return $this->hasMany('CommWall', 'contentid')
       ->where('type', '=', 'photos')
-      ->orderBy('date', 'DESC')
-      ->get();
+      ->orderBy('date', 'DESC');
   }
 
   /**

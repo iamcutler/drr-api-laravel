@@ -27,8 +27,7 @@ class UserVideo extends Eloquent {
   {
     return $this->hasMany('CommWall', 'contentid')
       ->where('type', '=', 'videos')
-      ->orderBy('date', 'DESC')
-      ->get();
+      ->orderBy('date', 'DESC');
   }
 
   /**
