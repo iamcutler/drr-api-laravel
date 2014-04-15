@@ -47,11 +47,11 @@ class DirtyGirlController extends \BaseController {
     $result['type'] = $query->dirty_type;
     $result['order'] = $query->ordering;
     $result['media']['thumbnail'] = "administrator/components/com_dirtygirlpages/uploads/" .$query->thumbnail_image;
-    $result['media']['image_1'] = ($query->image_1 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_1 : "";
-    $result['media']['image_2'] = ($query->image_2 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_2 : "";
-    $result['media']['image_3'] = ($query->image_3 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_3 : "";
-    $result['media']['image_4'] = ($query->image_4 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_4 : "";
-    $result['media']['image_5'] = ($query->image_5 != "") ? Config::get('constant.cdn_domain') . "/administrator/components/com_dirtygirlpages/uploads/" . $query->image_5 : "";
+    $result['media']['image_1'] = ($query->image_1 != "") ? "administrator/components/com_dirtygirlpages/uploads/" . $query->image_1 : "";
+    $result['media']['image_2'] = ($query->image_2 != "") ? "administrator/components/com_dirtygirlpages/uploads/" . $query->image_2 : "";
+    $result['media']['image_3'] = ($query->image_3 != "") ? "administrator/components/com_dirtygirlpages/uploads/" . $query->image_3 : "";
+    $result['media']['image_4'] = ($query->image_4 != "") ? "administrator/components/com_dirtygirlpages/uploads/" . $query->image_4 : "";
+    $result['media']['image_5'] = ($query->image_5 != "") ? "administrator/components/com_dirtygirlpages/uploads/" . $query->image_5 : "";
 
     return Response::json($result);
   }
