@@ -502,7 +502,7 @@ class ActivityController extends \BaseController {
     $results[$key]['comments'] = [];
     foreach($activity->wall() as $k => $value)
     {
-      $user = $value->user();
+      $user = $value->user()->first();
       $comm_user = $user->comm_user()->first();
 
       $results[$key]['comments'][$k]['user']['name'] = $user->name;
