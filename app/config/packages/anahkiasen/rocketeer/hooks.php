@@ -22,7 +22,9 @@
 	// Tasks to execute after the core Rocketeer Tasks
 	'after' => array(
 		'setup'   => array(),
-		'deploy'  => array(),
+		'deploy'  => array(
+      'cd /var/www/api.dirtyrottenrides.com/current && php artisan migrate'
+    ),
 		'cleanup' => array(),
 	),
 
