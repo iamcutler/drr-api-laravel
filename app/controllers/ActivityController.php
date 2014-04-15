@@ -284,7 +284,7 @@ class ActivityController extends \BaseController {
       $results['activity']['target'] = [];
       if($activity->target != 0 || $activity->actor == $activity->target)
       {
-        $target = $activity->target();
+        $target = $activity->userTarget()->first();
         $target_comm = $target->comm_user()->first();
 
         $results['activity']['target']['id'] = $target->id;
