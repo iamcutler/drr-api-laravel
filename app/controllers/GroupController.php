@@ -130,6 +130,7 @@ class GroupController extends \BaseController {
       }
 
       // Group events
+      $results['events'] = [];
       foreach($group->events as $key => $val)
       {
         $results['events'][$key]['title'] = $val->title;
