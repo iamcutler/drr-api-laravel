@@ -183,7 +183,7 @@ class UserActivity implements UserActivityRepositoryInterface {
     if($upload['result'])
     {
       // Use image name if caption is null
-      $caption = ($options['caption']) ? $options['caption'] : $file->getClientOriginalName();
+      $caption = ($options['caption']) ? $options['caption'] : '';
 
       // Database transaction to save image/activity
       $trans = DB::transaction(function() use ($user, $mobile_album, $caption, $upload) {
@@ -245,7 +245,7 @@ class UserActivity implements UserActivityRepositoryInterface {
   {
     $result = false;
     // Use image name if caption is null
-    $caption = (array_key_exists('caption', $options)) ? $options['caption'] : $file->getClientOriginalName();
+    $caption = (array_key_exists('caption', $options)) ? $options['caption'] : '';
     // Upload video to AWS S3
     $upload = $this->AWS->S3VideoUpload($file, $user);
 
