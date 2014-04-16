@@ -8,6 +8,35 @@ class UserVideo extends Eloquent {
   public $timestamps = false;
 
   /**
+   * Mass Assignment
+   */
+  protected $fillable = [
+    'title',
+    'type',
+    'video_id',
+    'description',
+    'creator',
+    'creator_type',
+    'created',
+    'permissions',
+    'category_id',
+    'hits',
+    'published',
+    'featured',
+    'duration',
+    'status',
+    'thumb',
+    'path',
+    'groupid',
+    'filesize',
+    'storage',
+    'location',
+    'latitude',
+    'longitude',
+    'params'
+  ];
+
+  /**
    * ORM relations
    */
   public function user_video()
