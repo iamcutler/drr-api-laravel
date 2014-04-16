@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'cdn_domain' => 'http://staging.dirtyrottenrides.netdna-cdn.com',
+  'cdn_domain' => 'd2pg1vmi0aywm.cloudfront.net',
   'AWS' => [
     'url' => 'https://s3.amazonaws.com/dirty-rotten-rides-staging',
     'bucket' => 'dirty-rotten-rides-staging',
