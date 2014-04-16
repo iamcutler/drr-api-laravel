@@ -1,11 +1,17 @@
 <?php
 
 class AmazonWebServices implements AWSRepositoryInterface {
+
+  public function __construct()
+  {
+    $this->AWS = App::make('aws');
+    $this->AWS->bucket = Config::get('constant.AWS.bucket');
+  }
+
   public function S3ImgUpload($file, Array $options = [])
   {
     $result['result'] = false;
-
-    $S3 = App::make('aws')->get('s3');
+    $S3 = $this->AWS->get('s3');
 
     $file_path = $file->getRealPath();
     $file_obj = Image::make($file_path);
@@ -31,11 +37,11 @@ class AmazonWebServices implements AWSRepositoryInterface {
     // Upload file to AWS S3
     try {
       // Save image to AWS S3
-      $S3->upload(Config::get('constant.AWS.bucket'), $options['image_path'] . $new_file_name . '.' . $file->getClientOriginalExtension(), fopen($file_path, 'r'), 'public-read');
+      $S3->upload($this->AWS->bucket, $options['image_path'] . $new_file_name . '.' . $file->getClientOriginalExtension(), fopen($file_path, 'r'), 'public-read');
 
       if($options['thumb'] == true)
       {
-        $S3->upload(Config::get('constant.AWS.bucket'), $options['image_path'] . $thumb_file_name, fopen(public_path() . '/' . $thumb_file_name, 'r'), 'public-read');
+        $S3->upload($this->AWS->bucket, $options['image_path'] . $thumb_file_name, fopen(public_path() . '/' . $thumb_file_name, 'r'), 'public-read');
       }
 
       // Return truthy
@@ -80,9 +86,36 @@ class AmazonWebServices implements AWSRepositoryInterface {
     return $result;
   }
 
+  // Video upload to S3
+  public function S3VideoUpload($file, User $user, Array $options = [])
+  {
+    $S3 = $this->AWS->get('s3');
+    $result = [];
+    $file_path = $file->getRealPath();
+    $new_file_name = str_replace('/', '', Hash::make($file->getClientOriginalName()));
+    $upload_path = (array_key_exists('upload_path', $options)) ? $options['upload_path'] : "/images/originalvideos/{$user->id}/";
+    $upload = $S3->upload($this->AWS->bucket, $upload_path . $new_file_name . '.' . $file->getClientOriginalExtension(), fopen($file_path, 'r'), 'public-read');
+
+    if($upload)
+    {
+      $result['result'] = true;
+      // Return video information
+      $result['file'] = [
+        'path' => $upload_path,
+        'name' => $new_file_name . '.' . $file->getClientOriginalExtension(),
+        'size' => $file->getSize()
+      ];
+    }
+    else {
+      $result['result'] = false;
+    }
+
+    return $result;
+  }
+
   public function deleteS3Object(Array $options = [])
   {
-    $S3 = App::make('aws')->get('s3');
+    $S3 = $this->AWS->get('s3');
     $result = false;
 
     $remove = $S3->deleteObject([
