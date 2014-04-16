@@ -83,102 +83,64 @@ class ActivityController extends \BaseController {
         }
         break;
 
-      case 'photo-status':
+      case 'media-status':
         $params = Input::all();
         $rules = [
           'app' => 'required',
-          'file' => 'required|image|max:10000000'
+          'file' => 'required|max:10000000'
         ];
         $validator = Validator::make($params, $rules);
+        $caption = (array_key_exists('caption', $params)) ? $params['caption'] : '';
 
-        if(!$validator->fails())
+        if($validator->passes())
         {
           // Check if file was uploaded
           if(Input::hasFile('file'))
           {
             $file = Input::file('file');
 
-            // Find or create mobile uploads album
-            $mobile_album = $this->profile->findOrCreateMobileAlbum($user->id);
-
-            $file_options = [
-              'image_path' => "images/photos/{$user->id}/{$mobile_album->id}/",
-              'thumb' => true,
-              'thumb_size' => [
-                'width' => 120,
-                'height' => 120
-              ]
-            ];
-
             // Less than 10MB files
             if($file->getSize() <= 10000000)
             {
-              // Upload/Generate uploaded files to AWS S3
-              $upload = $this->AWS->S3ImgUpload($file, $file_options);
-
-              if($upload['result'])
+              // Run condition to detect media type
+              if(in_array($file->getClientOriginalExtension(), ['jpg', 'JPEG', 'gif', 'png']))
               {
-                // Use image name if caption is null
-                $caption = (Input::has('caption')) ? $params['caption'] : $file->getClientOriginalName();
+                // Process and upload image to S3
+                $processImage = $this->activityInterface->processPhotoStatusUpload($file, $user, [
+                  'caption' => $caption
+                ]);
 
-                // Database transaction to save image/activity
-                $trans = DB::transaction(function() use ($params, $user, $mobile_album, $caption, $upload) {
-                  // Create photo record
-                  $newPhoto = $this->photo->create([
-                    'albumid' => $mobile_album->id,
-                    'caption' => $caption,
-                    'published' => 1,
-                    'creator' => $user->id,
-                    'permissions' => 0,
-                    'image' => $upload['file']['image_path'] . $upload['file']['name'],
-                    'thumbnail' => $upload['file']['image_path'] . $upload['file']['thumbnail'],
-                    'original' => $upload['file']['image_path'] . $upload['file']['name'],
-                    'filesize' => $upload['file']['size'],
-                    'storage' => 'file',
-                    'created' => date("Y-m-d H:i:s"),
-                    'status' => 'ready',
-                    'params' => '{}'
-                  ]);
-
-                  // Create activity record
-                  $newActivity = $this->activity->create([
-                    'actor' => $user->id,
-                    'target' => 0,
-                    'title' => $caption,
-                    'content' => '',
-                    'app' => 'photos',
-                    'verb' => '',
-                    'cid' => $mobile_album->id,
-                    'created' => date("Y-m-d H:i:s"),
-                    'access' => 0,
-                    'params' => '',
-                    'archived' => 0,
-                    'location' => '',
-                    'comment_id' => $newPhoto->id,
-                    'comment_type' => 'photos',
-                    'like_id' => $newPhoto->id,
-                    'like_type' => 'photo',
-                    'actors' => ''
-                  ]);
-
-                  // Make sure all records are successful
-                  if($newActivity && $newPhoto)
-                  {
-                    return true;
-                  }
-                });
-
-                if($trans)
+                if($processImage)
                 {
                   $result['result'] = true;
                 }
                 else {
-                  $result['status'] = 102;
+                  // Return error code
+                  $result['code'] = 102;
+                }
+              }
+              elseif(in_array($file->getClientOriginalExtension(), ['mov', 'MOV', 'mp4', 'mpeg'])) {
+                // Process and upload video to AWS S3
+                $processVideo = $this->activityInterface->processVideoStatusUpload($file, $user, [
+                  'caption' => $caption
+                ]);
+
+                if($processVideo)
+                {
+                  $result['result'] = true;
+                }
+                else {
+                  // Return error code
+                  $result['code'] = 102;
                 }
               }
               else {
                 $result['code'] = 101;
               }
+            }
+            else {
+              // File size is under limit
+              $result['code'] = 103;
             }
           }
           else {
