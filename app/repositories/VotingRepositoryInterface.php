@@ -1,5 +1,5 @@
 <?php
 
 interface VotingRepositoryInterface {
-  public function castVote($id);
+  public function castVote($params);
 }

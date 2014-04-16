@@ -77,12 +77,17 @@ class VoteController extends \BaseController {
   public function store()
   {
     $params = Input::all();
-    $validator = Validator::make($params, ['id_answer' => 'required|integer']);
+    $validator = Validator::make($params, [
+      'id_answer' => 'required|integer',
+      'date'      => 'required'
+    ]);
 
     if($validator->passes())
     {
-      $this->voting->castVote($params['id_answer']);
+      $this->voting->castVote($params);
     }
+
+    return Response::json([]);
   }
 
   /**
