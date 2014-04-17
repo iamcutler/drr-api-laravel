@@ -2,11 +2,12 @@
 
 class UserConnectionController extends \BaseController {
 
-  public function __construct(UserConnection $connection, User $user, CommUser $comm)
+  public function __construct(UserConnection $connection, User $user, CommUser $comm, UserRepositoryInterface $userRepo)
   {
     $this->connection = $connection;
     $this->user = $user;
     $this->comm_user = $comm;
+    $this->userRepo = $userRepo;
   }
 
   /**
@@ -38,7 +39,7 @@ class UserConnectionController extends \BaseController {
     $validator = Validator::make($input, $rules);
     $result = ['result' => false];
 
-    if(!$validator->fails())
+    if($validator->passes())
     {
       $user = $this->user->find_id_by_hash($input['user_hash']);
 
@@ -158,9 +159,9 @@ class UserConnectionController extends \BaseController {
       $commFriend = $friend->comm_user()->first();
 
       // Save new friends array for user and friend being removed
-      $commUser->friends = (string) $this->comm_user->Modify_friend_array($commUser, $id);
+      $commUser->friends = (string) $this->userRepo->modifyFriendCommArray($commUser, $id);
       $commUser->friendcount = $commUser->friendcount - 1;
-      $commFriend->friends = (string) $this->comm_user->Modify_friend_array($commFriend, $user->id);
+      $commFriend->friends = (string) $this->userRepo->modifyFriendCommArray($commFriend, $user->id);
       $commFriend->friendcount = $commFriend->friendcount - 1;
 
       if($commUser->save() && $commFriend->save())
