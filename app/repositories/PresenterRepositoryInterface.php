@@ -6,4 +6,5 @@ interface PresenterRepositoryInterface {
   static function likeStats($likes);
   static function Wall($wall);
   public function profileFeed(Activity $value);
+  public function getFeedResource(Activity $value);
 }

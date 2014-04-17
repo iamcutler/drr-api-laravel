@@ -2,7 +2,8 @@
 
 class UserActivity implements UserActivityRepositoryInterface {
   public function __construct(Likes $like, Activity $activity, User $user, UserPhoto $photo, UserVideo $video,
-                              ProfileRepositoryInterface $profile, AWSRepositoryInterface $aws)
+                              ProfileRepositoryInterface $profile, AWSRepositoryInterface $aws,
+                              PresenterRepositoryInterface $presenter)
   {
     $this->like = $like;
     $this->activity = $activity;
@@ -11,6 +12,7 @@ class UserActivity implements UserActivityRepositoryInterface {
     $this->photo = $photo;
     $this->video = $video;
     $this->AWS = $aws;
+    $this->presenter = $presenter;
   }
 
   public function setLike(User $user, $element, $id, $type)
@@ -86,7 +88,7 @@ class UserActivity implements UserActivityRepositoryInterface {
         {
           // Return true and saved record
           $result['result'] = true;
-          $result['activity'] = $this->activity->find($save->id);
+          $result['activity'] = $this->presenter->getFeedResource($save);
         }
       }
     }
