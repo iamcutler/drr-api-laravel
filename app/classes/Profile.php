@@ -219,37 +219,25 @@ class Profile implements ProfileRepositoryInterface {
       // Check if slug matches creator
       if($photo->creator == $user->id)
       {
-        // Get resource activity
-        $activity = $photo->activity()->where('app', '=', 'photos')->first();
+        $result['id'] = $photo->id;
+        $result['caption'] = $photo->caption;
+        $result['permissions'] = $photo->permissions;
+        $result['hits'] = $photo->hits;
+        $result['published'] = (int) $photo->published;
+        $result['created'] = $photo->created;
 
-        if(!is_null($activity))
-        {
-          $result['id'] = $photo->id;
-          $result['caption'] = $photo->caption;
-          $result['permissions'] = $photo->permissions;
-          $result['hits'] = $photo->hits;
-          $result['published'] = (int) $photo->published;
+        // Media array
+        $result['media'] = $this->presenter->UserImage($photo, ['caption' => $photo->caption]);
 
-          $result['like_id'] = (int) $activity->like_id;
-          $result['like_type'] = $activity->like_type;
-          $result['comment_id'] = (int) $activity->comment_id;
-          $result['comment_type'] = $activity->comment_type;
+        // Resource owner
+        $result['user'] = $this->presenter->User($user);
 
-          $result['created'] = $photo->created;
+        // Resource comments
+        $result['comments'] = $this->presenter->Wall($photo->wall);
 
-          // Media array
-          $result['media'] = $this->presenter->UserImage($photo, ['caption' => $photo->caption]);
-
-          // Resource owner
-          $result['user'] = $this->presenter->User($user);
-
-          // Resource stats
-          $likes = $activity->likes()->where('element', '=', 'photo');
-          $result['stats'] = $this->presenter->likeStats($likes);
-
-          // Resource comments
-          $result['comments'] = $this->presenter->Wall($photo->wall);
-        }
+        // Resource stats
+        $likes = $photo->likes();
+        $result['stats'] = $this->presenter->likeStats($likes);
       }
     }
 

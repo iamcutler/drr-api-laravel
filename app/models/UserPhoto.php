@@ -41,6 +41,12 @@ class UserPhoto extends Eloquent {
     return $this->hasOne('Activity', 'comment_id', 'id');
   }
 
+  public function likes()
+  {
+    return $this->hasMany('Likes', 'uid', 'id')
+      ->where('element', '=', 'photo');
+  }
+
   public function wall()
   {
     return $this->hasMany('CommWall', 'contentid')
