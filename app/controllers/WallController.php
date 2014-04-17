@@ -2,11 +2,13 @@
 
 class WallController extends \BaseController {
 
-  public function __construct(CommWall $comment, Activity $activity, User $user)
+  public function __construct(CommWall $comment, Activity $activity, User $user, UserPhoto $photo, UserVideo $video)
   {
     $this->comment = $comment;
     $this->user = $user;
     $this->activity = $activity;
+    $this->photo = $photo;
+    $this->video = $video;
   }
   /**
    * Display a listing of the resource.
@@ -44,52 +46,80 @@ class WallController extends \BaseController {
     ];
     $validator = Validator::make($params, $rules);
     $result = ['result' => false];
+    $user = $this->user->find($params['user']);
+    $comm_user = $user->comm_user()->first();
 
-    if($validator->passes())
+    if($validator->passes() && !is_null($user))
     {
       switch($params['app'])
       {
         case 'videos':
-          $activity = $this->activity->FindByCommentId($params['cid']);
+          $resource = $this->video->find($params['cid']);
           break;
-        default:
-          $activity = $this->activity->FindByCommentId($params['cid']);
+        case 'photos':
+          $resource = $this->photo->find($params['cid']);
+          break;
       }
 
-      if(!is_null($activity))
+      // Check if resource exists
+      if(!is_null($resource))
       {
-        // Check and make sure app type comparison
-        if($params['app'] == $activity->comment_type)
-        {
-          $act_access = $activity->access;
+        $result = [];
 
-          $save = $this->comment->create([
+        $save = DB::transaction(function() use ($resource, $user, $params) {
+          $comment = $this->comment->create([
             'contentid' => $params['cid'],
             'post_by' => $params['user'],
             'ip' => Request::getClientIp(),
             'comment' => $params['comment'],
             'date' => date('Y-m-d H:i:s'),
             'published' => 1,
-            'type' => $activity->comment_type
+            'type' => $params['app']
           ]);
 
-          if($save)
+          // Save comment activity
+          $activity = $this->activity->create([
+            'actor' => $user->id,
+            'target' => 0,
+            'content' => $params['comment'],
+            'app' => $params['app'] . '.comment',
+            'cid' => $comment->id,
+            'created' => date("Y-m-d H:i:s"),
+            'access' => 0,
+            'params' => '',
+            'archived' => 0,
+            'location' => '',
+            'comment_id' => $comment->id,
+            'comment_type' => $params['app'] . '.wall.create',
+            'like_id' => $comment->id,
+            'like_type' => $params['app'] . '.wall.create',
+            'actors' => ''
+          ]);
+
+          if($comment && $activity)
           {
-            $user = $save->user()->first();
-            $comm_user = $user->comm_user()->first();
-
             $result['result'] = true;
-            $result['wall']['id'] = $save->id;
-            $result['wall']['type'] = $save->type;
-            $result['wall']['comment'] = $save->comment;
-            $result['wall']['created'] = $save->date;
-
-            $result['wall']['user']['id'] = $user->id;
-            $result['wall']['user']['name'] = $user->name;
-            $result['wall']['user']['thumbnail'] = $comm_user->thumb;
-            $result['wall']['user']['avatar'] = $comm_user->avatar;
-            $result['wall']['user']['slug'] = $comm_user->alias;
+            $result['comment'] = $comment;
           }
+
+          return $result;
+        });
+
+        if($save['result'])
+        {
+          $comment = $save['comment'];
+
+          $result['result'] = true;
+          $result['wall']['id'] = $comment->id;
+          $result['wall']['type'] = $comment->type;
+          $result['wall']['comment'] = $comment->comment;
+          $result['wall']['created'] = $comment->date;
+
+          $result['wall']['user']['id'] = $user->id;
+          $result['wall']['user']['name'] = $user->name;
+          $result['wall']['user']['thumbnail'] = $comm_user->thumb;
+          $result['wall']['user']['avatar'] = $comm_user->avatar;
+          $result['wall']['user']['slug'] = $comm_user->alias;
         }
       }
     }
