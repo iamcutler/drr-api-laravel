@@ -52,7 +52,8 @@ class UserConnection extends Eloquent {
 
   public static function updateOrCreateConnection(Array $connection)
   {
-    $result = UserConnection::where('connect_to', '=', $connection['connect_to'])->where('connect_from', '=', $connection['connect_from']);
+    $result = UserConnection::where('connect_to', '=', $connection['connect_to'])
+      ->where('connect_from', '=', $connection['connect_from']);
     $status = false;
 
     // Check if connection is found

@@ -72,37 +72,62 @@ class UserConnectionController extends \BaseController {
     $user_hash = Input::get('user_hash');
     $request = $this->connection->find($id);
     $user = $this->user->Find_id_by_hash($user_hash);
+    $result = ['status' => false];
 
-    if(!is_null($request->first()) && !is_null($user->first()))
+    if(!is_null($request) && !is_null($user))
     {
-      // Update request
-      if($request->status == 0)
-      {
-        $request->update([
-          'status' => 1
-        ]);
+      // Get requester
+      $requester = $this->user->find($request->connect_from);
 
-        // Create or update reverse connection to users
-        $this->connection->UpdateOrCreateConnection([
-          'connect_from' => $user->id,
-          'connect_to' => $request->connect_from,
-          'status' => 1,
-          'group' => 0,
-          'msg' => '',
-          'created' => date("Y-m-d H:i:s")
-        ]);
-
-        return ['status' => true];
-      }
-      else
+      if(!is_null($requester))
       {
-        return ['status' => false];
+        // Update request
+        if($request->status == 0)
+        {
+          $request->update([
+            'status' => 1
+          ]);
+
+          // Create or update reverse connection to users
+          $newConnection = $this->connection->UpdateOrCreateConnection([
+            'connect_from' => $user->id,
+            'connect_to' => $requester->id,
+            'status' => 1,
+            'group' => 0,
+            'msg' => '',
+            'created' => date("Y-m-d H:i:s")
+          ]);
+
+          // Add comm friend arrays
+          if($newConnection)
+          {
+            $commUser = $user->comm_user()->first();
+            $commRequester = $requester->comm_user()->first();
+
+            // Save new friends array for user and add to friend count by 1
+            $commUser->friends = (string) $this->userRepo->modifyFriendCommArray($commUser, $requester->id, 1);
+            $commUser->increment('friendcount');
+            $commRequester->friends = (string) $this->userRepo->modifyFriendCommArray($commRequester, $user->id, 1);
+            $commRequester->increment('friendcount');
+
+            if($commUser->save() && $commRequester->save())
+            {
+              $result['status'] = true;
+            }
+          }
+        }
+        else
+        {
+          $result['status'] = false;
+        }
       }
     }
     else
     {
-      return ['status' => false];
+      $result['status'] = false;
     }
+
+    return $result;
   }
 
   /**
