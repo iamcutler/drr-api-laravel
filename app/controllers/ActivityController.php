@@ -119,7 +119,8 @@ class ActivityController extends \BaseController {
                   $result['code'] = 102;
                 }
               }
-              elseif(in_array($file->getClientOriginalExtension(), ['mov', 'MOV', 'mp4', 'mpeg'])) {
+              // Enable in next release cycle
+              /*elseif(in_array($file->getClientOriginalExtension(), ['mov', 'MOV', 'mp4', 'mpeg'])) {
                 // Process and upload video to AWS S3
                 $processVideo = $this->activityInterface->processVideoStatusUpload($file, $user, [
                   'caption' => $caption
@@ -133,7 +134,7 @@ class ActivityController extends \BaseController {
                   // Return error code
                   $result['code'] = 102;
                 }
-              }
+              }*/
               else {
                 $result['code'] = 101;
               }
