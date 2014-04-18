@@ -35,6 +35,11 @@ class Activity extends Eloquent {
     return $this->hasOne('User', 'id', 'target');
   }
 
+  public function activity_wall()
+  {
+    return $this->hasMany('CommWall', 'contentid', 'comment_id');
+  }
+
   public function wall()
   {
     return $this->hasMany('CommWall', 'contentid', 'id');

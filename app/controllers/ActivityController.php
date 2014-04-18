@@ -208,7 +208,7 @@ class ActivityController extends \BaseController {
    */
   public function show($id)
   {
-    $activity = $this->activity->with('wall.user.comm_user')->find($id);
+    $activity = $this->activity->with('activity_wall.user.comm_user')->find($id);
     $results = [];
 
     if(!is_null($activity))
@@ -302,7 +302,7 @@ class ActivityController extends \BaseController {
 
       // Activity comments
       $results['activity']['comments'] = [];
-      foreach($activity->wall as $key => $value)
+      foreach($activity->activity_wall as $key => $value)
       {
         $results['activity']['comments'][$key]['id'] = $value->id;
         $results['activity']['comments'][$key]['comment'] = $value->comment;
