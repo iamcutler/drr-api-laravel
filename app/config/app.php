@@ -110,6 +110,7 @@ return array(
     'Profiler\ProfilerServiceProvider',
     'Aws\Laravel\AwsServiceProvider',
     'Intervention\Image\ImageServiceProvider',
+    'Rocketeer\RocketeerServiceProvider',
 	),
 
 	/*
@@ -178,6 +179,7 @@ return array(
     'Profiler'        => 'Profiler\Facades\Profiler',
     'AWS'             => 'Aws\Laravel\AwsFacade',
     'Image'           => 'Intervention\Image\Facades\Image',
+    'Rocketeer' => 'Rocketeer\Facades\Rocketeer',
 	),
 
 );
