@@ -200,8 +200,8 @@ class Profile implements ProfileRepositoryInterface {
         $result['user'] = $this->presenter->User($user);
 
         // Resource stats
-        $likes = $video->likes()->where('element', '=', 'videos');
-        $result['stats'] = $this->presenter->likeStats($likes);
+        $likes = $video->likes()->where('element', '=', 'videos')->first();
+        $result['stats'] = $this->presenter->likeStats($likes, 0);
 
         // Resource comments
         $result['comments'] = $this->presenter->Wall($video->wall);
@@ -239,8 +239,8 @@ class Profile implements ProfileRepositoryInterface {
         $result['comments'] = $this->presenter->Wall($photo->wall);
 
         // Resource stats
-        $likes = $photo->likes();
-        $result['stats'] = $this->presenter->likeStats($likes);
+        $likes = $photo->likes()->first();
+        $result['stats'] = $this->presenter->likeStats($likes, 0);
       }
     }
 
