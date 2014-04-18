@@ -27,7 +27,7 @@ class VoteController extends \BaseController {
       $poll['poll']['date_start'] = $current_poll->date_start;
       $poll['poll']['date_end'] = $current_poll->date_end;
       $poll['poll']['number_answers'] = (int) $current_poll->answer->count();
-      $poll['poll']['voting_period'] = (int) $current_poll->voting_period;
+      $poll['poll']['voting_period'] = (float) $current_poll->voting_period;
       $poll['poll']['created'] = $current_poll->created;
 
       // Get poll answers
