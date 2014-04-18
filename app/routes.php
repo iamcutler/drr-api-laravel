@@ -57,7 +57,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
     Route::resource('groups', 'GroupController');
 
     Route::group(['prefix' => 'like'], function() {
-      Route::post('like/{element}/{id}/{type}', 'LikeController@like');
+      Route::post('/', 'LikeController@like');
     });
 
     // Account
