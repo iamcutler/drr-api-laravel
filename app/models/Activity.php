@@ -47,7 +47,7 @@ class Activity extends Eloquent {
 
   public function likes()
   {
-    return $this->hasMany('Likes', 'uid', 'like_id');
+    return $this->hasOne('Likes', 'uid', 'like_id');
   }
 
   public function event()

@@ -31,14 +31,13 @@ class User extends Eloquent {
   }
 
   public function profile_likes() {
-    return $this->hasMany('Likes', 'uid');
+    return $this->hasOne('Likes', 'uid');
   }
 
   public function profile_dislikes()
   {
-    return $this->hasMany('Likes', 'id', 'dislike')
-      ->where('element', '=', 'profile')
-      ->get();
+    return $this->hasOne('Likes', 'id', 'dislike')
+      ->where('element', '=', 'profile')  ;
   }
 
   public function photo()
