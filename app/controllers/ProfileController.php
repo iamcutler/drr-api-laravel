@@ -4,7 +4,7 @@ class ProfileController extends \BaseController {
 
   public function __construct(User $user, CommUser $comm_user, UserPhoto $photo, UserVideo $video,
                               UserConnection $connection, EventMember $eventMember, GroupMember $groupMember,
-                              ProfileRepositoryInterface $profile)
+                              ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
@@ -14,6 +14,7 @@ class ProfileController extends \BaseController {
     $this->eventMember = $eventMember;
     $this->groupMember = $groupMember;
     $this->profile = $profile;
+    $this->presenter = $presenter;
   }
 
   public function user_profile($slug)
@@ -66,7 +67,7 @@ class ProfileController extends \BaseController {
       $result['profile']['settings'] = json_decode($profile->comm_user->params);
 
       // Profile status
-      $result['profile']['stats']['likes'] = (int) $profile->profile_likes->count();
+      $result['profile']['stats'] = $this->presenter->likeStats($profile->profile_likes, 0);
 
       // Count array
       $result['profile']['counts']['photos'] = (int) $profile->photo->count();
