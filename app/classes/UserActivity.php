@@ -96,58 +96,6 @@ class UserActivity implements UserActivityRepositoryInterface {
     return $result;
   }
 
-  protected function createOrOverwriteOrRemoveLike($type, Array $args)
-  {
-    $result = $this->like->Find_existing_like($args);
-
-    if($result->count() == 0)
-    {
-      // Create like if not found
-      $like = new Likes;
-
-      $like->element = $args['element'];
-      $like->uid = $args['uid'];
-
-      if($type) {
-        $like->like = $args['user'];
-        $like->dislike = '';
-      } else {
-        $like->like = '';
-        $like->dislike = $args['user'];
-      }
-
-      $like->save();
-
-      return true;
-    }
-    else {
-      // Check if this is a like, if not, it must be a dislike
-      if($type == 1 && $result->like == $args['user'] || $type == 0 && $result->dislike == $args['user'])
-      {
-        // Remove if found
-        $result->delete();
-
-        return true;
-      }
-      else {
-        if($type == 1) {
-          $result->like = $args['user'];
-          $result->dislike = '';
-        }
-        else {
-          $result->like = '';
-          $result->dislike = $args['user'];
-        }
-
-        $result->save();
-
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   public function user_search($q, $user_id, $type = 'name', $offset = 0, $limit = 20)
   {
     switch($type)
@@ -315,5 +263,99 @@ class UserActivity implements UserActivityRepositoryInterface {
     }
 
     return $result;
+  }
+
+  protected function createOrOverwriteOrRemoveLike(User $user, $type, Array $args)
+  {
+    $like = $this->like->Find_existing_like($args)->first();
+    $stats = ['result' => false];
+
+    if(is_null($like))
+    {
+      // Create like if not found
+      $like = $this->like->create([
+        'element' => $args['element'],
+        'uid' => $args['uid']
+      ]);
+
+      if($type) {
+        $like->like = $user->id;
+        $like->dislike = '';
+      } else {
+        $like->like = '';
+        $like->dislike = $user->id;
+      }
+
+      if($like->save())
+      {
+        $stats['stats'] = $like;
+        $stats['result'] = true;
+      }
+    }
+    // Like exists
+    else {
+      // Check if this is a like
+      // Check if like has any users in string
+      if($type == 1)
+      {
+        if($like->like == '')
+        {
+          // Empty string in like resource
+          $like->like = $user->id;
+        }
+        else {
+          $like_array = explode(',', (string) $like->like);
+
+          if(in_array($user->id, $like_array))
+          {
+            // Remove existing like
+            $like_array = array_diff($like_array, [$user->id]);
+          }
+          else {
+            $like_array[] = $user->id;
+          }
+
+          $like->like = implode(",", $like_array);
+        }
+
+        // Save like
+        if($like->save())
+        {
+          $stats['stats'] = $like;
+          $stats['result'] = true;
+        }
+      }
+      // Dislike
+      else {
+        if($like->dislike == '')
+        {
+          // Empty string in like resource
+          $like->dislike = $user->id;
+        }
+        else {
+          $like_array = explode(',', (string) $like->dislike);
+
+          if(in_array($user->id, $like_array))
+          {
+            // Remove existing like
+            $like_array = array_diff($like_array, [$user->id]);
+          }
+          else {
+            $like_array[] = $user->id;
+          }
+
+          $like->dislike = implode(",", $like_array);
+        }
+
+        // Save like
+        if($like->save())
+        {
+          $stats['stats'] = $like;
+          $stats['result'] = true;
+        }
+      }
+    }
+
+    return $stats;
   }
 }
