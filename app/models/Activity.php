@@ -42,7 +42,7 @@ class Activity extends Eloquent {
 
   public function wall()
   {
-    return $this->hasMany('CommWall', 'contentid', 'id');
+    return $this->hasMany('CommWall', 'contentid', 'comment_id');
   }
 
   public function likes()
