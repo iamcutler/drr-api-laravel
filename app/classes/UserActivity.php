@@ -17,48 +17,27 @@ class UserActivity implements UserActivityRepositoryInterface {
 
   public function setLike(User $user, $element, $id, $type)
   {
-    $record = false;
-    $result = [];
+    $result = ['status' => false];
 
     // Assign array for like or dislike
     $like = [
       'element' => $element,
-      'uid' => $id,
-      'user' => $user->id
+      'uid' => $id
     ];
 
     if($type == 1)
     {
-      $record = $this->createOrOverwriteOrRemoveLike(1, $like);
+      $record = $this->createOrOverwriteOrRemoveLike($user, 1, $like);
     }
     elseif($type == 0) {
-      $record = $this->createOrOverwriteOrRemoveLike(0, $like);
+      $record = $this->createOrOverwriteOrRemoveLike($user, 0, $like);
     }
 
-    if($record)
+    if($record['result'])
     {
-      $likes = 0;
-      $dislikes = 0;
-
-      // Loop through and assign incrementing to proper like type
-      foreach($this->like->Find_likes($element, $id) as $val)
-      {
-        if($val->like != "")
-        {
-          $likes++;
-        }
-        elseif($val->dislike != "")
-        {
-          $dislikes++;
-        }
-      }
-
       $result = [
         'status' => true,
-        'like' => [
-          'likes' => $likes,
-          'dislikes' => $dislikes
-        ]
+        'like' => $this->presenter->likeStats($record['stats'])
       ];
     }
 

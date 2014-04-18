@@ -69,7 +69,7 @@ class FeedController extends \BaseController {
       $result[$key]['target']['slug'] = $target_comm->alias;
 
       // Resource stats
-      $result[$key]['stats']['likes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('like', '!=', '')->count();
+      $result[$key]['stats'] = $this->presenter->likeStats($value->likes()->where('element', '=', $value->like_type)->first(), 0);
 
       // Resource comments
       $result[$key]['comments'] = [];
@@ -150,7 +150,7 @@ class FeedController extends \BaseController {
 
       // Resource stats
       $result[$key]['stats'] = [];
-      $result[$key]['stats']['likes'] = (int) $value->likes()->where('element', '=', $value->like_type)->where('like', '!=', '')->count();
+      $result[$key]['stats'] = $this->presenter->likeStats($value->likes()->where('element', '=', $value->like_type)->first(), 0);
 
       // Resource comments
       $result[$key]['comments'] = [];

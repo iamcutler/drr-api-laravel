@@ -34,10 +34,7 @@ class Likes extends Eloquent {
     // Find an existing like or dislike
     return $query
       ->where('element', '=', $args['element'])
-      ->where('uid', '=', $args['uid'])
-      ->where('like', '=', $args['user'])
-      ->orWhere('dislike', '=', $args['user'])
-      ->first();
+      ->where('uid', '=', $args['uid']);
   }
 
   public function scopeFind_likes($query, $element, $id)
