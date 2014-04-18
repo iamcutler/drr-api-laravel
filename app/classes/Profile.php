@@ -171,8 +171,6 @@ class Profile implements ProfileRepositoryInterface {
       // Check if video is owned by user
       if($video->creator == $user->id)
       {
-        $activity = $video->activity();
-
         $result['id'] = (int) $video->id;
         $result['title'] = $video->title;
         $result['type'] = $video->type;
@@ -180,12 +178,17 @@ class Profile implements ProfileRepositoryInterface {
         $result['permissions'] = $video->permissions;
         $result['featured'] = (int) $video->featured;
         $result['location'] = $video->location;
-
-        $result['comment_id'] = (int) $activity->comment_id;
-        $result['comment_type'] = $activity->comment_type;
-        $result['like_id'] = (int) $activity->like_id;
-        $result['like_type'] = $activity->like_type;
         $result['created'] = $video->created;
+
+        $activity = $video->activity();
+
+        if(!is_null($activity))
+        {
+          $result['comment_id'] = (int) $activity->comment_id;
+          $result['comment_type'] = $activity->comment_type;
+          $result['like_id'] = (int) $activity->like_id;
+          $result['like_type'] = $activity->like_type;
+        }
 
         $result['media']['video_id'] = (int) $video->video_id;
         $result['media']['thumbnail'] = $video->thumb;
@@ -197,7 +200,7 @@ class Profile implements ProfileRepositoryInterface {
         $result['user'] = $this->presenter->User($user);
 
         // Resource stats
-        $likes = $activity->likes()->where('element', '=', 'videos');
+        $likes = $video->likes()->where('element', '=', 'videos');
         $result['stats'] = $this->presenter->likeStats($likes);
 
         // Resource comments

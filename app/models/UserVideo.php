@@ -52,6 +52,11 @@ class UserVideo extends Eloquent {
       ->first();
   }
 
+  public function likes()
+  {
+    return $this->hasMany('Likes', 'uid');
+  }
+
   public function wall()
   {
     return $this->hasMany('CommWall', 'contentid')
