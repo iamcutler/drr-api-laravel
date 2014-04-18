@@ -39,10 +39,10 @@ class Presenter implements PresenterRepositoryInterface {
   {
     $result = [];
 
-    $result['likes'] = count(explode(',', $likes->like));
+    $result['likes'] = (is_null($likes)) ? 0 : count(explode(',', $likes->like));
     if($dislikes)
     {
-      $result['dislikes'] = count(explode(',', $likes->dislike));
+      $result['dislikes'] = (is_null($likes)) ? 0 : count(explode(',', $likes->dislike));
     }
 
     return $result;
