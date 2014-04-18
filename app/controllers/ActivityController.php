@@ -208,7 +208,12 @@ class ActivityController extends \BaseController {
    */
   public function show($id)
   {
-    $activity = $this->activity->with('activity_wall.user.comm_user')->find($id);
+    $activity = $this->activity
+      ->with(['activity_wall' => function($query) {
+          $query->with('user.comm_user')
+            ->orderBy('date', 'DESC');
+        }])
+      ->find($id);
     $results = [];
 
     if(!is_null($activity))
