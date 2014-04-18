@@ -154,16 +154,16 @@ class FeedController extends \BaseController {
 
       // Resource comments
       $result[$key]['comments'] = [];
-      foreach($value->wall as $k => $val)
+      foreach($value->activity_wall as $k => $val)
       {
-        $results[$key]['comments'][$k]['user']['id'] = $val->user->id;
-        $results[$key]['comments'][$k]['user']['name'] = $val->user->name;
-        $results[$key]['comments'][$k]['user']['avatar'] = $val->user->comm_user->avatar;
-        $results[$key]['comments'][$k]['user']['thumbnail'] = $val->user->comm_user->thumb;
-        $results[$key]['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;
+        $result[$key]['comments'][$k]['user']['id'] = $val->user->id;
+        $result[$key]['comments'][$k]['user']['name'] = $val->user->name;
+        $result[$key]['comments'][$k]['user']['avatar'] = $val->user->comm_user->avatar;
+        $result[$key]['comments'][$k]['user']['thumbnail'] = $val->user->comm_user->thumb;
+        $result[$key]['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;
 
-        $results[$key]['comments'][$k]['comment'] = $val->comment;
-        $results[$key]['comments'][$k]['date'] = $val->date;
+        $result[$key]['comments'][$k]['comment'] = $val->comment;
+        $result[$key]['comments'][$k]['date'] = $val->date;
       }
 
       // Resource media

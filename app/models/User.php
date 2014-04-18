@@ -97,7 +97,7 @@ class User extends Eloquent {
         }])
 
       // Comments
-      ->with(['wall' => function($query) {
+      ->with(['activity_wall' => function($query) {
           $query
             ->with('user.comm_user')
             ->where('published', '=', 1)

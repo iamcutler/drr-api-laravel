@@ -107,7 +107,7 @@ class Presenter implements PresenterRepositoryInterface {
 
     // Resource comments
     $result['comments'] = [];
-    foreach($value->wall as $k => $val)
+    foreach($value->activity_wall as $k => $val)
     {
       $result['comments'][$k]['user']['id'] = (int) $val->user->id;
       $result['comments'][$k]['user']['name'] = $val->user->name;
