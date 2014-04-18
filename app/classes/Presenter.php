@@ -35,12 +35,15 @@ class Presenter implements PresenterRepositoryInterface {
     return $result;
   }
 
-  static function likeStats($likes)
+  static function likeStats($likes, $dislikes = 1)
   {
     $result = [];
 
-    $result['likes'] = (int) $likes->where('like', '!=', '')->count();
-    $result['dislikes'] = (int) $likes->where('dislike', '!=', '')->count();
+    $result['likes'] = count(explode(',', $likes->like));
+    if($dislikes)
+    {
+      $result['dislikes'] = count(explode(',', $likes->dislike));
+    }
 
     return $result;
   }
