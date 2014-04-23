@@ -47,8 +47,8 @@ class FeedController extends \BaseController {
       // Resource owner
       $result[$key]['actor']['id'] = (int) $value->userActor->id;
       $result[$key]['actor']['name'] = $value->userActor->name;
-      $result[$key]['actor']['thumbnail'] = $value->userActor->comm_user->thumb;
-      $result[$key]['actor']['avatar'] = $value->userActor->comm_user->avatar;
+      $result[$key]['actor']['thumbnail'] = '/' . $value->userActor->comm_user->thumb;
+      $result[$key]['actor']['avatar'] = '/' . $value->userActor->comm_user->avatar;
       $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource Target
@@ -64,8 +64,8 @@ class FeedController extends \BaseController {
 
       $result[$key]['target']['id'] = (int) $target->id;
       $result[$key]['target']['name'] = $target->name;
-      $result[$key]['target']['thumbnail'] = $target_comm->thumb;
-      $result[$key]['target']['avatar'] = $target_comm->avatar;
+      $result[$key]['target']['thumbnail'] = '/' . $target_comm->thumb;
+      $result[$key]['target']['avatar'] = '/' . $target_comm->avatar;
       $result[$key]['target']['slug'] = $target_comm->alias;
 
       // Resource stats
@@ -77,8 +77,8 @@ class FeedController extends \BaseController {
       {
         $result[$key]['comments'][$k]['user']['id'] = (int) $v->user->id;
         $result[$key]['comments'][$k]['user']['name'] = $v->user->name;
-        $result[$key]['comments'][$k]['user']['avatar'] = $v->user->comm_user->avatar;
-        $result[$key]['comments'][$k]['user']['thumbnail'] = $v->user->comm_user->thumb;
+        $result[$key]['comments'][$k]['user']['avatar'] = '/' . $v->user->comm_user->avatar;
+        $result[$key]['comments'][$k]['user']['thumbnail'] = '/' . $v->user->comm_user->thumb;
         $result[$key]['comments'][$k]['user']['slug'] = $v->user->comm_user->alias;
 
         $result[$key]['comments'][$k]['comment'] = $v->comment;
@@ -97,9 +97,9 @@ class FeedController extends \BaseController {
           if(!is_null($media))
           {
             $result[$key]['media']['caption'] = $media->caption;
-            $result[$key]['media']['image'] = $media->image;
-            $result[$key]['media']['thumbnail'] = $media->thumbnail;
-            $result[$key]['media']['original'] = $media->original;
+            $result[$key]['media']['image'] = '/' . $media->image;
+            $result[$key]['media']['thumbnail'] = '/' . $media->thumbnail;
+            $result[$key]['media']['original'] = '/' . $media->original;
             $result[$key]['media']['created'] = $media->created;
           }
           break;
@@ -144,8 +144,8 @@ class FeedController extends \BaseController {
       // Resource owner
       $result[$key]['user']['id'] = (int) $value->userActor->id;
       $result[$key]['user']['name'] = $value->userActor->name;
-      $result[$key]['user']['thumbnail'] = $value->userActor->comm_user->thumb;
-      $result[$key]['user']['avatar'] = $value->userActor->comm_user->avatar;
+      $result[$key]['user']['thumbnail'] = '/'.$value->userActor->comm_user->thumb;
+      $result[$key]['user']['avatar'] = '/'.$value->userActor->comm_user->avatar;
       $result[$key]['user']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource stats
@@ -179,7 +179,7 @@ class FeedController extends \BaseController {
           $result[$key]['media']['type'] = $media->type;
           $result[$key]['media']['video_id'] = $media->video_id;
           $result[$key]['media']['description'] = $media->description;
-          $result[$key]['media']['thumb'] = '/'.$media->thumb;
+          $result[$key]['media']['thumb'] = '/' . $media->thumb;
           $result[$key]['media']['path'] = $media->path;
           $result[$key]['media']['created'] = $media->created;
         }
@@ -190,9 +190,9 @@ class FeedController extends \BaseController {
         if(!is_null($media))
         {
           $result[$key]['media']['caption'] = $media->caption;
-          $result[$key]['media']['image'] = '/'.$media->image;
-          $result[$key]['media']['thumbnail'] = '/'.$media->thumbnail;
-          $result[$key]['media']['original'] = '/'.$media->original;
+          $result[$key]['media']['image'] = '/' . $media->image;
+          $result[$key]['media']['thumbnail'] = '/' . $media->thumbnail;
+          $result[$key]['media']['original'] = '/' . $media->original;
           $result[$key]['media']['created'] = $media->created;
         }
       }

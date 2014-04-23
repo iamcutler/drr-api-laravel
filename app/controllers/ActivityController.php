@@ -245,8 +245,8 @@ class ActivityController extends \BaseController {
 
       $results['activity']['user']['id'] = $user->id;
       $results['activity']['user']['name'] = $user->name;
-      $results['activity']['user']['avatar'] = $comm_user->avatar;
-      $results['activity']['user']['thumbnail'] = $comm_user->thumb;
+      $results['activity']['user']['avatar'] = '/'. $comm_user->avatar;
+      $results['activity']['user']['thumbnail'] = '/'. $comm_user->thumb;
       $results['activity']['user']['slug'] = $comm_user->alias;
 
       $results['activity']['target'] = [];
@@ -257,15 +257,15 @@ class ActivityController extends \BaseController {
 
         $results['activity']['target']['id'] = $target->id;
         $results['activity']['target']['name'] = $target->name;
-        $results['activity']['target']['avatar'] = $target_comm->avatar;
-        $results['activity']['target']['thumbnail'] = $target_comm->thumb;
+        $results['activity']['target']['avatar'] = '/'. $target_comm->avatar;
+        $results['activity']['target']['thumbnail'] = '/'. $target_comm->thumb;
         $results['activity']['target']['slug'] = $target_comm->alias;
       }
       else {
         $results['activity']['target']['id'] = $user->id;
         $results['activity']['target']['name'] = $user->name;
-        $results['activity']['target']['avatar'] = $comm_user->avatar;
-        $results['activity']['target']['thumbnail'] = $comm_user->thumb;
+        $results['activity']['target']['avatar'] = '/'. $comm_user->avatar;
+        $results['activity']['target']['thumbnail'] = '/'. $comm_user->thumb;
         $results['activity']['target']['slug'] = $comm_user->alias;
       }
 
@@ -286,7 +286,7 @@ class ActivityController extends \BaseController {
           $results['activity']['media']['type'] = $media->type;
           $results['activity']['media']['video_id'] = $media->video_id;
           $results['activity']['media']['description'] = $media->description;
-          $results['activity']['media']['thumb'] = $media->thumb;
+          $results['activity']['media']['thumb'] = '/'. $media->thumb;
           $results['activity']['media']['path'] = $media->path;
           $results['activity']['media']['created'] = $media->created;
         }
@@ -298,9 +298,9 @@ class ActivityController extends \BaseController {
         {
           $results['activity']['media']['id'] = $media->id;
           $results['activity']['media']['caption'] = $media->caption;
-          $results['activity']['media']['image'] = $media->image;
-          $results['activity']['media']['thumbnail'] = $media->thumbnail;
-          $results['activity']['media']['original'] = $media->original;
+          $results['activity']['media']['image'] = '/'. $media->image;
+          $results['activity']['media']['thumbnail'] = '/'. $media->thumbnail;
+          $results['activity']['media']['original'] = '/'. $media->original;
           $results['activity']['media']['created'] = $media->created;
         }
       }
@@ -316,8 +316,8 @@ class ActivityController extends \BaseController {
 
         $results['activity']['comments'][$key]['user']['id'] = $value->user->id;
         $results['activity']['comments'][$key]['user']['name'] = $value->user->name;
-        $results['activity']['comments'][$key]['user']['thumbnail'] = $value->user->comm_user->thumb;
-        $results['activity']['comments'][$key]['user']['avatar'] = $value->user->comm_user->avatar;
+        $results['activity']['comments'][$key]['user']['thumbnail'] = '/'. $value->user->comm_user->thumb;
+        $results['activity']['comments'][$key]['user']['avatar'] = '/'. $value->user->comm_user->avatar;
         $results['activity']['comments'][$key]['user']['slug'] = $value->user->comm_user->alias;
         $results['activity']['comments'][$key]['user']['slug'] = $value->user->comm_user->alias;
 

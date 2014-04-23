@@ -102,7 +102,7 @@ class Profile implements ProfileRepositoryInterface {
 
         if(!is_null($photos))
         {
-          $result[$key]['thumbnail'] = $photos->thumbnail;
+          $result[$key]['thumbnail'] = '/' . $photos->thumbnail;
         }
         else {
           $result[$key]['thumbnail'] = null;
@@ -149,7 +149,7 @@ class Profile implements ProfileRepositoryInterface {
       foreach($photos as $key => $val)
       {
         $results['photos'][$key]['id'] = $val['id'];
-        $results['photos'][$key]['thumbnail'] = $val['thumbnail'];
+        $results['photos'][$key]['thumbnail'] = '/' . $val['thumbnail'];
         $results['photos'][$key]['params'] = json_decode($val['params']);
         $results['photos'][$key]['permissions'] = $val['permissions'];
         $results['photos'][$key]['created'] = $val['created'];
@@ -191,7 +191,7 @@ class Profile implements ProfileRepositoryInterface {
         }
 
         $result['media']['video_id'] = (int) $video->video_id;
-        $result['media']['thumbnail'] = $video->thumb;
+        $result['media']['thumbnail'] = '/' . $video->thumb;
         $result['media']['path'] = $video->path;
         $result['media']['filesize'] = (int) $video->filesize;
         $result['media']['duration'] = (int) $video->duration;
