@@ -127,7 +127,29 @@ class ProfileController extends \BaseController {
 
     if(!is_null($user))
     {
-      $result = $this->video->Find_all_by_user_id($user->userid)->get();
+      foreach($this->video->Find_all_by_user_id($user->userid)->get() as $key => $value)
+      {
+        $result[$key]['id'] = $value->id;
+        $result[$key]['title'] = $value->title;
+        $result[$key]['type'] = $value->type;
+        $result[$key]['video_id'] = $value->video_id;
+        $result[$key]['description'] = $value->description;
+        $result[$key]['creator'] = $value->creator;
+        $result[$key]['creator_type'] = $value->creator_type;
+        $result[$key]['created'] = $value->created;
+        $result[$key]['permissions'] = $value->permissions;
+        $result[$key]['category_id'] = $value->category_id;
+        $result[$key]['hits'] = $value->hits;
+        $result[$key]['featured'] = $value->featured;
+        $result[$key]['duration'] = $value->duration;
+        $result[$key]['status'] = $value->status;
+        $result[$key]['thumb'] = '/' . $value->thumb;
+        $result[$key]['path'] = $value->path;
+        $result[$key]['groupid'] = $value->groupid;
+        $result[$key]['filesize'] = $value->filesize;
+        $result[$key]['location'] = $value->location;
+        $result[$key]['params'] = $value->params;
+      }
     }
 
     return Response::json($result);
