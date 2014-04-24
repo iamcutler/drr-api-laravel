@@ -178,8 +178,8 @@ class Presenter implements PresenterRepositoryInterface {
     /// Resource owner
     $result['user']['id'] = (int) $userActor->id;
     $result['user']['name'] = $userActor->name;
-    $result['user']['thumbnail'] = $userCommActor->thumb;
-    $result['user']['avatar'] = $userCommActor->avatar;
+    $result['user']['thumbnail'] = '/'. $userCommActor->thumb;
+    $result['user']['avatar'] = '/'. $userCommActor->avatar;
     $result['user']['slug'] = $userCommActor->alias;
 
     // Resource Target
@@ -187,15 +187,15 @@ class Presenter implements PresenterRepositoryInterface {
     {
       $result['target']['id'] = (int) $userActor->id;
       $result['target']['name'] = $userActor->name;
-      $result['target']['thumbnail'] = $userCommActor->thumb;
-      $result['target']['avatar'] = $userCommActor->avatar;
+      $result['target']['thumbnail'] = '/'. $userCommActor->thumb;
+      $result['target']['avatar'] = '/'. $userCommActor->avatar;
       $result['target']['slug'] = $userCommActor->alias;
     }
     else {
       $result['target']['id'] = (int) $userTarget->id;
       $result['target']['name'] = $userTarget->name;
-      $result['target']['thumbnail'] = $userCommTarget->thumb;
-      $result['target']['avatar'] = $userCommTarget->avatar;
+      $result['target']['thumbnail'] = '/'. $userCommTarget->thumb;
+      $result['target']['avatar'] = '/'. $userCommTarget->avatar;
       $result['target']['slug'] = $userCommTarget->alias;
     }
 
@@ -208,8 +208,8 @@ class Presenter implements PresenterRepositoryInterface {
     {
       $result['comments'][$k]['user']['id'] = (int) $val->user->id;
       $result['comments'][$k]['user']['name'] = $val->user->name;
-      $result['comments'][$k]['user']['avatar'] = $val->user->comm_user->avatar;
-      $result['comments'][$k]['user']['thumbnail'] = $val->user->comm_user->thumb;
+      $result['comments'][$k]['user']['avatar'] = '/'. $val->user->comm_user->avatar;
+      $result['comments'][$k]['user']['thumbnail'] = '/'. $val->user->comm_user->thumb;
       $result['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;
 
       $result['comments'][$k]['comment'] = $val->comment;
@@ -229,7 +229,7 @@ class Presenter implements PresenterRepositoryInterface {
         $result['media']['type'] = $media->type;
         $result['media']['video_id'] = $media->video_id;
         $result['media']['description'] = $media->description;
-        $result['media']['thumb'] = $media->thumb;
+        $result['media']['thumb'] = '/'. $media->thumb;
         $result['media']['path'] = $media->path;
         $result['media']['created'] = $media->created;
       }
@@ -240,9 +240,9 @@ class Presenter implements PresenterRepositoryInterface {
       if(!is_null($media))
       {
         $result['media']['caption'] = $media->caption;
-        $result['media']['image'] = $media->image;
-        $result['media']['thumbnail'] = $media->thumbnail;
-        $result['media']['original'] = $media->original;
+        $result['media']['image'] = '/'. $media->image;
+        $result['media']['thumbnail'] = '/'. $media->thumbnail;
+        $result['media']['original'] = '/'. $media->original;
         $result['media']['created'] = $media->created;
       }
     }
