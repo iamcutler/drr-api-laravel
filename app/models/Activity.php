@@ -79,8 +79,13 @@ class Activity extends Eloquent {
   /**
    * Scoped queries
    */
-  public function scopeNews_feed($query, Array $friends = [], $offset = 0, $limit = 10)
+  public function scopeNews_feed($query, User $user, $offset = 0, $limit = 10)
   {
+    $comm_user = $user->comm_user()->first();
+    // Friends array
+    $friends = explode(',', $comm_user->friends);
+    $friends[] = $comm_user->userid;
+
     return $query
       // Actors and targets
       ->with('userActor.comm_user', 'userTarget.comm_user')

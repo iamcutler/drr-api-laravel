@@ -18,10 +18,9 @@ class FeedController extends \BaseController {
   {
     $params = Input::all();
     $user = $this->user->Find_id_by_hash($params['user_hash']);
-    $user_comm = $user->comm_user()->first();
     $result = [];
 
-    $activity = $this->activity->news_feed(explode(',', $user_comm->friends), $offset)->get();
+    $activity = $this->activity->news_feed($user, $offset)->get();
 
     foreach($activity as $key => $value)
     {
@@ -97,9 +96,9 @@ class FeedController extends \BaseController {
           if(!is_null($media))
           {
             $result[$key]['media']['caption'] = $media->caption;
-            $result[$key]['media']['image'] = '/' . $media->image;
-            $result[$key]['media']['thumbnail'] = '/' . $media->thumbnail;
-            $result[$key]['media']['original'] = '/' . $media->original;
+            $result[$key]['media']['image'] = '/'. $media->image;
+            $result[$key]['media']['thumbnail'] = '/'. $media->thumbnail;
+            $result[$key]['media']['original'] = '/'. $media->original;
             $result[$key]['media']['created'] = $media->created;
           }
           break;
@@ -112,7 +111,7 @@ class FeedController extends \BaseController {
             $result[$key]['media']['type'] = $media->type;
             $result[$key]['media']['video_id'] = $media->video_id;
             $result[$key]['media']['description'] = $media->description;
-            $result[$key]['media']['thumb'] = $media->thumb;
+            $result[$key]['media']['thumb'] = '/'. $media->thumb;
             $result[$key]['media']['path'] = $media->path;
             $result[$key]['media']['created'] = $media->created;
           }
