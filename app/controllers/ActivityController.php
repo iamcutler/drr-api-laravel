@@ -463,8 +463,8 @@ class ActivityController extends \BaseController {
     $results[$key]['id'] = $activity->id;
     $results[$key]['user']['id'] = $actor->id;
     $results[$key]['user']['name'] = $actor->name;
-    $results[$key]['user']['avatar'] = $comm_user->avatar;
-    $results[$key]['user']['thumbnail'] = $comm_user->thumb;
+    $results[$key]['user']['avatar'] = '/'. $comm_user->avatar;
+    $results[$key]['user']['thumbnail'] = '/'. $comm_user->thumb;
     $results[$key]['user']['slug'] = $comm_user->alias;
 
     $results[$key]['comments'] = [];
@@ -474,8 +474,8 @@ class ActivityController extends \BaseController {
       $comm_user = $user->comm_user()->first();
 
       $results[$key]['comments'][$k]['user']['name'] = $user->name;
-      $results[$key]['comments'][$k]['user']['avatar'] = $comm_user->avatar;
-      $results[$key]['comments'][$k]['user']['thumbnail'] = $comm_user->thumb;
+      $results[$key]['comments'][$k]['user']['avatar'] = '/'. $comm_user->avatar;
+      $results[$key]['comments'][$k]['user']['thumbnail'] = '/'. $comm_user->thumb;
       $results[$key]['comments'][$k]['user']['slug'] = $comm_user->alias;
 
       $results[$key]['comments'][$k]['comment'] = $value['comment'];
