@@ -133,7 +133,7 @@ class FeedController extends \BaseController {
     {
       // Resource
       $result[$key]['id'] = (int) $value->id;
-      $result[$key]['type'] = $value->app;
+      $result[$key]['app'] = $value->app;
       $result[$key]['comment_id'] = (int) $value->comment_id;
       $result[$key]['comment_type'] = $value->comment_type;
       $result[$key]['like_id'] = (int) $value->like_id;
@@ -141,11 +141,11 @@ class FeedController extends \BaseController {
       $result[$key]['created'] = $value->created;
 
       // Resource owner
-      $result[$key]['user']['id'] = (int) $value->userActor->id;
-      $result[$key]['user']['name'] = $value->userActor->name;
-      $result[$key]['user']['thumbnail'] = '/'.$value->userActor->comm_user->thumb;
-      $result[$key]['user']['avatar'] = '/'.$value->userActor->comm_user->avatar;
-      $result[$key]['user']['slug'] = $value->userActor->comm_user->alias;
+      $result[$key]['actor']['id'] = (int) $value->userActor->id;
+      $result[$key]['actor']['name'] = $value->userActor->name;
+      $result[$key]['actor']['thumbnail'] = '/'. $value->userActor->comm_user->thumb;
+      $result[$key]['actor']['avatar'] = '/'. $value->userActor->comm_user->avatar;
+      $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource stats
       $result[$key]['stats'] = [];
@@ -157,8 +157,8 @@ class FeedController extends \BaseController {
       {
         $result[$key]['comments'][$k]['user']['id'] = $val->user->id;
         $result[$key]['comments'][$k]['user']['name'] = $val->user->name;
-        $result[$key]['comments'][$k]['user']['avatar'] = $val->user->comm_user->avatar;
-        $result[$key]['comments'][$k]['user']['thumbnail'] = $val->user->comm_user->thumb;
+        $result[$key]['comments'][$k]['user']['avatar'] = '/'. $val->user->comm_user->avatar;
+        $result[$key]['comments'][$k]['user']['thumbnail'] = '/'. $val->user->comm_user->thumb;
         $result[$key]['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;
 
         $result[$key]['comments'][$k]['comment'] = $val->comment;
@@ -178,7 +178,7 @@ class FeedController extends \BaseController {
           $result[$key]['media']['type'] = $media->type;
           $result[$key]['media']['video_id'] = $media->video_id;
           $result[$key]['media']['description'] = $media->description;
-          $result[$key]['media']['thumb'] = '/' . $media->thumb;
+          $result[$key]['media']['thumb'] = '/'. $media->thumb;
           $result[$key]['media']['path'] = $media->path;
           $result[$key]['media']['created'] = $media->created;
         }
@@ -189,9 +189,9 @@ class FeedController extends \BaseController {
         if(!is_null($media))
         {
           $result[$key]['media']['caption'] = $media->caption;
-          $result[$key]['media']['image'] = '/' . $media->image;
-          $result[$key]['media']['thumbnail'] = '/' . $media->thumbnail;
-          $result[$key]['media']['original'] = '/' . $media->original;
+          $result[$key]['media']['image'] = '/'. $media->image;
+          $result[$key]['media']['thumbnail'] = '/'. $media->thumbnail;
+          $result[$key]['media']['original'] = '/'. $media->original;
           $result[$key]['media']['created'] = $media->created;
         }
       }

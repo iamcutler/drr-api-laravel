@@ -74,7 +74,7 @@ class Presenter implements PresenterRepositoryInterface {
     // Resource
     $result['id'] = (int) $value->id;
     $result['title'] = $value->title;
-    $result['type'] = $value->app;
+    $result['app'] = $value->app;
     $result['comment_id'] = (int) $value->comment_id;
     $result['comment_type'] = $value->comment_type;
     $result['like_id'] = (int) $value->like_id;
@@ -82,11 +82,11 @@ class Presenter implements PresenterRepositoryInterface {
     $result['created'] = $value->created;
 
     /// Resource owner
-    $result['user']['id'] = (int) $value->userActor->id;
-    $result['user']['name'] = $value->userActor->name;
-    $result['user']['thumbnail'] = '/' . $value->userActor->comm_user->thumb;
-    $result['user']['avatar'] = '/' . $value->userActor->comm_user->avatar;
-    $result['user']['slug'] = $value->userActor->comm_user->alias;
+    $result['actor']['id'] = (int) $value->userActor->id;
+    $result['actor']['name'] = $value->userActor->name;
+    $result['actor']['thumbnail'] = '/' . $value->userActor->comm_user->thumb;
+    $result['actor']['avatar'] = '/' . $value->userActor->comm_user->avatar;
+    $result['actor']['slug'] = $value->userActor->comm_user->alias;
 
     // Resource Target
     if($value->target == $value->actor || $value->target == 0)
