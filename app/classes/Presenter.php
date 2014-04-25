@@ -176,11 +176,11 @@ class Presenter implements PresenterRepositoryInterface {
     $result['created'] = $value->created;
 
     /// Resource owner
-    $result['user']['id'] = (int) $userActor->id;
-    $result['user']['name'] = $userActor->name;
-    $result['user']['thumbnail'] = '/'. $userCommActor->thumb;
-    $result['user']['avatar'] = '/'. $userCommActor->avatar;
-    $result['user']['slug'] = $userCommActor->alias;
+    $result['actor']['id'] = (int) $userActor->id;
+    $result['actor']['name'] = $userActor->name;
+    $result['actor']['thumbnail'] = '/'. $userCommActor->thumb;
+    $result['actor']['avatar'] = '/'. $userCommActor->avatar;
+    $result['actor']['slug'] = $userCommActor->alias;
 
     // Resource Target
     if($value->target == $value->actor || $value->target == 0)
