@@ -3,7 +3,8 @@
 class ActivityController extends \BaseController {
 
   public function __construct(Activity $activity, User $user, Events $event, UserPhoto $photo, UserPhotoAlbum $album,
-                              AWSRepositoryInterface $amazon, ProfileRepositoryInterface $profile, UserActivityRepositoryInterface $activityInterface)
+                              AWSRepositoryInterface $amazon, ProfileRepositoryInterface $profile, UserActivityRepositoryInterface $activityInterface,
+                              PresenterRepositoryInterface $presenter)
   {
     $this->AWS = $amazon;
     $this->activity = $activity;
@@ -13,6 +14,7 @@ class ActivityController extends \BaseController {
     $this->photo_album = $album;
     $this->profile = $profile;
     $this->activityInterface = $activityInterface;
+    $this->presenter = $presenter;
   }
 
   /**
@@ -113,6 +115,7 @@ class ActivityController extends \BaseController {
                 if($processImage)
                 {
                   $result['result'] = true;
+                  $result['activity'] = $this->presenter->getFeedResource($this->activity->orderBy('created', 'DESC')->first());
                 }
                 else {
                   // Return error code
