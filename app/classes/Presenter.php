@@ -162,8 +162,6 @@ class Presenter implements PresenterRepositoryInterface {
     // Get relations
     $userActor = $value->userActor()->first();
     $userCommActor = $userActor->comm_user()->first();
-    $userTarget = $value->userTarget()->first();
-    $userCommTarget = $userTarget->comm_user()->first();
 
     // Resource
     $result['id'] = (int) $value->id;
@@ -192,6 +190,10 @@ class Presenter implements PresenterRepositoryInterface {
       $result['target']['slug'] = $userCommActor->alias;
     }
     else {
+      // Get target
+      $userTarget = $value->userTarget()->first();
+      $userCommTarget = $userTarget->comm_user()->first();
+
       $result['target']['id'] = (int) $userTarget->id;
       $result['target']['name'] = $userTarget->name;
       $result['target']['thumbnail'] = '/'. $userCommTarget->thumb;
