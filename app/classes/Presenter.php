@@ -166,7 +166,7 @@ class Presenter implements PresenterRepositoryInterface {
     // Resource
     $result['id'] = (int) $value->id;
     $result['title'] = $value->title;
-    $result['type'] = $value->app;
+    $result['app'] = $value->app;
     $result['comment_id'] = (int) $value->comment_id;
     $result['comment_type'] = $value->comment_type;
     $result['like_id'] = (int) $value->like_id;
