@@ -127,7 +127,7 @@ class UserActivity implements UserActivityRepositoryInterface {
           'thumbnail' => $upload['file']['image_path'] . $upload['file']['thumbnail'],
           'original' => $upload['file']['image_path'] . $upload['file']['name'],
           'filesize' => $upload['file']['size'],
-          'storage' => 'file',
+          'storage' => 's3',
           'created' => date("Y-m-d H:i:s"),
           'status' => 'ready',
           'params' => '{}'
