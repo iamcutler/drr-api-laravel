@@ -83,7 +83,7 @@ class WallController extends \BaseController {
             'target' => 0,
             'content' => $params['comment'],
             'app' => $params['app'] . '.comment',
-            'cid' => $comment->id,
+            'cid' => $resource->id,
             'created' => date("Y-m-d H:i:s"),
             'access' => 0,
             'params' => '',
