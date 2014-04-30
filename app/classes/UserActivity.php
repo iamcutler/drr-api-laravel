@@ -116,6 +116,9 @@ class UserActivity implements UserActivityRepositoryInterface {
 
       // Database transaction to save image/activity
       $trans = DB::transaction(function() use ($user, $mobile_album, $caption, $upload) {
+        // Get comm user orm
+        $comm_user = $user->comm_user()->first();
+
         // Create photo record
         $newPhoto = $this->photo->create([
           'albumid' => $mobile_album->id,
@@ -144,7 +147,14 @@ class UserActivity implements UserActivityRepositoryInterface {
           'cid' => $mobile_album->id,
           'created' => date("Y-m-d H:i:s"),
           'access' => 0,
-          'params' => '',
+          'params' => json_encode([
+            "multiUrl" => "/index.php/{$comm_user->alias}/photos/album?albumid={$mobile_album->id}",
+            "photoid" => $newPhoto->id,
+            "action" => "upload",
+            "stream" => 1,
+            "photo_url" => "/index.php/{$comm_user->alias}/photos/photo?albumid={$mobile_album->id}&amp;photoid={$newPhoto->id}",
+            "style" => 1
+          ]),
           'archived' => 0,
           'location' => '',
           'comment_id' => $newPhoto->id,
