@@ -79,9 +79,6 @@ class ProfileController extends \BaseController {
       foreach(str_getcsv($profile->comm_user->friends, ',') as $val ) { $friend_count++; }
       $result['profile']['counts']['friends'] = $friend_count;
 
-      // Profile Feed
-      $result['profile']['feed'] = $this->profile->getFeed($profile);
-
       // Update profile views per hit
       $this->profile->addProfileView($profile->comm_user);
     }
@@ -169,7 +166,7 @@ class ProfileController extends \BaseController {
 
     if(!is_null($user))
     {
-      $result = $this->profile->getFeed($user->id, $offset, $limit);
+      $result = $this->profile->getFeed($user, $offset, $limit);
     }
 
     return Response::json($result);
