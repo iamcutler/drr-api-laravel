@@ -91,7 +91,8 @@ class Activity extends Eloquent {
       ->with('userActor.comm_user', 'userTarget.comm_user')
       // Comments
       ->with(['wall' => function($query) {
-          $query->with('user.comm_user');
+          $query->orderBy('date', 'DESC')
+                ->with('user.comm_user');
         }])
       // Media
       ->with('photo', 'video')
