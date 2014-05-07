@@ -117,8 +117,8 @@ class WallController extends \BaseController {
 
           $result['wall']['user']['id'] = $user->id;
           $result['wall']['user']['name'] = $user->name;
-          $result['wall']['user']['thumbnail'] = $comm_user->thumb;
-          $result['wall']['user']['avatar'] = $comm_user->avatar;
+          $result['wall']['user']['thumbnail'] = '/'. $comm_user->thumb;
+          $result['wall']['user']['avatar'] = '/'. $comm_user->avatar;
           $result['wall']['user']['slug'] = $comm_user->alias;
         }
       }
