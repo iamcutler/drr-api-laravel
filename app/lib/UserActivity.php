@@ -37,6 +37,7 @@ class UserActivity implements UserActivityRepositoryInterface {
     {
       $result = [
         'status' => true,
+        'user' => $record['user'],
         'like' => $this->presenter->likeStats($record['stats'])
       ];
     }
@@ -278,6 +279,7 @@ class UserActivity implements UserActivityRepositoryInterface {
       if($like->save())
       {
         $stats['stats'] = $like;
+        $stats['user'] = $this->detectUserLike($user, $like);
         $stats['result'] = true;
       }
     }
@@ -311,6 +313,7 @@ class UserActivity implements UserActivityRepositoryInterface {
         if($like->save())
         {
           $stats['stats'] = $like;
+          $stats['user'] = $this->detectUserLike($user, $like);
           $stats['result'] = true;
         }
       }
@@ -340,11 +343,44 @@ class UserActivity implements UserActivityRepositoryInterface {
         if($like->save())
         {
           $stats['stats'] = $like;
+          $stats['user'] = $this->detectUserLike($user, $like);
           $stats['result'] = true;
         }
       }
     }
 
     return $stats;
+  }
+
+  /**
+   * @param User $user
+   * @param Likes $like
+   * @desc Check if user has liked/disliked activity
+   * @return array
+   */
+  public function detectUserLike(User $user, Likes $like)
+  {
+    $result['like'] = false;
+    $result['dislike'] = false;
+
+    // Loop through likes to find user
+    foreach(explode(',', $like->like) as $key => $val)
+    {
+      if($val == $user->id)
+      {
+        $result['like'] = true;
+      }
+    }
+
+    // Loop through dislikes to find user
+    foreach(explode(',', $like->dislike) as $key => $val)
+    {
+      if($val == $user->id)
+      {
+        $result['dislike'] = true;
+      }
+    }
+
+    return $result;
   }
 }

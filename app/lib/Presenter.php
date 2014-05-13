@@ -68,7 +68,7 @@ class Presenter implements PresenterRepositoryInterface {
     return $result;
   }
 
-  public function profileFeed(Activity $value)
+  public function profileFeed(User $user, Activity $value)
   {
     $result = [];
     // Resource

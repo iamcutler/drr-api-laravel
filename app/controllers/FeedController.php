@@ -2,10 +2,11 @@
 
 class FeedController extends \BaseController {
 
-  public function __construct(User $user, Activity $activity, PresenterRepositoryInterface $presenter)
+  public function __construct(User $user, Activity $activity, UserActivityRepositoryInterface $activityRepo, PresenterRepositoryInterface $presenter)
   {
     $this->user = $user;
     $this->activity = $activity;
+    $this->activityRepo = $activityRepo;
     $this->presenter = $presenter;
   }
 
@@ -68,7 +69,17 @@ class FeedController extends \BaseController {
       $result[$key]['target']['slug'] = $target_comm->alias;
 
       // Resource stats
-      $result[$key]['stats'] = $this->presenter->likeStats($value->likes()->where('element', '=', $value->like_type)->first(), 0);
+      $resource_like = $value->likes()->where('element', '=', $value->like_type)->first();
+      $result[$key]['stats'] = $this->presenter->likeStats($resource_like, 0);
+
+      if($resource_like)
+      {
+        $result[$key]['stats']['user'] = $this->activityRepo->detectUserLike($user, $resource_like);
+      }
+      else {
+        $result[$key]['stats']['user']['like'] = false;
+        $result[$key]['stats']['user']['dislike'] = false;
+      }
 
       // Resource comments
       $result[$key]['comments'] = [];
@@ -126,7 +137,9 @@ class FeedController extends \BaseController {
 
   public function media($offset = 0)
   {
+    $params = Input::all();
     $feed = $this->activity->media_feed($offset)->get();
+    $user = $this->user->Find_id_by_hash($params['user_hash']);
     $result = [];
 
     foreach($feed as $key => $value)
@@ -148,8 +161,17 @@ class FeedController extends \BaseController {
       $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource stats
-      $result[$key]['stats'] = [];
-      $result[$key]['stats'] = $this->presenter->likeStats($value->likes()->where('element', '=', $value->like_type)->first(), 0);
+      $resource_like = $value->likes()->where('element', '=', $value->like_type)->first();
+      $result[$key]['stats'] = $this->presenter->likeStats($resource_like, 0);
+
+      if($resource_like)
+      {
+        $result[$key]['stats']['user'] = $this->activityRepo->detectUserLike($user, $resource_like);
+      }
+      else {
+        $result[$key]['stats']['user']['like'] = false;
+        $result[$key]['stats']['user']['dislike'] = false;
+      }
 
       // Resource comments
       $result[$key]['comments'] = [];

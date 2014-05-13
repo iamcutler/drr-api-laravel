@@ -21,7 +21,7 @@ class Profile implements ProfileRepositoryInterface {
 
     foreach($activity as $key => $value)
     {
-      $result[$key] = $this->presenter->profileFeed($value);
+      $result[$key] = $this->presenter->profileFeed($user, $value);
     }
 
     return $result;
