@@ -39,6 +39,7 @@ class SearchController extends \BaseController {
         {
           $result[$key]['id'] = (int) $value->id;
           $result[$key]['name'] = $value->name;
+          $result[$key]['username'] = $value->username;
           $result[$key]['avatar'] = $value->comm_user->avatar;
           $result[$key]['thumbnail'] = $value->comm_user->thumb;
           $result[$key]['slug'] = $value->comm_user->alias;

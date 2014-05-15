@@ -248,6 +248,7 @@ class ActivityController extends \BaseController {
 
       $results['activity']['user']['id'] = $user->id;
       $results['activity']['user']['name'] = $user->name;
+      $results['activity']['user']['username'] = $user->username;
       $results['activity']['user']['avatar'] = '/'. $comm_user->avatar;
       $results['activity']['user']['thumbnail'] = '/'. $comm_user->thumb;
       $results['activity']['user']['slug'] = $comm_user->alias;
@@ -260,6 +261,7 @@ class ActivityController extends \BaseController {
 
         $results['activity']['target']['id'] = $target->id;
         $results['activity']['target']['name'] = $target->name;
+        $results['activity']['target']['username'] = $target->username;
         $results['activity']['target']['avatar'] = '/'. $target_comm->avatar;
         $results['activity']['target']['thumbnail'] = '/'. $target_comm->thumb;
         $results['activity']['target']['slug'] = $target_comm->alias;
@@ -267,6 +269,7 @@ class ActivityController extends \BaseController {
       else {
         $results['activity']['target']['id'] = $user->id;
         $results['activity']['target']['name'] = $user->name;
+        $results['activity']['target']['username'] = $user->username;
         $results['activity']['target']['avatar'] = '/'. $comm_user->avatar;
         $results['activity']['target']['thumbnail'] = '/'. $comm_user->thumb;
         $results['activity']['target']['slug'] = $comm_user->alias;
@@ -466,6 +469,7 @@ class ActivityController extends \BaseController {
     $results[$key]['id'] = $activity->id;
     $results[$key]['user']['id'] = $actor->id;
     $results[$key]['user']['name'] = $actor->name;
+    $results[$key]['user']['username'] = $actor->username;
     $results[$key]['user']['avatar'] = '/'. $comm_user->avatar;
     $results[$key]['user']['thumbnail'] = '/'. $comm_user->thumb;
     $results[$key]['user']['slug'] = $comm_user->alias;
@@ -477,6 +481,7 @@ class ActivityController extends \BaseController {
       $comm_user = $user->comm_user()->first();
 
       $results[$key]['comments'][$k]['user']['name'] = $user->name;
+      $results[$key]['comments'][$k]['user']['username'] = $user->username;
       $results[$key]['comments'][$k]['user']['avatar'] = '/'. $comm_user->avatar;
       $results[$key]['comments'][$k]['user']['thumbnail'] = '/'. $comm_user->thumb;
       $results[$key]['comments'][$k]['user']['slug'] = $comm_user->alias;

@@ -47,6 +47,7 @@ class FeedController extends \BaseController {
       // Resource owner
       $result[$key]['actor']['id'] = (int) $value->userActor->id;
       $result[$key]['actor']['name'] = $value->userActor->name;
+      $result[$key]['actor']['username'] = $value->userActor->username;
       $result[$key]['actor']['thumbnail'] = '/' . $value->userActor->comm_user->thumb;
       $result[$key]['actor']['avatar'] = '/' . $value->userActor->comm_user->avatar;
       $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
@@ -64,6 +65,7 @@ class FeedController extends \BaseController {
 
       $result[$key]['target']['id'] = (int) $target->id;
       $result[$key]['target']['name'] = $target->name;
+      $result[$key]['target']['username'] = $target->username;
       $result[$key]['target']['thumbnail'] = '/' . $target_comm->thumb;
       $result[$key]['target']['avatar'] = '/' . $target_comm->avatar;
       $result[$key]['target']['slug'] = $target_comm->alias;
@@ -87,6 +89,7 @@ class FeedController extends \BaseController {
       {
         $result[$key]['comments'][$k]['user']['id'] = (int) $v->user->id;
         $result[$key]['comments'][$k]['user']['name'] = $v->user->name;
+        $result[$key]['comments'][$k]['user']['username'] = $v->user->username;
         $result[$key]['comments'][$k]['user']['avatar'] = '/' . $v->user->comm_user->avatar;
         $result[$key]['comments'][$k]['user']['thumbnail'] = '/' . $v->user->comm_user->thumb;
         $result[$key]['comments'][$k]['user']['slug'] = $v->user->comm_user->alias;
@@ -156,6 +159,7 @@ class FeedController extends \BaseController {
       // Resource owner
       $result[$key]['actor']['id'] = (int) $value->userActor->id;
       $result[$key]['actor']['name'] = $value->userActor->name;
+      $result[$key]['actor']['username'] = $value->userActor->username;
       $result[$key]['actor']['thumbnail'] = '/'. $value->userActor->comm_user->thumb;
       $result[$key]['actor']['avatar'] = '/'. $value->userActor->comm_user->avatar;
       $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
@@ -179,6 +183,7 @@ class FeedController extends \BaseController {
       {
         $result[$key]['comments'][$k]['user']['id'] = $val->user->id;
         $result[$key]['comments'][$k]['user']['name'] = $val->user->name;
+        $result[$key]['comments'][$k]['user']['username'] = $val->user->username;
         $result[$key]['comments'][$k]['user']['avatar'] = '/'. $val->user->comm_user->avatar;
         $result[$key]['comments'][$k]['user']['thumbnail'] = '/'. $val->user->comm_user->thumb;
         $result[$key]['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;

@@ -84,6 +84,7 @@ class Presenter implements PresenterRepositoryInterface {
     /// Resource owner
     $result['actor']['id'] = (int) $value->userActor->id;
     $result['actor']['name'] = $value->userActor->name;
+    $result['actor']['username'] = $value->userActor->username;
     $result['actor']['thumbnail'] = '/' . $value->userActor->comm_user->thumb;
     $result['actor']['avatar'] = '/' . $value->userActor->comm_user->avatar;
     $result['actor']['slug'] = $value->userActor->comm_user->alias;
@@ -93,6 +94,7 @@ class Presenter implements PresenterRepositoryInterface {
     {
       $result['target']['id'] = (int) $value->userActor->id;
       $result['target']['name'] = $value->userActor->name;
+      $result['target']['username'] = $value->userActor->username;
       $result['target']['thumbnail'] = '/' . $value->userActor->comm_user->thumb;
       $result['target']['avatar'] = '/' . $value->userActor->comm_user->avatar;
       $result['target']['slug'] = $value->userActor->comm_user->alias;
@@ -100,6 +102,7 @@ class Presenter implements PresenterRepositoryInterface {
     else {
       $result['target']['id'] = (int) $value->userTarget->id;
       $result['target']['name'] = $value->userTarget->name;
+      $result['target']['username'] = $value->userTarget->username;
       $result['target']['thumbnail'] = '/' . $value->userTarget->comm_user->thumb;
       $result['target']['avatar'] = '/' . $value->userTarget->comm_user->avatar;
       $result['target']['slug'] = $value->userTarget->comm_user->alias;
@@ -114,6 +117,7 @@ class Presenter implements PresenterRepositoryInterface {
     {
       $result['comments'][$k]['user']['id'] = (int) $val->user->id;
       $result['comments'][$k]['user']['name'] = $val->user->name;
+      $result['comments'][$k]['user']['username'] = $val->user->username;
       $result['comments'][$k]['user']['avatar'] = '/' . $val->user->comm_user->avatar;
       $result['comments'][$k]['user']['thumbnail'] = '/' . $val->user->comm_user->thumb;
       $result['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;

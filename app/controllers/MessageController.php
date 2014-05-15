@@ -48,6 +48,7 @@ class MessageController extends \BaseController {
             // User formatting
             $result[$key]['user']['id'] = $recep->id;
             $result[$key]['user']['name'] = $recep->name;
+            $result[$key]['user']['username'] = $recep->username;
             $result[$key]['user']['avatar'] = $recep->avatar;
             $result[$key]['user']['thumbnail'] = $recep->thumbnail;
             $result[$key]['user']['slug'] = $recep->slug;
@@ -211,6 +212,7 @@ class MessageController extends \BaseController {
           // From
           $result['messages'][$key]['user_from']['id'] = $value->recepient->userFrom->id;
           $result['messages'][$key]['user_from']['name'] = $value->recepient->userFrom->name;
+          $result['messages'][$key]['user_from']['username'] = $value->recepient->userFrom->username;
           $result['messages'][$key]['user_from']['thumbnail'] = $value->recepient->userFrom->comm_user->thumb;
           $result['messages'][$key]['user_from']['avatar'] = $value->recepient->userFrom->comm_user->avatar;
           $result['messages'][$key]['user_from']['slug'] = $value->recepient->userFrom->comm_user->alias;
@@ -218,6 +220,7 @@ class MessageController extends \BaseController {
           // To
           $result['messages'][$key]['user_to']['id'] = $value->recepient->userTo->id;
           $result['messages'][$key]['user_to']['name'] = $value->recepient->userTo->name;
+          $result['messages'][$key]['user_to']['username'] = $value->recepient->userTo->username;
           $result['messages'][$key]['user_to']['thumbnail'] = $value->recepient->userTo->comm_user->thumb;
           $result['messages'][$key]['user_to']['avatar'] = $value->recepient->userTo->comm_user->avatar;
           $result['messages'][$key]['user_to']['slug'] = $value->recepient->userTo->comm_user->alias;
