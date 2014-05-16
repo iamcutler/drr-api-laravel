@@ -122,11 +122,15 @@ class Activity extends Eloquent {
   public function scopeMedia_feed($query, $offset = 0, $limit = 10)
   {
     return $query
-      ->with('userActor.comm_user', 'activity_wall.user.comm_user')
-      // Video
-      ->with('video')
-      // Photo
-      ->with('photo')
+      ->with('userActor.comm_user')
+      // Wall
+      ->with(['activity_wall' => function($query) {
+        $query
+          ->orderBy('date', 'DESC')
+          ->with('user.comm_user');
+      }])
+      // Video && Photo
+      ->with('video', 'photo')
       ->where('access', '=', 0)
       ->where('app', '=', 'photos')
       ->where('like_type', '=', 'photo')
