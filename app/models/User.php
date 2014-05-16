@@ -274,6 +274,7 @@ class User extends Eloquent {
       ->select([
         'users.id',
         'users.name',
+        'users.username',
         'community_users.avatar',
         'community_users.thumb as thumbnail',
         'community_users.status',

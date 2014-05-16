@@ -30,6 +30,7 @@ class UserConnection extends Eloquent {
       ->get([
         'community_connection.connection_id as id',
         'users.name',
+        'users.username',
         'community_users.alias as slug',
         'community_users.avatar',
         'community_users.thumb as thumbnail',
