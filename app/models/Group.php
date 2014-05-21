@@ -136,4 +136,61 @@ class Group extends Eloquent {
             ->where('like', '!=', '');
         }]);
   }
+
+  /**
+   * @param $q
+   * @param int $offset
+   * @param int $limit
+   * @summary search by name for groups
+   * @return mixed
+   */
+  public function scopeFindByName($query, $q, $offset = 0, $limit = 20) {
+    $q = explode(' ', $q);
+
+    $search = $query
+      ->where('published', '=', 1);
+
+    // Loop through string array to add search conditionals
+    foreach($q as $key => $val)
+    {
+      if($key == 0)
+      {
+        $search = $query->where('name', 'LIKE', '%' . $val . '%');
+      }
+      else {
+        $search = $query->orWhere('name', 'LIKE', '%' . $val . '%');
+      }
+    }
+
+    return $search
+      ->with('category')
+      ->with(['member' => function($query) {
+        $query
+          ->where('approved', '=', 1)
+          ->with('user.comm_user');
+      }])
+      ->skip($offset)
+      ->take($limit)
+      ->orderBy('name', 'ASC');
+  }
+
+  /**
+   * @param int $offset
+   * @param int $limit
+   * @summary Find all groups with eager loading
+   * @return mixed
+   */
+  public function scopeFindAll($query, $offset = 0, $limit = 20)
+  {
+    return $query
+      ->with('category')
+      ->with(['member' => function($query) {
+          $query
+            ->where('approved', '=', 1)
+            ->with('user.comm_user');
+        }])
+      ->skip($offset)
+      ->take($limit)
+      ->orderBy('name', 'ASC');
+  }
 }

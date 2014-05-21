@@ -70,6 +70,7 @@ Route::group(['before' => 'user-hash-auth'], function() {
     Route::group(['prefix' => 'search'], function() {
       Route::get('people', 'SearchController@people');
       Route::get('events', 'SearchController@events');
+      Route::get('groups', 'SearchController@groups');
     });
 
     // Activity

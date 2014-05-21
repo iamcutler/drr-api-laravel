@@ -2,10 +2,11 @@
 
 class SearchController extends \BaseController {
 
-  public function __construct(UserActivityRepositoryInterface $activity, Events $event, User $user)
+  public function __construct(UserActivityRepositoryInterface $activity, Events $event, Group $group, User $user)
   {
     $this->activity = $activity;
     $this->event = $event;
+    $this->group = $group;
     $this->user = $user;
   }
 
@@ -60,6 +61,11 @@ class SearchController extends \BaseController {
     return Response::json($result);
   }
 
+  /**
+   * @params string q
+   * @params int offset
+   * @return array
+   */
   public function events()
   {
     $params = Input::all();
@@ -87,6 +93,61 @@ class SearchController extends \BaseController {
           $result[$key]['enddate'] = $val->enddate;
           $result[$key]['avatar'] = $val->avatar;
           $result[$key]['thumbnail'] = $val->thumb;
+        }
+      }
+    }
+
+    return Response::json($result);
+  }
+
+  /**
+   * @params string q
+   * @params int offset
+   * @return array
+   */
+  public function groups()
+  {
+    $params = Input::all();
+    //$user = $this->user->find_id_by_hash($params['user_hash']);
+    $rules = [
+      'offset' => 'required|integer'
+    ];
+    $validation = Validator::make($params, $rules);
+    $result = [];
+
+    if($validation->passes())
+    {
+      // Run search on groups
+      if($params['q'] != '' || $params['q'])
+      {
+        $search = $this->group->findByName($params['q'], $params['offset'])->get();
+      }
+      else {
+        $search = $this->group->findAll($params['offset'])->get();
+      }
+
+      if(!is_null($search))
+      {
+        foreach($search as $key => $value)
+        {
+          $result[$key]['id'] = (int) $value->id;
+          $result[$key]['category'] = $value->category->name;
+          $result[$key]['name'] = $value->name;
+          $result[$key]['description'] = $value->description;
+          $result[$key]['avatar'] = '/'. $value->avatar;
+          $result[$key]['thumbnail'] = '/'. $value->thumb;
+          $result[$key]['params'] = json_decode($value->params);
+          $result[$key]['created'] = $value->created;
+
+          $result[$key]['members'] = [];
+          foreach($value->member as $k => $v)
+          {
+            $result[$key]['members'][$k]['name'] = $v->user->name;
+            $result[$key]['members'][$k]['username'] = $v->user->username;
+            $result[$key]['members'][$k]['avatar'] = $v->user->comm_user->avatar;
+            $result[$key]['members'][$k]['thumbnail'] = $v->user->comm_user->thumb;
+            $result[$key]['members'][$k]['slug'] = $v->user->comm_user->alias;
+          }
         }
       }
     }
