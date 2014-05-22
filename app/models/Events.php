@@ -153,4 +153,29 @@ class Events extends Eloquent {
             }]);
         }]);
   }
+
+  /**
+   * @param int $offset
+   * @param int $limit
+   * @desc Find all events by name
+   */
+  public function scopeFindAllByDate($query, $offset = 0, $limit = 20)
+  {
+    return $query
+      ->where('published', '=', 1)
+      ->where('permission', '<=', 30)
+      ->where('startdate', '>=', date('Y-m-d H:i:s'))
+      ->with(['member' => function($query) {
+          $query
+            ->where('status', '=', 1)
+            ->with(['user' => function($query) {
+                $query
+                  ->orderBy('name', 'ASC')
+                  ->with('comm_user');
+              }]);
+        }])
+      ->orderBy('created', 'DESC')
+      ->skip($offset)
+      ->take($limit);
+  }
 }

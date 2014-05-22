@@ -71,7 +71,7 @@ class SearchController extends \BaseController {
     $params = Input::all();
     $user = $this->user->find_id_by_hash($params['user_hash']);
     $rules = [
-      'q' => 'required',
+      //'q' => 'required',
       'type' => 'required',
       'offset' => 'required|integer'
     ];
@@ -80,7 +80,13 @@ class SearchController extends \BaseController {
 
     if($validation->passes())
     {
-      $search = $this->event->searchEvents($params['q'], $params['type'], $params['offset'])->get();
+      if($params['q'] != '')
+      {
+        $search = $this->event->searchEvents($params['q'], $params['type'], $params['offset'])->get();
+      }
+      else {
+        $search = $this->event->findAllByDate($params['offset'])->get();
+      }
 
       if(!is_null($search))
       {
