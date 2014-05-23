@@ -16,7 +16,9 @@ class Profile implements ProfileRepositoryInterface {
 
   public function getFeed(User $user, $offset = 0, $limit = 10)
   {
-    $activity = $user->profile_feed(819)->take($limit)->skip($offset)->get();
+    $activity = Cache::remember("profile-feed-{$user->id}-{$offset}", 30, function() use ($user, $offset, $limit) {
+      return $user->profile_feed()->take($limit)->skip($offset)->get();
+    });
     $result = [];
 
     foreach($activity as $key => $value)

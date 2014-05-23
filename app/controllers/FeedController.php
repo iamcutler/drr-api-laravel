@@ -21,7 +21,9 @@ class FeedController extends \BaseController {
     $user = $this->user->Find_id_by_hash($params['user_hash']);
     $result = [];
 
-    $activity = $this->activity->news_feed($user, $offset)->get();
+    $activity = Cache::remember("news-feed-{$user->id}-{$offset}", 30, function() use ($user, $offset) {
+      return $this->activity->news_feed($user, $offset)->get();
+    });
 
     foreach($activity as $key => $value)
     {
@@ -141,8 +143,10 @@ class FeedController extends \BaseController {
   public function media($offset = 0)
   {
     $params = Input::all();
-    $feed = $this->activity->media_feed($offset)->get();
     $user = $this->user->Find_id_by_hash($params['user_hash']);
+    $feed = Cache::remember("media-feed-{$offset}", 30, function() use ($offset) {
+      return $this->activity->media_feed($offset)->get();
+    });
     $result = [];
 
     foreach($feed as $key => $value)
