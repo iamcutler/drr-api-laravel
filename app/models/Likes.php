@@ -18,12 +18,12 @@ class Likes extends Eloquent {
    */
   public function user_like()
   {
-    return $this->belongsTo('User', 'like', 'id')->first();
+    return $this->belongsTo('User', 'like', 'id');
   }
 
   public function user_dislike()
   {
-    return $this->belongsTo('User', 'like', 'id')->first();
+    return $this->belongsTo('User', 'dislike', 'id');
   }
 
   /**
