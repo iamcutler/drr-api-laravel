@@ -169,12 +169,11 @@ class FeedController extends \BaseController {
       $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource stats
-      $resource_like = $value->likes()->where('element', '=', $value->like_type)->first();
-      $result[$key]['stats'] = $this->presenter->likeStats($resource_like, 0);
+      $result[$key]['stats'] = $this->presenter->likeStats($value->likes, 0);
 
-      if($resource_like)
+      if($value->likes)
       {
-        $result[$key]['stats']['user'] = $this->activityRepo->detectUserLike($user, $resource_like);
+        $result[$key]['stats']['user'] = $this->activityRepo->detectUserLike($user, $value->likes);
       }
       else {
         $result[$key]['stats']['user']['like'] = false;

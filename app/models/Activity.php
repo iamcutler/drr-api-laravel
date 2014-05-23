@@ -131,6 +131,11 @@ class Activity extends Eloquent {
       }])
       // Video && Photo
       ->with('video', 'photo')
+      ->with(['likes' => function($query) {
+          $query
+            ->where('element', '=', 'photo')
+            ->orWhere('element', '=', 'videos');
+        }])
       ->where('access', '=', 0)
       ->where('app', '=', 'photos')
       ->where('like_type', '=', 'photo')
