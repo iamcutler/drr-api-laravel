@@ -41,6 +41,7 @@
 	'shared' => array(
 		'{path.storage}/logs',
 		'{path.storage}/sessions',
+    '{path.storage}/cache',
     '{path}/config/database.php'
 	),
 
@@ -58,6 +59,7 @@
       '{path.storage}/sessions',
       '{path.storage}/logs',
       '{path.storage}/views',
+      '{path.storage}/cache',
 			'{path.public}'
 		),
 
