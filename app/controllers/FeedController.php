@@ -58,19 +58,28 @@ class FeedController extends \BaseController {
       if($value->target != 0 && $value->actor != $value->target)
       {
         $target = $value->userTarget;
-        $target_comm = $value->userTarget->comm_user;
+        if($target)
+        {
+          $target_comm = $value->userTarget->comm_user;
+        }
       }
       else {
         $target = $value->userActor;
-        $target_comm = $value->userActor->comm_user;
+        if($target)
+        {
+          $target_comm = $value->userActor->comm_user;
+        }
       }
 
-      $result[$key]['target']['id'] = (int) $target->id;
-      $result[$key]['target']['name'] = $target->name;
-      $result[$key]['target']['username'] = $target->username;
-      $result[$key]['target']['thumbnail'] = '/' . $target_comm->thumb;
-      $result[$key]['target']['avatar'] = '/' . $target_comm->avatar;
-      $result[$key]['target']['slug'] = $target_comm->alias;
+      if($target)
+      {
+        $result[$key]['target']['id'] = (int) $target->id;
+        $result[$key]['target']['name'] = $target->name;
+        $result[$key]['target']['username'] = $target->username;
+        $result[$key]['target']['thumbnail'] = '/' . $target_comm->thumb;
+        $result[$key]['target']['avatar'] = '/' . $target_comm->avatar;
+        $result[$key]['target']['slug'] = $target_comm->alias;
+      }
 
       // Resource stats
       $resource_like = $value->likes()->where('element', '=', $value->like_type)->first();
