@@ -27,7 +27,10 @@ class Message extends Eloquent {
   {
     return $query
       ->with(['recepient' => function($query) {
-          $query->with('userFrom.comm_user', 'userTo.comm_user');
+          $query
+            ->with('userFrom.comm_user', 'userTo.comm_user')
+            // Update messages to read
+            ->update(['is_read' => 1]);
         }])
       ->where('parent', '=', $id)
       ->orderBy('posted_on', 'DESC')
