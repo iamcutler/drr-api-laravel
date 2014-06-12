@@ -2,6 +2,11 @@
 
 class AuthController extends \BaseController {
 
+  public function __construct(FacebookRepository $facebook)
+  {
+    $this->facebook = $facebook;
+  }
+
   public static function auth_user_hash_filter()
   {
     if(Input::has('user_hash')) {
@@ -60,5 +65,12 @@ class AuthController extends \BaseController {
     }
 
     return Response::json($result);
+  }
+
+  public function facebook_login()
+  {
+    $params = Input::all();
+
+    return Response::json($this->facebook->login($params));
   }
 }

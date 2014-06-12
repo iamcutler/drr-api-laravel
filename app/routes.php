@@ -23,7 +23,11 @@ Route::get('/', function()
 |--------------------------------------------------------------------------
 */
 // Login
-Route::post('/user/login', 'AuthController@login');
+Route::group(['prefix' => 'login'], function() {
+  Route::post('user', 'AuthController@login');
+  // Facebook authentication
+  Route::post('fb', 'AuthController@facebook_login');
+});
 // Check username uniqueness
 Route::post('/check/username/{username}', 'UserController@check_username_uniqueness');
 
