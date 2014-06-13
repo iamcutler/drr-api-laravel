@@ -76,7 +76,10 @@ class ProfileController extends \BaseController {
       $result['profile']['counts']['groups'] = (int) $profile->groupMember->count();
 
       $friend_count = 0;
-      foreach(str_getcsv($profile->comm_user->friends, ',') as $val ) { $friend_count++; }
+      if($profile->comm_user->friends != "")
+      {
+        foreach(str_getcsv($profile->comm_user->friends, ',') as $val ) { $friend_count++; }
+      }
       $result['profile']['counts']['friends'] = $friend_count;
 
       // Update profile views per hit
