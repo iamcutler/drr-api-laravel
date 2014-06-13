@@ -14,14 +14,8 @@ class FacebookConnect implements FacebookRepository {
     // Check for existing facebook user
     $existing = $this->user->where('email', '=', $fb['email'])->first();
 
-    if(!$existing)
+    if($existing)
     {
-      // Save new user
-      $user = $this->save_user($fb);
-
-
-    }
-    else {
       // Get relational comm_user data
       $comm_user = $existing->comm_user()->first();
 
@@ -36,6 +30,24 @@ class FacebookConnect implements FacebookRepository {
         ]
       ];
     }
+    else {
+      // Save new user
+      $user = $this->save_user($fb);
+
+      if($user['status'])
+      {
+        $result = ['status' => true,
+          'user' => [
+            'id' => $user['user']->id,
+            'name' => $user['user']->name,
+            'slug' => $user['comm_user']->alias,
+            'thumbnail' => $user['comm_user']->thumb,
+            'username' => $user['user']->username,
+            'hash' => $user['user']->user_hash
+          ]
+        ];
+      }
+    }
 
     return $result;
   }
@@ -44,51 +56,44 @@ class FacebookConnect implements FacebookRepository {
   {
     $result['status'] = false;
 
-    $transaction = DB::transaction(function() use ($fb) {
-      $result['result'] = false;
+    // Start transaction!
+    DB::beginTransaction();
 
-      $user = $this->user->save([
-        'name' => $fb['name'],
-        'username' => $fb['username'],
-        'email' => $fb['email'],
-        'password' => User::generate_password('facebookConnectDRR'),
-        'usertype' => 2,
-        'registerDate' => date("Y-m-d H:i:s"),
-        'lastvisitDate' => date("Y-m-d H:i:s"),
-        'params' => '',
-        'user_hash' => User::generate_hash($fb['first_name'] . " " . $fb['last_name'], $fb['username'])
-      ]);
+    try {
+      $user = new User;
+      $user->name = $fb['first_name'] ." ". $fb['last_name'];
+      $user->username = User::checkOrOverrideUsername($fb['username']);
+      $user->email = $fb['email'];
+      $user->password = User::generate_password('facebookConnectDRR');
+      $user->usertype = 2;
+      $user->registerDate = date("Y-m-d H:i:s");
+      $user->lastvisitDate = date("Y-m-d H:i:s");
+      $user->params = '';
+      $user->user_hash = User::generate_hash($fb['first_name'] . " " . $fb['last_name'], $fb['username']);
+      $user->save();
 
-      if($user)
-      {
-        $comm_user = $user->comm_user()->save([
-          'userid' => $user->id,
-          'alias' => $user->id . ":" . str_replace(' ', '-', $user->name)
-        ]);
+      $comm_user = new CommUser;
+      $comm_user->userid = $user->id;
+      $comm_user->alias = $user->id . ":" . str_replace(' ', '-', $user->name);
+      $comm_user->save();
 
-        if($comm_user)
-        {
-          $result['result'] = true;
-          $result['user'] = $user;
-          $result['comm_user'] = $comm_user;
-        }
-      }
-
-      return $result;
-    });
-
-    if($transaction['result'])
-    {
       $connect = new ConnectUser;
-      $connect->connectid = $fb->id;
+      $connect->connectid = $fb['id'];
       $connect->type = 'facebook';
-      $connect->userid = $transaction['user']->id;
+      $connect->userid = $user->id;
       $connect->save();
-
-      $result['status'] = true;
-      $result['user'] = $transaction['user'];
-      $result['comm_user'] = $transaction['comm_user'];
     }
+    catch(\Exception $e) {
+      DB::rollback();
+      throw $e;
+    }
+
+    // Commit transaction queries
+    DB::commit();
+
+    $result['status'] = true;
+    $result['user'] = $user;
+    $result['comm_user'] = $comm_user;
 
     return $result;
   }
