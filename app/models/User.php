@@ -418,4 +418,17 @@ class User extends Eloquent {
           $query->where('element', '=', 'profile');
         }]);
   }
+
+  public static function checkOrOverrideUsername($username)
+  {
+    // Check if username is unique
+    $password = User::where('username', '=', $username);
+    if($password->count() > 0)
+    {
+      return User::checkOrOverrideUsername($username . rand(0, 100));
+    }
+    else {
+      return $username;
+    }
+  }
 }
