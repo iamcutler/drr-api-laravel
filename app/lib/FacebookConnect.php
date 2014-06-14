@@ -16,6 +16,13 @@ class FacebookConnect implements FacebookRepository {
 
     if($existing)
     {
+      // generate user hash if non is assigned
+      if($existing->user_hash == "")
+      {
+        $existing->user_hash = User::generate_hash($existing->name, $existing->username);
+        $existing->save();
+      }
+
       // Get relational comm_user data
       $comm_user = $existing->comm_user()->first();
 
