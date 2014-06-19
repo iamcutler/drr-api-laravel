@@ -421,6 +421,48 @@ class ActivityController extends \BaseController {
           }
         }
         break;
+      // Photos
+      case 'photos':
+        $photo = $activity->photo()->first();
+
+        if($activity->actor == $user->id || $user->id == $photo->creator)
+        {
+          // Switch statement for different photo and album types
+          switch($activity->comment_type)
+          {
+            case 'photos':
+              // Remove AWS S3 objects
+              // Image
+              $this->AWS->deleteS3Object([
+                'Bucket' => Config::get('constant.AWS.bucket'),
+                'Key' => $photo->image
+              ]);
+              // Thumbnail
+              $this->AWS->deleteS3Object([
+                'Bucket' => Config::get('constant.AWS.bucket'),
+                'Key' => $photo->thumbnail
+              ]);
+              // Original
+              if($activity->image !== $activity->original)
+              {
+                $this->AWS->deleteS3Object([
+                  'Bucket' => Config::get('constant.AWS.bucket'),
+                  'Key' => $photo->original
+                ]);
+              }
+              // Delete photo
+              $photo->delete();
+
+              return true;
+              break;
+          }
+        }
+        break;
+      default:
+        if($user->id == $activity->actor)
+        {
+          return true;
+        }
     }
 
     return false;
