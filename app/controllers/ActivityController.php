@@ -371,7 +371,7 @@ class ActivityController extends \BaseController {
     $validator = Validator::make($input, $rules);
     $result = ['result' => false];
 
-    if(!$validator->fails())
+    if($validator->passes())
     {
       $user = $this->user->Find_id_by_hash($input['user_hash']);
       $activity = $this->activity->find($id);
