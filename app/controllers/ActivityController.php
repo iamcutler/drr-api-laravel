@@ -458,8 +458,35 @@ class ActivityController extends \BaseController {
           }
         }
         break;
-      default:
+      case 'videos':
         if($user->id == $activity->actor)
+        {
+          // Check comment type on videos
+          switch($activity->comment_type)
+          {
+            case 'videos':
+              $video = $activity->video()->first();
+
+              // If video ORM was found
+              if($video)
+              {
+                // Delete based on video type. Ex: youtube
+                switch($video->type)
+                {
+                  default:
+                    $video->delete();
+                }
+              }
+
+              return true;
+              break;
+            default:
+              return true;
+          }
+        }
+        break;
+      default:
+        if($user->id == $activity->actor || $user->id == $activity->target)
         {
           return true;
         }
