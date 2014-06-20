@@ -112,7 +112,6 @@ Route::group(['before' => 'user-hash-auth'], function() {
   */
   Route::group(['prefix' => 'dirty-girls'], function() {
     Route::get('/', 'DirtyGirlController@index');
-    Route::get('{id}', 'DirtyGirlController@show');
     Route::resource('voting/current', 'VoteController', ['only' => ['index', 'store']]);
 
     Route::group(['prefix' => 'submission'], function() {
