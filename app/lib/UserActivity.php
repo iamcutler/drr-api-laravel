@@ -83,10 +83,10 @@ class UserActivity implements UserActivityRepositoryInterface {
       case 'username':
         break;
       case 'name':
-        $result = $this->user->searchByName($q, $user_id, $offset);
+        $result = $this->user->searchByNameOrUsername($q, $user_id, $offset);
         break;
       default:
-        $result = $this->user->searchByName($q, $user_id, $offset);
+        $result = $this->user->searchByNameOrUsername($q, $user_id, $offset);
     }
 
     return $result;
