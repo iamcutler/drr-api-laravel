@@ -141,6 +141,7 @@ class Profile implements ProfileRepositoryInterface {
     if($user_comm->alias == $slug)
     {
       // Output album information
+      $results['id'] = $album->id;
       $results['name'] = $album->name;
       $results['permissions'] = $album->permissions;
       $results['album_owner'] = ($requester->id === $album->creator) ? true : false;
@@ -152,9 +153,13 @@ class Profile implements ProfileRepositoryInterface {
       {
         $results['photos'][$key]['id'] = $val['id'];
         $results['photos'][$key]['thumbnail'] = '/' . $val['thumbnail'];
+        $results['photos'][$key]['image'] = '/' . $val['image'];
         $results['photos'][$key]['params'] = json_decode($val['params']);
         $results['photos'][$key]['permissions'] = $val['permissions'];
         $results['photos'][$key]['created'] = $val['created'];
+
+        $results['photos'][$key]['stats'] = $this->presenter->likeStats($val->likes->first(), 0);
+        $results['photos'][$key]['comments'] = $this->presenter->Wall($val->wall);
       }
     }
 

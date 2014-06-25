@@ -79,6 +79,11 @@ class UserPhoto extends Eloquent {
     return $query
       ->where('albumid', '=', $id)
       ->where('published', '=', 1)
+      // Eager load comments and likes
+      ->with('likes')
+      ->with(['wall' => function($query) {
+          $query->with('user.comm_user');
+        }])
       ->orderBy('created', 'DESC');
   }
 }
