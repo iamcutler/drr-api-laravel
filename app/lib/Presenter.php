@@ -55,6 +55,7 @@ class Presenter implements PresenterRepositoryInterface {
     {
       $result[$key]['user']['id'] = $value->user->id;
       $result[$key]['user']['name'] = $value->user->name;
+      $result[$key]['user']['username'] = $value->user->username;
       $result[$key]['user']['avatar'] = '/' . $value->user->comm_user->avatar;
       $result[$key]['user']['thumbnail'] = '/' . $value->user->comm_user->thumb;
       $result[$key]['user']['slug'] = $value->user->comm_user->alias;
