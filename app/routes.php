@@ -14,7 +14,7 @@
 // Home
 Route::get('/', function()
 {
-  return View::make('default');
+  return View::make('home');
 });
 
 /*
