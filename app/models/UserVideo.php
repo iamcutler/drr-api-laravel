@@ -70,6 +70,10 @@ class UserVideo extends Eloquent {
   public function scopeFind_all_by_user_id($query, $id)
   {
     return $query
+      ->with(['wall' => function($q) {
+          $q->with('user.comm_user');
+        }])
+      ->with('likes')
       ->where('creator', '=', $id)
       ->where('published', '=', 1);
   }

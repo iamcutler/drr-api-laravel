@@ -131,8 +131,6 @@ class ProfileController extends \BaseController {
       {
         $result[$key]['id'] = $value->id;
         $result[$key]['title'] = $value->title;
-        $result[$key]['type'] = $value->type;
-        $result[$key]['video_id'] = $value->video_id;
         $result[$key]['description'] = $value->description;
         $result[$key]['creator'] = $value->creator;
         $result[$key]['creator_type'] = $value->creator_type;
@@ -143,12 +141,20 @@ class ProfileController extends \BaseController {
         $result[$key]['featured'] = $value->featured;
         $result[$key]['duration'] = $value->duration;
         $result[$key]['status'] = $value->status;
-        $result[$key]['thumb'] = '/' . $value->thumb;
-        $result[$key]['path'] = $value->path;
         $result[$key]['groupid'] = $value->groupid;
         $result[$key]['filesize'] = $value->filesize;
         $result[$key]['location'] = $value->location;
         $result[$key]['params'] = $value->params;
+
+        $result[$key]['media']['video_id'] = $value->video_id;
+        $result[$key]['media']['type'] = $value->type;
+        $result[$key]['media']['thumbnail'] = '/' . $value->thumb;
+        $result[$key]['media']['path'] = $value->path;
+
+        // Stats and comments
+        $result[$key]['stats'] = $this->presenter->likeStats($value->likes, 0);
+
+        $result[$key]['comments'] = $this->presenter->Wall($value->wall);
       }
     }
 
