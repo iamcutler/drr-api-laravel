@@ -1,10 +1,20 @@
 <?php
 
+use DRR\Transformers\VideoTransformer;
+use DRR\Transformers\WallTransformer;
+
 class ProfileController extends \BaseController {
+
+  /**
+   * @var DRR\Transformers\
+   */
+  protected $videoTransformer;
+  protected $wallTransformer;
 
   public function __construct(User $user, CommUser $comm_user, UserPhoto $photo, UserVideo $video,
                               UserConnection $connection, EventMember $eventMember, GroupMember $groupMember,
-                              ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter)
+                              ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter,
+                              VideoTransformer $videoTransformer, WallTransformer $wallTransformer)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
@@ -15,6 +25,8 @@ class ProfileController extends \BaseController {
     $this->groupMember = $groupMember;
     $this->profile = $profile;
     $this->presenter = $presenter;
+    $this->videoTransformer = $videoTransformer;
+    $this->wallTransformer = $wallTransformer;
   }
 
   public function user_profile($slug)
@@ -120,47 +132,36 @@ class ProfileController extends \BaseController {
     return Response::json($results);
   }
 
+  /**
+   * @param $slug
+   * @desc Fetch user videos by slug
+   * @return mixed
+   */
   public function videos($slug)
   {
     $user = $this->comm_user->Find_by_slug($slug);
-    $result = [];
+    $videos = [];
 
     if(!is_null($user))
     {
-      foreach($this->video->Find_all_by_user_id($user->userid)->get() as $key => $value)
+      $resource = $this->video->find_all_by_user_id($user->userid)->get();
+
+      foreach($resource as $key => $val)
       {
-        $result[$key]['id'] = $value->id;
-        $result[$key]['title'] = $value->title;
-        $result[$key]['description'] = $value->description;
-        $result[$key]['creator'] = $value->creator;
-        $result[$key]['creator_type'] = $value->creator_type;
-        $result[$key]['created'] = $value->created;
-        $result[$key]['permissions'] = $value->permissions;
-        $result[$key]['category_id'] = $value->category_id;
-        $result[$key]['hits'] = $value->hits;
-        $result[$key]['featured'] = $value->featured;
-        $result[$key]['duration'] = $value->duration;
-        $result[$key]['status'] = $value->status;
-        $result[$key]['groupid'] = $value->groupid;
-        $result[$key]['filesize'] = $value->filesize;
-        $result[$key]['location'] = $value->location;
-        $result[$key]['params'] = $value->params;
-
-        $result[$key]['media']['video_id'] = $value->video_id;
-        $result[$key]['media']['type'] = $value->type;
-        $result[$key]['media']['thumbnail'] = '/' . $value->thumb;
-        $result[$key]['media']['path'] = $value->path;
-
-        // Stats and comments
-        $result[$key]['stats'] = $this->presenter->likeStats($value->likes, 0);
-
-        $result[$key]['comments'] = $this->presenter->Wall($value->wall);
+        $videos[$key] = $this->videoTransformer->transform($val->toArray());
+        $videos[$key]['comments'] = $this->wallTransformer->transformCollection($val->wall->toArray());
       }
     }
 
-    return Response::json($result);
+    return Response::json($videos);
   }
 
+  /**
+   * @param $slug
+   * @param $id
+   * @desc Fetch single user video
+   * @return mixed
+   */
   public function video($slug, $id)
   {
     $result = $this->profile->video($slug, $id);
