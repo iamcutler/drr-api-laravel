@@ -2,6 +2,7 @@
 
 use DRR\Transformers\VideoTransformer;
 use DRR\Transformers\WallTransformer;
+use DRR\Transformers\ProfileTransformer;
 
 class ProfileController extends \BaseController {
 
@@ -10,23 +11,23 @@ class ProfileController extends \BaseController {
    */
   protected $videoTransformer;
   protected $wallTransformer;
+  protected $profileTransformer;
 
   public function __construct(User $user, CommUser $comm_user, UserPhoto $photo, UserVideo $video,
-                              UserConnection $connection, EventMember $eventMember, GroupMember $groupMember,
-                              ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter,
-                              VideoTransformer $videoTransformer, WallTransformer $wallTransformer)
+                              UserConnection $connection, ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter,
+                              VideoTransformer $videoTransformer, WallTransformer $wallTransformer,
+                              ProfileTransformer $profileTransformer)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
     $this->photo = $photo;
     $this->video = $video;
     $this->connection = $connection;
-    $this->eventMember = $eventMember;
-    $this->groupMember = $groupMember;
     $this->profile = $profile;
     $this->presenter = $presenter;
     $this->videoTransformer = $videoTransformer;
     $this->wallTransformer = $wallTransformer;
+    $this->profileTransformer = $profileTransformer;
   }
 
   public function user_profile($slug)
@@ -38,64 +39,11 @@ class ProfileController extends \BaseController {
 
     if(!is_null($profile))
     {
-      $result['user']['id'] = (int) $profile->id;
-      $result['user']['name'] = $profile->name;
-      $result['user']['username'] = $profile->username;
-      $result['user']['slug'] = $profile->comm_user->alias;
-      $result['user']['avatar'] = $profile->comm_user->avatar;
-      $result['user']['thumbnail'] = $profile->comm_user->thumb;
-
-      // Relation array to tell relationship to requester
-      $result['relation'] = [];
-      $result['relation']['self'] = ($requester->id == $profile->id) ? true : false;
-      $result['relation']['friends'] = false;
-      $result['relation']['request_sent'] = false;
-
-      // Check if requester and user are friends
-      foreach(str_getcsv($profile->comm_user->friends, ',') as $key => $val)
-      {
-        if($val == $requester->id)
-        {
-          $result['relation']['friends'] = true;
-        }
-      }
-
-      // Change friend request to true if detected
-      if($this->connection->Find_existing_connection($profile->id, $requester->id)->count() > 0)
-      {
-        $result['relation']['request_sent'] = true;
-      }
-
-      // Profile array
-      $result['profile']['status']['status'] = $profile->comm_user->status;
-      $result['profile']['status']['created'] = $profile->comm_user->posted_on;
-
-      $result['profile']['views'] = $profile->comm_user->view;
-      $result['profile']['friends'] = $profile->comm_user->friends;
-      $result['profile']['friend_count'] = (int) $profile->comm_user->friendcount;
-      $result['profile']['last_visit'] = $profile->lastvisitDate;
-      $result['profile']['registered'] = $profile->registerDate;
-
-      $result['profile']['settings'] = json_decode($profile->comm_user->params);
-
-      // Profile status
-      $result['profile']['stats'] = $this->presenter->likeStats($profile->profile_likes, 0);
-
-      // Count array
-      $result['profile']['counts']['photos'] = (int) $profile->photo->count();
-      $result['profile']['counts']['videos'] = (int) $profile->video->count();
-      $result['profile']['counts']['events'] = (int) $profile->eventMember->count();
-      $result['profile']['counts']['groups'] = (int) $profile->groupMember->count();
-
-      $friend_count = 0;
-      if($profile->comm_user->friends != "")
-      {
-        foreach(str_getcsv($profile->comm_user->friends, ',') as $val ) { $friend_count++; }
-      }
-      $result['profile']['counts']['friends'] = $friend_count;
+      $profile['requester'] = $requester;
+      $result = $this->profileTransformer->transform($profile->toArray());
 
       // Update profile views per hit
-      $this->profile->addProfileView($profile->comm_user);
+      $profile->comm_user->increment('view', 1);
     }
 
     return Response::json($result);
