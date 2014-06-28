@@ -53,6 +53,7 @@ class GroupController extends \BaseController {
 
     if(!is_null($group))
     {
+      /** TODO: Use group transformer */
       // Format group payload
       $results['id'] = (int) $group->id;
       $results['ownerid'] = (int) $group->ownerid;

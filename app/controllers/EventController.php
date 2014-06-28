@@ -132,6 +132,7 @@ class EventController extends \BaseController {
     $event = $this->event->eagerEventData()->find($id);
     $results = [];
 
+    /** TODO: Use event transformer */
     // Format output
     $results['event']['id'] = $event ->id;
     $results['event']['category'] = $event->category->name;

@@ -38,6 +38,7 @@ class SearchController extends \BaseController {
 
         foreach($search as $key => $value)
         {
+          /** TODO: Use user transformer */
           $result[$key]['id'] = (int) $value->id;
           $result[$key]['name'] = $value->name;
           $result[$key]['username'] = $value->username;
@@ -92,6 +93,7 @@ class SearchController extends \BaseController {
       {
         foreach($search as $key => $val)
         {
+          /** TODO: Look into creating event transformer and use here */
           $result[$key]['id'] = (int) $val->id;
           $result[$key]['title'] = $val->title;
           $result[$key]['location'] = $val->location;
@@ -136,6 +138,7 @@ class SearchController extends \BaseController {
       {
         foreach($search as $key => $value)
         {
+          /** TODO: Look into creating group tranformer */
           $result[$key]['id'] = (int) $value->id;
           $result[$key]['category'] = $value->category->name;
           $result[$key]['name'] = $value->name;

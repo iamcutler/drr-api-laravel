@@ -14,6 +14,7 @@ class VoteController extends \BaseController {
    *
    * @return Response
    */
+  /** TODO: Create vote transformer and pass through output */
   public function index()
   {
     $current_poll = $this->poll->Get_current()->first();

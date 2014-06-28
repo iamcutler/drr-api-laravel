@@ -109,6 +109,7 @@ class WallController extends \BaseController {
         {
           $comment = $save['comment'];
 
+          /** TODO: Pass output through wall transformer */
           $result['result'] = true;
           $result['wall']['id'] = $comment->id;
           $result['wall']['type'] = $comment->type;

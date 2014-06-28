@@ -45,6 +45,7 @@ class MessageController extends \BaseController {
           // Make sure user is found
           if(!is_null($recep))
           {
+            /** TODO: Use transformers for message output */
             // User formatting
             $result[$key]['user']['id'] = $recep->id;
             $result[$key]['user']['name'] = $recep->name;
@@ -199,6 +200,7 @@ class MessageController extends \BaseController {
 
         foreach($messages as $key => $value)
         {
+          /** TODO: Use message transformer */
           // Message formatting
           $result['messages'][$key]['id'] = $value->id;
           $result['messages'][$key]['subject'] = $value->subject;
