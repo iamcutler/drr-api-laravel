@@ -9,5 +9,4 @@ interface ProfileRepositoryInterface {
   public function photo($slug, $id);
   public function video($slug, $id);
   public function findOrCreateMobileAlbum($user_id);
-  public function addProfileView(CommUser $user, $num = 1);
 }
