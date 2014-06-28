@@ -13,16 +13,14 @@ class ProfileController extends \BaseController {
   protected $wallTransformer;
   protected $profileTransformer;
 
-  public function __construct(User $user, CommUser $comm_user, UserPhoto $photo, UserVideo $video,
-                              UserConnection $connection, ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter,
+  public function __construct(User $user, CommUser $comm_user, UserVideo $video,
+                              ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter,
                               VideoTransformer $videoTransformer, WallTransformer $wallTransformer,
                               ProfileTransformer $profileTransformer)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
-    $this->photo = $photo;
     $this->video = $video;
-    $this->connection = $connection;
     $this->profile = $profile;
     $this->presenter = $presenter;
     $this->videoTransformer = $videoTransformer;
