@@ -6,12 +6,15 @@ class ProfileTransformer extends Transformer {
 
   protected $userTransformer;
   protected $likesTransformer;
+  protected $userLikesTransformer;
   protected $connection;
 
-  function __construct(UserTransformer $userTransformer, LikesTransformer $likesTransformer, Connection $connection)
+  function __construct(UserTransformer $userTransformer, LikesTransformer $likesTransformer, UserLikesTransformer $userLikesTransformer,
+                       Connection $connection)
   {
     $this->userTransformer = $userTransformer;
     $this->likesTransformer = $likesTransformer;
+    $this->userLikesTransformer = $userLikesTransformer;
     $this->connection = $connection;
   }
 
@@ -68,15 +71,15 @@ class ProfileTransformer extends Transformer {
           'groups' => (int) count($profile['group_member']),
           'friends' => $friend_count
         ],
-        // Relationship to requester
-        'relation' => [
-          'self' => (bool) ($profile['requester']['id'] == $profile['id']) ? true : false,
-          'friends' => (bool) $friend_status,
-          'request_sent' => (bool) $request_sent
-        ],
         // Profile status
-        'stats' => $this->likesTransformer->transform($profile['profile_likes'])
-    ]
+        'stats' => $this->userLikesTransformer->transform($profile['profile_likes'], $profile['requester']->toArray())
+      ],
+      // Relationship to requester
+      'relation' => [
+        'self' => (bool) ($profile['requester']['id'] == $profile['id']) ? true : false,
+        'friends' => (bool) $friend_status,
+        'request_sent' => (bool) $request_sent
+      ]
     ];
   }
 }
