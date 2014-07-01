@@ -1,8 +1,9 @@
 <?php
 
-use DRR\Transformers\VideoTransformer;
-use DRR\Transformers\WallTransformer;
-use DRR\Transformers\ProfileTransformer;
+use \DRR\Transformers\VideoTransformer;
+use \DRR\Transformers\WallTransformer;
+use \DRR\Transformers\ProfileTransformer;
+use \DRR\Transformers\UserLikesTransformer;
 
 class ProfileController extends \BaseController {
 
@@ -12,11 +13,12 @@ class ProfileController extends \BaseController {
   protected $videoTransformer;
   protected $wallTransformer;
   protected $profileTransformer;
+  protected $userLikesTransformer;
 
   public function __construct(User $user, CommUser $comm_user, UserVideo $video,
                               ProfileRepositoryInterface $profile, PresenterRepositoryInterface $presenter,
                               VideoTransformer $videoTransformer, WallTransformer $wallTransformer,
-                              ProfileTransformer $profileTransformer)
+                              ProfileTransformer $profileTransformer, UserLikesTransformer $userLikesTransformer)
   {
     $this->user = $user;
     $this->comm_user = $comm_user;
@@ -26,6 +28,7 @@ class ProfileController extends \BaseController {
     $this->videoTransformer = $videoTransformer;
     $this->wallTransformer = $wallTransformer;
     $this->profileTransformer = $profileTransformer;
+    $this->userLikesTransformer = $userLikesTransformer;
   }
 
   public function user_profile($slug)
@@ -85,16 +88,20 @@ class ProfileController extends \BaseController {
    */
   public function videos($slug)
   {
+    $requester = $this->user->find_id_by_hash(Input::get('user_hash'));
     $user = $this->comm_user->Find_by_slug($slug);
     $videos = [];
 
-    if(!is_null($user))
+    if(isset($user))
     {
       $resource = $this->video->find_all_by_user_id($user->userid)->get();
 
       foreach($resource as $key => $val)
       {
         $videos[$key] = $this->videoTransformer->transform($val->toArray());
+
+        $videos[$key]['stats'] = $this->userLikesTransformer->transform((is_object($val->likes)) ? $val->likes->toArray() : [], $requester->toArray());
+
         $videos[$key]['comments'] = $this->wallTransformer->transformCollection($val->wall->toArray());
       }
     }

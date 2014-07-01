@@ -73,7 +73,9 @@ class UserVideo extends Eloquent {
       ->with(['wall' => function($q) {
           $q->with('user.comm_user');
         }])
-      ->with('likes')
+      ->with(['likes' => function($likes) {
+          $likes->where('element', '=', 'videos');
+        }])
       ->where('creator', '=', $id)
       ->where('published', '=', 1);
   }
