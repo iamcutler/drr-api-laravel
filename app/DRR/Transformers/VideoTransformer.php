@@ -24,7 +24,7 @@ class VideoTransformer extends Transformer {
       'media' => [
         'video_id' => $video['video_id'],
         'type' => $video['type'],
-        'thumbnail' => $video['thumb'],
+        'thumbnail' => "/{$video['thumb']}",
         'path' => $video['path']
       ]
     ];
