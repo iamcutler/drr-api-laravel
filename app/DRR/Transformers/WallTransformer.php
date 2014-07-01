@@ -14,8 +14,8 @@ class WallTransformer extends Transformer {
         'name' => $wall['user']['name'],
         'username' => $wall['user']['username'],
         'slug' => $wall['user']['comm_user']['alias'],
-        'thumbnail' => $wall['user']['comm_user']['thumb'],
-        'avatar' => $wall['user']['comm_user']['avatar']
+        'thumbnail' => "/{$wall['user']['comm_user']['thumb']}",
+        'avatar' => "/{$wall['user']['comm_user']['avatar']}"
       ]
     ];
   }
