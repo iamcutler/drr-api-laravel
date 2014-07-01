@@ -1,9 +1,15 @@
 <?php
 
+use \DRR\Transformers\WallTransformer;
+use \DRR\Transformers\UserLikesTransformer;
+
 class Profile implements ProfileRepositoryInterface {
 
+  protected $wallTransformer;
+  protected $userLikesTransformer;
+
   public function __construct(Activity $activity, User $user, UserField $field, UserPhoto $photo, UserPhotoAlbum $album, UserVideo $video,
-                              PresenterRepositoryInterface $presenter)
+                              PresenterRepositoryInterface $presenter, WallTransformer $wallTransformer, UserLikesTransformer $userLikesTransformer)
   {
     $this->activity = $activity;
     $this->field = $field;
@@ -12,6 +18,8 @@ class Profile implements ProfileRepositoryInterface {
     $this->photo = $photo;
     $this->video = $video;
     $this->presenter = $presenter;
+    $this->wallTransformer = $wallTransformer;
+    $this->userLikesTransformer = $userLikesTransformer;
   }
 
   public function getFeed(User $user, $offset = 0, $limit = 10)
@@ -134,7 +142,7 @@ class Profile implements ProfileRepositoryInterface {
     $user = $this->user->find($album->creator);
     $user_comm = $user->comm_user()->first();
     // Get all album photos
-    $photos = $album->photo()->Find_all_by_album_id($id)->get();
+    $photos = $album->photo()->find_all_by_album_id($id)->get();
     $results = [];
 
     // Check if slug matches owner alias
@@ -151,15 +159,22 @@ class Profile implements ProfileRepositoryInterface {
       // Loop output to photos array
       foreach($photos as $key => $val)
       {
-        $results['photos'][$key]['id'] = $val['id'];
-        $results['photos'][$key]['thumbnail'] = '/' . $val['thumbnail'];
-        $results['photos'][$key]['image'] = '/' . $val['image'];
+        $results['photos'][$key]['id'] = (int) $val['id'];
+        $results['photos'][$key]['thumbnail'] = "/{$val['thumbnail']}";
+        $results['photos'][$key]['image'] = "/{$val['image']}";
         $results['photos'][$key]['params'] = json_decode($val['params']);
         $results['photos'][$key]['permissions'] = $val['permissions'];
         $results['photos'][$key]['created'] = $val['created'];
 
-        $results['photos'][$key]['stats'] = $this->presenter->likeStats($val->likes->first(), 0);
-        $results['photos'][$key]['comments'] = $this->presenter->Wall($val->wall);
+        foreach($val->likes as $v)
+        {
+          if(isset($v))
+          {
+            $results['photos'][$key]['stats'] = $this->userLikesTransformer->transform($v->toArray(), $requester->toArray());
+          }
+        }
+
+        $results['photos'][$key]['comments'] = $this->wallTransformer->transformCollection($val->wall->toArray());
       }
     }
 
