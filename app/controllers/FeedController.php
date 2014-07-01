@@ -1,13 +1,26 @@
 <?php
 
+use \DRR\Transformers\UserTransformer;
+use \DRR\Transformers\WallTransformer;
+use \DRR\Transformers\UserLikesTransformer;
+
 class FeedController extends \BaseController {
 
-  public function __construct(User $user, Activity $activity, UserActivityRepositoryInterface $activityRepo, PresenterRepositoryInterface $presenter)
+  protected $userTransformer;
+  protected $wallTransformer;
+  protected $userLikesTransformer;
+
+  public function __construct(User $user, Activity $activity, UserActivityRepositoryInterface $activityRepo,
+                              PresenterRepositoryInterface $presenter, UserTransformer $userTransformer,
+                              WallTransformer $wallTransformer, UserLikesTransformer $userLikesTransformer)
   {
     $this->user = $user;
     $this->activity = $activity;
     $this->activityRepo = $activityRepo;
     $this->presenter = $presenter;
+    $this->userTransformer = $userTransformer;
+    $this->wallTransformer = $wallTransformer;
+    $this->userLikesTransformer = $userLikesTransformer;
   }
 
   /**
@@ -47,12 +60,7 @@ class FeedController extends \BaseController {
       $result[$key]['created'] = $value->created;
 
       // Resource owner
-      $result[$key]['actor']['id'] = (int) $value->userActor->id;
-      $result[$key]['actor']['name'] = $value->userActor->name;
-      $result[$key]['actor']['username'] = $value->userActor->username;
-      $result[$key]['actor']['thumbnail'] = '/' . $value->userActor->comm_user->thumb;
-      $result[$key]['actor']['avatar'] = '/' . $value->userActor->comm_user->avatar;
-      $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
+      $result[$key]['actor'] = $this->userTransformer->transform($value->userActor->toArray());
 
       // Resource Target
       if($value->target != 0 && $value->actor != $value->target)
@@ -83,30 +91,15 @@ class FeedController extends \BaseController {
 
       // Resource stats
       $resource_like = $value->likes()->where('element', '=', $value->like_type)->first();
-      $result[$key]['stats'] = $this->presenter->likeStats($resource_like, 0);
-
-      if($resource_like)
-      {
-        $result[$key]['stats']['user'] = $this->activityRepo->detectUserLike($user, $resource_like);
-      }
-      else {
-        $result[$key]['stats']['user']['like'] = false;
-        $result[$key]['stats']['user']['dislike'] = false;
-      }
+      // If like is NOT found
+      $resource_like = ($resource_like) ? $resource_like->toArray() : [];
+      $result[$key]['stats'] = $this->userLikesTransformer->transform($resource_like, $user->toArray());
 
       // Resource comments
       $result[$key]['comments'] = [];
       foreach($value->wall as $k => $v)
       {
-        $result[$key]['comments'][$k]['user']['id'] = (int) $v->user->id;
-        $result[$key]['comments'][$k]['user']['name'] = $v->user->name;
-        $result[$key]['comments'][$k]['user']['username'] = $v->user->username;
-        $result[$key]['comments'][$k]['user']['avatar'] = '/' . $v->user->comm_user->avatar;
-        $result[$key]['comments'][$k]['user']['thumbnail'] = '/' . $v->user->comm_user->thumb;
-        $result[$key]['comments'][$k]['user']['slug'] = $v->user->comm_user->alias;
-
-        $result[$key]['comments'][$k]['comment'] = $v->comment;
-        $result[$key]['comments'][$k]['date'] = $v->date;
+        $result[$key]['comments'][$k] = $this->wallTransformer->transform($v);
       }
 
       // Resource media
@@ -178,31 +171,16 @@ class FeedController extends \BaseController {
       $result[$key]['actor']['slug'] = $value->userActor->comm_user->alias;
 
       // Resource stats
-      $result[$key]['stats'] = $this->presenter->likeStats($value->likes, 0);
-
       if($value->likes)
       {
-        $result[$key]['stats']['user'] = $this->activityRepo->detectUserLike($user, $value->likes);
+        $result[$key]['stats'] = $this->userLikesTransformer->transform($value->likes->toArray(), $user->toArray());
       }
       else {
-        $result[$key]['stats']['user']['like'] = false;
-        $result[$key]['stats']['user']['dislike'] = false;
+        $result[$key]['stats'] = $this->userLikesTransformer->transform([], $user->toArray());
       }
 
       // Resource comments
-      $result[$key]['comments'] = [];
-      foreach($value->activity_wall as $k => $val)
-      {
-        $result[$key]['comments'][$k]['user']['id'] = $val->user->id;
-        $result[$key]['comments'][$k]['user']['name'] = $val->user->name;
-        $result[$key]['comments'][$k]['user']['username'] = $val->user->username;
-        $result[$key]['comments'][$k]['user']['avatar'] = '/'. $val->user->comm_user->avatar;
-        $result[$key]['comments'][$k]['user']['thumbnail'] = '/'. $val->user->comm_user->thumb;
-        $result[$key]['comments'][$k]['user']['slug'] = $val->user->comm_user->alias;
-
-        $result[$key]['comments'][$k]['comment'] = $val->comment;
-        $result[$key]['comments'][$k]['date'] = $val->date;
-      }
+      $result[$key]['comments'] = $this->wallTransformer->transformCollection($value->activity_wall->toArray());
 
       // Resource media
       $result[$key]['media'] = [];
