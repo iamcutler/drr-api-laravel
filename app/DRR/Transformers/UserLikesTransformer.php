@@ -2,7 +2,7 @@
 
 class UserLikesTransformer {
 
-  public function transform(array $like, array $user)
+  public function transform($like, $user)
   {
     return [
       'likes' => (int) (array_key_exists('like', $like)) ? $this->getCounts($like['like']) : 0,
