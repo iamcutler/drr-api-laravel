@@ -62,6 +62,13 @@ App::error(function(Exception $exception, $code)
   }
 });
 
+App::error(function(\DRR\ProfileNotFoundException $expection)
+{
+  Log::error($expection);
+
+  return Response::json(["status" => 404, "message" => "Profile wasn't found"]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Maintenance Mode Handler
