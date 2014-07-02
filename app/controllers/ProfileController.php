@@ -4,6 +4,7 @@ use \DRR\Transformers\VideoTransformer;
 use \DRR\Transformers\WallTransformer;
 use \DRR\Transformers\ProfileTransformer;
 use \DRR\Transformers\UserLikesTransformer;
+use \DRR\ProfileNotFoundException;
 
 class ProfileController extends \BaseController {
 
@@ -35,7 +36,16 @@ class ProfileController extends \BaseController {
   {
     $params = Input::all();
     $requester = $this->user->Find_id_by_hash($params['user_hash']);
-    $profile = $this->user->EagerProfileData()->find($this->comm_user->where('alias', '=', $slug)->first()->userid);
+
+    // Eager loading profile or throw ProfileNotFoundException
+    try
+    {
+      $profile = $this->user->EagerProfileData()->find($this->comm_user->where('alias', '=', $slug)->first()->userid);
+    }
+    catch(ErrorException $e) {
+      throw new ProfileNotFoundException;
+    }
+
     $result = [];
 
     if(!is_null($profile))
