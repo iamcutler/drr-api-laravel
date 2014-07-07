@@ -69,7 +69,7 @@ class Group extends Eloquent {
 
   public function likes()
   {
-    return $this->hasMany('Likes', 'uid');
+    return $this->hasOne('Likes', 'uid');
   }
 
   public function dislikes()
