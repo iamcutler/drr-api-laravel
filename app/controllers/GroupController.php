@@ -1,13 +1,35 @@
 <?php
 
+use \DRR\Transformers\GroupTransformer;
+use \DRR\Transformers\GroupMemberTransformer;
+use \DRR\Transformers\GroupAnnouncementTransformer;
+use \DRR\Transformers\GroupDiscussionTransformer;
+use \DRR\Transformers\GroupEventTransformer;
+use \DRR\Transformers\UserLikesTransformer;
+
 class GroupController extends \BaseController {
 
-  public function __construct(Group $group, User $user, CommUser $comm_user, GroupMember $member)
+  protected $groupTransformer;
+  protected $groupMemberTransformer;
+  protected $groupAccouncementTransformer;
+  protected $groupDiscussionTransformer;
+  protected $groupEventTransformer;
+  protected $userStatsTransformer;
+
+  public function __construct(Group $group, User $user, CommUser $comm_user, GroupMember $member,
+                              GroupTransformer $groupTransformer, GroupMemberTransformer $groupMemberTransformer, GroupAnnouncementTransformer $groupAnnouncementTransformer,
+                              GroupDiscussionTransformer $groupDiscussionTransformer, GroupEventTransformer $groupEventTransformer, UserLikesTransformer $userStatsTransformer)
   {
     $this->group = $group;
     $this->user = $user;
     $this->comm_user = $comm_user;
     $this->group_member = $member;
+    $this->groupTransformer = $groupTransformer;
+    $this->groupMemberTransformer = $groupMemberTransformer;
+    $this->groupAccouncementTransformer = $groupAnnouncementTransformer;
+    $this->groupDiscussionTransformer = $groupDiscussionTransformer;
+    $this->groupEventTransformer = $groupEventTransformer;
+    $this->userStatsTransformer = $userStatsTransformer;
   }
 
   /**
@@ -48,102 +70,33 @@ class GroupController extends \BaseController {
    */
   public function show($id)
   {
+    $requester = $this->user->find_id_by_hash(Input::get('user_hash'));
     $group = $this->group->eagerGroupData()->find($id);
     $results = [];
 
     if(!is_null($group))
     {
-      /** TODO: Use group transformer */
       // Format group payload
-      $results['id'] = (int) $group->id;
-      $results['ownerid'] = (int) $group->ownerid;
-      $results['category'] = $group->category->name;
-      $results['name'] = $group->name;
-      $results['description'] = $group->description;
-      $results['email'] = $group->email;
-      $results['website'] = $group->website;
-      $results['approvals'] = $group->approvals;
-      $results['avatar'] = $group->avatar;
-      $results['thumbnail'] = $group->thumb;
-      $results['created'] = $group->created;
+      $results = $this->groupTransformer->transform($group);
 
       // Group counts
       $results['counts']['discussions'] = (int) $group->discussion->count();
       $results['counts']['members'] = (int) $group->member->count();
-      $results['params'] = json_decode($group->params);
 
       // Group stats
-      $results['stats'] = [];
-      $results['stats']['likes'] = (int) $group->likes->count();
+      $results['stats'] = $this->userStatsTransformer->transform($group->likes->toArray()[0], $requester->toArray());
 
       // Group members
-      $results['members'] = [];
-      foreach($group->member as $key => $val)
-      {
-        $results['members'][$key]['name'] = $val->user->name;
-        $results['members'][$key]['avatar'] = $val->user->comm_user->avatar;
-        $results['members'][$key]['thumbnail'] = $val->user->comm_user->thumb;
-        $results['members'][$key]['slug'] = $val->user->comm_user->alias;
-        $results['members'][$key]['approved'] = $val->approved;
-        $results['members'][$key]['permissions'] = $val->permissions;
-      }
+      $results['members'] = $this->groupMemberTransformer->transformCollection($group->member->toArray());
 
       // Group announcements
-      $results['announcements'] = [];
-      foreach($group->bulletin as $key => $val)
-      {
-        $results['announcements'][$key]['id'] = $val->id;
-        $results['announcements'][$key]['title'] = $val->title;
-        $results['announcements'][$key]['message'] = $val->message;
-        $results['announcements'][$key]['params'] = json_decode($val->params);
-        $results['announcements'][$key]['date'] = $val->date;
-
-        $results['announcements'][$key]['user']['name'] = $val->user->name;
-        $results['announcements'][$key]['user']['avatar'] = $val->user->comm_user->avatar;
-        $results['announcements'][$key]['user']['thumbnail'] = $val->user->comm_user->thumb;
-        $results['announcements'][$key]['user']['slug'] = $val->user->comm_user->alias;
-      }
+      $results['announcements'] = $this->groupAccouncementTransformer->transformCollection($group->bulletin->toArray());
 
       // Group discussions
-      $results['discussions'] = [];
-      foreach($group->discussion as $key => $val)
-      {
-        $results['discussions'][$key]['id'] = $val->id;
-        $results['discussions'][$key]['content'] = $val->content;
-        $results['discussions'][$key]['app'] = $val->app;
-        $results['discussions'][$key]['cid'] = $val->cid;
-        $results['discussions'][$key]['groupid'] = $val->groupid;
-        $results['discussions'][$key]['group_access'] = $val->group_access;
-        $results['discussions'][$key]['access'] = $val->access;
-        $results['discussions'][$key]['params'] = json_decode($val->params);
-        $results['discussions'][$key]['comment_id'] = $val->comment_id;
-        $results['discussions'][$key]['comment_type'] = $val->comment_type;
-        //$results['discussions'][$key]['comment_count'] = $val->discussion_replys($val->cid)->count();
-        $results['discussions'][$key]['like_id'] = $val->like_id;
-        $results['discussions'][$key]['like_type'] = $val->like_type;
-        $results['discussions'][$key]['created'] = $val->created;
-
-        // Actor
-        $results['discussions'][$key]['user']['name'] = $val->userActor->name;
-        $results['discussions'][$key]['user']['avatar'] = $val->userActor->comm_user->avatar;
-        $results['discussions'][$key]['user']['thumbnail'] = $val->userActor->comm_user->thumb;
-        $results['discussions'][$key]['user']['slug'] = $val->userActor->comm_user->alias;
-      }
+      $results['discussions'] = $this->groupDiscussionTransformer->transformCollection($group->discussion->toArray());
 
       // Group events
-      $results['events'] = [];
-      foreach($group->events as $key => $val)
-      {
-        $results['events'][$key]['title'] = $val->title;
-        $results['events'][$key]['location'] = $val->location;
-        $results['events'][$key]['summary'] = $val->summary;
-        $results['events'][$key]['description'] = $val->description;
-        $results['events'][$key]['startdate'] = $val->startdate;
-        $results['events'][$key]['enddate'] = $val->enddate;
-        $results['events'][$key]['permissions'] = $val->permission;
-        $results['events'][$key]['avatar'] = $val->avatar;
-        $results['events'][$key]['thumb'] = $val->thumb;
-      }
+      $results['events'] = $this->groupEventTransformer->transformCollection($group->events->toArray());
 
       // Group Activity
       $results['activity'] = [];
@@ -199,11 +152,11 @@ class GroupController extends \BaseController {
       {
         $group = $val->group();
 
-        $result[$key]['id'] = $group->id;
+        $result[$key]['id'] = (int) $group->id;
         $result[$key]['name'] = $group->name;
         $result[$key]['description'] = $group->description;
-        $result[$key]['avatar'] = $group->avatar;
-        $result[$key]['thumbnail'] = $group->thumb;
+        $result[$key]['avatar'] = "/{$group->avatar}";
+        $result[$key]['thumbnail'] = "/{$group->thumb}";
         $result[$key]['permissions'] = $val->permissions;
       }
     }
