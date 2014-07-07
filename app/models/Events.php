@@ -151,7 +151,8 @@ class Events extends Eloquent {
                 ->orderBy('name', 'ASC')
                 ->with('comm_user');
             }]);
-        }]);
+        }])
+        ->with('likes');
   }
 
   /**
