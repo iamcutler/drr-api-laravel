@@ -74,9 +74,9 @@ class Events extends Eloquent {
   }
 
   public function likes() {
-    return $this->hasMany('Likes', 'uid')
-      ->where('like', '!=', '')
-      ->get();
+    return $this
+      ->hasOne('Likes', 'uid')
+      ->where('element', '=', 'events');
   }
 
   public function dislikes()
