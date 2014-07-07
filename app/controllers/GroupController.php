@@ -84,7 +84,7 @@ class GroupController extends \BaseController {
       $results['counts']['members'] = (int) $group->member->count();
 
       // Group stats
-      $results['stats'] = $this->userStatsTransformer->transform($group->likes->toArray()[0], $requester->toArray());
+      $results['stats'] = $this->userStatsTransformer->transform($group->likes->toArray(), $requester->toArray());
 
       // Group members
       $results['members'] = $this->groupMemberTransformer->transformCollection($group->member->toArray());
