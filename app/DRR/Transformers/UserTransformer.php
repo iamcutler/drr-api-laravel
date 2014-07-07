@@ -8,8 +8,8 @@ class UserTransformer extends Transformer {
       'name' => $user['name'],
       'username' => $user['username'],
       'email' => $user['email'],
-      'thumbnail' => "/{$user['comm_user']['thumb']}",
-      'avatar' => "/{$user['comm_user']['avatar']}",
+      'thumbnail' => ($user['comm_user']['thumb'] != '') ? "/{$user['comm_user']['thumb']}" : '',
+      'avatar' => ($user['comm_user']['avatar'] != '') ? "/{$user['comm_user']['avatar']}" : '',
       'slug' => $user['comm_user']['alias']
     ];
   }
