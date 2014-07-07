@@ -155,8 +155,8 @@ class GroupController extends \BaseController {
         $result[$key]['id'] = (int) $group->id;
         $result[$key]['name'] = $group->name;
         $result[$key]['description'] = $group->description;
-        $result[$key]['avatar'] = "/{$group->avatar}";
-        $result[$key]['thumbnail'] = "/{$group->thumb}";
+        $result[$key]['avatar'] = ($group->avatar!= '') ? "/{$group->avatar}" : '';
+        $result[$key]['thumbnail'] = ($group->thumb != '') ? "/{$group->thumb}" : '';
         $result[$key]['permissions'] = $val->permissions;
       }
     }
