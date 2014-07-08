@@ -6,15 +6,16 @@
 	"require": {
 		"laravel/framework": "4.1.*",
 		"barryvdh/laravel-cors": "dev-master",
+        "aws/aws-sdk-php-laravel": "1.*",
+        "intervention/image": "dev-master"
+	},
+    "require-dev": {
+        "anahkiasen/rocketeer": "dev-master",
+        "silvertipsoftware/factorygirl": "dev-master",
         "loic-sharma/profiler": "dev-master",
         "phpunit/phpunit": "3.7.*@dev",
         "Mockery/Mockery": ">=0.7.2",
-        "aws/aws-sdk-php-laravel": "1.*",
-        "intervention/image": "dev-master",
-		"anahkiasen/rocketeer": "dev-master"
-	},
-    "require-dev": {
-        "silvertipsoftware/factorygirl": "dev-master"
+        "phpspec/phpspec": "2.0.1"
     },
 	"autoload": {
 		"classmap": [
