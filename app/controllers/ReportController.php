@@ -12,32 +12,32 @@ class ReportController extends \BaseController {
   {
     if(Input::has('category') && Input::has('message') && Input::has('bug_type') && Input::has('user_hash'))
     {
-      $input = Input::all();
+      $params = Input::all();
 
-      $validator = $this->report->validate($input);
+      $validator = $this->report->validate($params);
 
-      if($validator->passes())
+      if($validator)
       {
         // Find user by passed in hash
-        $user = $this->user->Find_id_by_hash($input['user_hash']);
+        $user = $this->user->Find_id_by_hash($params['user_hash']);
 
         // Save model
         $this->report->create([
           'user_id' => $user->id,
-          'category' => $input['category'],
-          'message' => $input['message'],
+          'category' => $params['category'],
+          'message' => $params['message'],
           'ip' => Request::getClientIp(),
           'client' => $_SERVER['HTTP_USER_AGENT'],
-          'report_type' => $input['bug_type']
+          'report_type' => $params['bug_type']
         ]);
 
         // Data to pass to mailer
         $mailer = [
           'user_id' => $user->id,
           'user_name' => $user->name,
-          'category' => $input['category'],
-          'comments' => $input['message'],
-          'report_type' => $input['bug_type'],
+          'category' => $params['category'],
+          'comments' => $params['message'],
+          'report_type' => $params['bug_type'],
           'client' => $_SERVER['HTTP_USER_AGENT'],
           'ip' => Request::getClientIp()
         ];
