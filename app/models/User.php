@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
-
-class User extends Eloquent {
+class User extends BaseModel {
 
 	// The database table used by the model.
 	protected $table = 'users';
