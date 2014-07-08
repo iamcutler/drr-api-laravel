@@ -13,6 +13,9 @@
         "intervention/image": "dev-master",
 		"anahkiasen/rocketeer": "dev-master"
 	},
+    "require-dev": {
+        "silvertipsoftware/factorygirl": "dev-master"
+    },
 	"autoload": {
 		"classmap": [
 			"app/commands",

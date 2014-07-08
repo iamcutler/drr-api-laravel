@@ -111,6 +111,7 @@ return array(
     'Aws\Laravel\AwsServiceProvider',
     'Intervention\Image\ImageServiceProvider',
     'Rocketeer\RocketeerServiceProvider',
+    'SilvertipSoftware\FactoryGirl\FactoryGirlServiceProvider',
 	),
 
 	/*
@@ -180,6 +181,7 @@ return array(
     'AWS'             => 'Aws\Laravel\AwsFacade',
     'Image'           => 'Intervention\Image\Facades\Image',
     'Rocketeer'       => 'Rocketeer\Facades\Rocketeer',
+    'Factory'         => 'SilvertipSoftware\FactoryGirl\Facades\FactoryGirl',
 	),
 
 );
