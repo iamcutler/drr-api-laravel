@@ -12,6 +12,24 @@ class User extends BaseModel {
   public $timestamps = false;
 
   /**
+   * Validations
+   */
+  public static $rules = [
+    'name' => 'required',
+    'username' => 'required',
+    'email' => 'required|email|unique:users',
+    'password' => 'required',
+    'usertype' => 'required|integer',
+    'block' => 'required|integer',
+    'registerDate' => 'required',
+    'lastvisitDate' => 'required',
+    'activation' => 'required',
+    'params' => 'required',
+    'lastResetTime' => 'required',
+    'resetCount' => 'required|integer'
+  ];
+
+  /**
   * ORM
   */
   public function comm_user()
