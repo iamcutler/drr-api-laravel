@@ -4,8 +4,11 @@
 // Using these to keep password encryption consistency.
 */
 
+namespace DRR\AuthHelper;
+
 class AuthHelper {
-  static function genRandomPassword($length = 8) {
+
+  public function genRandomPassword($length = 8) {
     $salt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     $len = strlen($salt);
     $makepass = '';
@@ -21,7 +24,7 @@ class AuthHelper {
     return $makepass;
   }
 
-  static function getCryptedPassword($plaintext, $salt = '', $encryption = 'md5-hex', $show_encrypt = false) {
+  public function getCryptedPassword($plaintext, $salt = '', $encryption = 'md5-hex', $show_encrypt = false) {
     // Get the salt to use.
     $salt = AuthHelper::getSalt($encryption, $salt, $plaintext);
 
@@ -97,7 +100,7 @@ class AuthHelper {
     }
   }
 
-  static function getSalt($encryption = 'md5-hex', $seed = '', $plaintext = '') {
+  public function getSalt($encryption = 'md5-hex', $seed = '', $plaintext = '') {
     // Encrypt the password.
     switch ($encryption) {
       case 'crypt' :
@@ -168,7 +171,7 @@ class AuthHelper {
     }
   }
 
-  static function _toAPRMD5($value, $count) {
+  public function _toAPRMD5($value, $count) {
     /* 64 characters that are valid for APRMD5 passwords. */
     $APRMD5 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
@@ -181,7 +184,7 @@ class AuthHelper {
     return $aprmd5;
   }
 
-  static function _bin($hex) {
+  public function _bin($hex) {
     $bin = '';
     $length = strlen($hex);
     for ($i = 0; $i < $length; $i += 2) {

@@ -112,6 +112,7 @@ return array(
     'Intervention\Image\ImageServiceProvider',
     'Rocketeer\RocketeerServiceProvider',
     'SilvertipSoftware\FactoryGirl\FactoryGirlServiceProvider',
+    'DRR\AuthHelper\AuthHelperServiceProvider',
 	),
 
 	/*
@@ -182,6 +183,7 @@ return array(
     'Image'           => 'Intervention\Image\Facades\Image',
     'Rocketeer'       => 'Rocketeer\Facades\Rocketeer',
     'Factory'         => 'SilvertipSoftware\FactoryGirl\Facades\FactoryGirl',
+    'AuthHelper'     => 'DRR\AuthHelper\Facades\AuthHelper',
 	),
 
 );
