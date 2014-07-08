@@ -29,6 +29,16 @@ class UserTest extends TestCase {
   }
 
   /** @test */
+  public function validation_fails_without_unique_email()
+  {
+    $user = Factory::build('User', [
+      'email' => 'allan@211enterprises.com'
+    ]);
+
+    $this->assertFalse($user->validate(Input::all()), 'Expected validation to fail if email is not unique');
+  }
+
+  /** @test */
   public function validation_passes_with_all_required_attributes()
   {
     $user = Factory::build('User');
