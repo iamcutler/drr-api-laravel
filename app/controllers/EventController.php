@@ -2,23 +2,29 @@
 
 use \DRR\Transformers\EventTransformer;
 use \DRR\Transformers\EventMemberTransformer;
+use \DRR\Transformers\UserLikesTransformer;
 
 class EventController extends \BaseController {
 
   protected $eventTransformer;
   protected $eventMemberTransformer;
+  protected $userStatsTransformer;
 
-  public function __construct(Events $event, EventMember $member, CommUser $user, EventCategory $category,
-                              Activity $activity, EventTransformer $eventTransformer, EventMemberTransformer $eventMemberTransformer)
+  public function __construct(User $user, Events $event, EventMember $member, CommUser $commUser, EventCategory $category,
+                              Activity $activity, EventTransformer $eventTransformer, EventMemberTransformer $eventMemberTransformer,
+                              UserLikesTransformer $userStatsTransformer)
   {
     $this->event = $event;
     $this->event_member = $member;
     $this->user = $user;
+    $this->comm_user = $commUser;
     $this->event_category = $category;
     $this->activity = $activity;
     $this->eventTransformer = $eventTransformer;
     $this->eventMemberTransformer = $eventMemberTransformer;
+    $this->userStatsTransformer = $userStatsTransformer;
   }
+
   /**
    * Display a listing of the resource.
    *
@@ -138,6 +144,7 @@ class EventController extends \BaseController {
    */
   public function show($id)
   {
+    $requester = $this->user->find_id_by_hash(Input::get('user_hash'));
     $event = $this->event->eagerEventData()->find($id);
     $results = [];
 
@@ -145,8 +152,7 @@ class EventController extends \BaseController {
     $results['event'] = $this->eventTransformer->transform($event->toArray());
 
     // Event likes / dislikes
-    $results['event']['stats']['likes'] = $event->likes()->count();
-    //$results['event']['stats']['dislikes'] = $event->dislikes()->count();
+    $results['event']['stats'] = $this->userStatsTransformer->transform($event->likes->toArray(), $requester->toArray());
 
     // Event members
     $results['event']['members'] = $this->eventMemberTransformer->transformCollection($event->member->toArray());
@@ -196,7 +202,7 @@ class EventController extends \BaseController {
    */
   public function user_events($slug)
   {
-    $user = $this->user->Find_by_slug($slug);
+    $user = $this->comm_user->Find_by_slug($slug);
     $result = [];
 
     if(!is_null($user))
