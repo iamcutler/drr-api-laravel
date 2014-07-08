@@ -1,6 +1,6 @@
 <?php
 
-class Report extends Eloquent {
+class Report extends BaseModel {
   /**
    * Table used by model
    */
@@ -16,9 +16,4 @@ class Report extends Eloquent {
     'message' => 'required',
     'bug_type' => 'required'
   ];
-
-  public static function validate($input)
-  {
-    return Validator::make($input, static::$rules);
-  }
 }

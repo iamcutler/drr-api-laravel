@@ -20,6 +20,14 @@ Factory::define('User', function($f) {
   ];
 });
 
+Factory::define('Report', function($f) {
+  return [
+    'category' => 'Testing',
+    'message' => 'Testing report',
+    'bug_type' => 'mobile-app'
+  ];
+});
+
 /*
  * Factory Senquences
  */
