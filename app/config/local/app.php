@@ -183,7 +183,7 @@ return array(
     'Image'           => 'Intervention\Image\Facades\Image',
     'Rocketeer'       => 'Rocketeer\Facades\Rocketeer',
     'Factory'         => 'SilvertipSoftware\FactoryGirl\Facades\FactoryGirl',
-    'AuthHelper'     => 'DRR\AuthHelper\Facades\AuthHelper',
+    'AuthHelper'      => 'DRR\AuthHelper\Facades\AuthHelper',
 	),
 
 );
