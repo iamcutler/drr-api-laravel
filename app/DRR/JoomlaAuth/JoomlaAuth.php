@@ -4,9 +4,9 @@
 // Using these to keep password encryption consistency.
 */
 
-namespace DRR\AuthHelper;
+namespace DRR\JoomlaAuth;
 
-class AuthHelper {
+class JoomlaAuth {
 
   public function genRandomPassword($length = 8) {
     $salt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -26,7 +26,7 @@ class AuthHelper {
 
   public function getCryptedPassword($plaintext, $salt = '', $encryption = 'md5-hex', $show_encrypt = false) {
     // Get the salt to use.
-    $salt = AuthHelper::getSalt($encryption, $salt, $plaintext);
+    $salt = $this->getSalt($encryption, $salt, $plaintext);
 
     // Encrypt the password.
     switch ($encryption) {
@@ -58,7 +58,7 @@ class AuthHelper {
       case 'aprmd5' :
         $length = strlen($plaintext);
         $context = $plaintext.'$apr1$'.$salt;
-        $binary = AuthHelper::_bin(md5($plaintext.$salt.$plaintext));
+        $binary = $this->_bin(md5($plaintext.$salt.$plaintext));
 
         for ($i = $length; $i > 0; $i -= 16) {
           $context .= substr($binary, 0, ($i > 16 ? 16 : $i));
@@ -67,7 +67,7 @@ class AuthHelper {
           $context .= ($i & 1) ? chr(0) : $plaintext[0];
         }
 
-        $binary = AuthHelper::_bin(md5($context));
+        $binary = $this->_bin(md5($context));
 
         for ($i = 0; $i < 1000; $i ++) {
           $new = ($i & 1) ? $plaintext : substr($binary, 0, 16);
@@ -78,7 +78,7 @@ class AuthHelper {
             $new .= $plaintext;
           }
           $new .= ($i & 1) ? substr($binary, 0, 16) : $plaintext;
-          $binary = AuthHelper::_bin(md5($new));
+          $binary = $this->_bin(md5($new));
         }
 
         $p = array ();
@@ -88,10 +88,10 @@ class AuthHelper {
           if ($j == 16) {
             $j = 5;
           }
-          $p[] = AuthHelper::_toAPRMD5((ord($binary[$i]) << 16) | (ord($binary[$k]) << 8) | (ord($binary[$j])), 5);
+          $p[] = $this->_toAPRMD5((ord($binary[$i]) << 16) | (ord($binary[$k]) << 8) | (ord($binary[$j])), 5);
         }
 
-        return '$apr1$'.$salt.'$'.implode('', $p) . AuthHelper::_toAPRMD5(ord($binary[11]), 3);
+        return '$apr1$'.$salt.'$'.implode('', $p) . $this->_toAPRMD5(ord($binary[11]), 3);
 
       case 'md5-hex' :
       default :

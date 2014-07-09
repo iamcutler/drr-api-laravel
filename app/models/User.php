@@ -199,8 +199,8 @@ class User extends BaseModel {
 
   public static function generate_password($password)
   {
-    $salt = AuthHelper::genRandomPassword(32);
-    $crypt = AuthHelper::getCryptedPassword($password, $salt);
+    $salt = JoomlaAuth::genRandomPassword(32);
+    $crypt = JoomlaAuth::getCryptedPassword($password, $salt);
     return $crypt . ':' . $salt;
   }
 
